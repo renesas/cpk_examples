@@ -9,9 +9,9 @@ If you are willing to contribute you codes, please [contact us](mailto:craig.wu.
 
 瑞萨提供多种CPK开发板，为了方便查找，我们将样例代码放在以CPK板名字命名的目录下。由于瑞萨原厂开发环境e2studio的限制，在各级目录和文件名中都不使用横杠（减号）和空格，全部使用下划线和小写字母。各个CPK板和目录的对应关系如下：
 
-| 核心板                                                    | 对应目录      |
-| :-------------------------------------------------------- | :------------ |
-| [CPKCOR-RA8D1B 核心板](about:blank)      | cpkcor_ra8d1b |
+| 用户手册                                        | 样例代码目录      | 官网连接        |
+| :-------------------------------------------------------- | :------------ | :-------------- |
+| [CPKCOR-RA8D1B 核心板](cpkcor_ra8d1b/docs/01_overview.md) |[cpkcor_ra8d1b](./cpkcor_ra8d1b/) | [renesas.com/cpkcor-ra8d1b](about:blank) |
 
 
 
