@@ -11,7 +11,7 @@ If you are willing to contribute you codes, please [contact us](mailto:craig.wu.
 
 | 用户手册                                        | 样例代码目录      | 官网连接        |
 | :-------------------------------------------------------- | :------------ | :-------------- |
-| [CPKCOR-RA8D1B 核心板](cpkcor_ra8d1b/docs/01_overview.md) |[cpkcor_ra8d1b](./cpkcor_ra8d1b/) | [renesas.com/cpkcor-ra8d1b](about:blank) |
+| [CPKCOR-RA8D1B 核心板](cpkcor_ra8d1b/docs/01_overview.md) |[cpkcor_ra8d1b](https://github.com/renesas/cpk_examples/tree/main/cpkcor_ra8d1b) | [renesas.com/cpkcor-ra8d1b](about:blank) |
 
 
 
