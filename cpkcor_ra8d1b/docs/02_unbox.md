@@ -40,7 +40,7 @@ Windows环境下双击`setup_fsp_v5_3_0_e2s_v2024-04.exe`即可，如果您不�
 
 [BSP下载地址](./Renesas.RA_board_ra8d1_cpkcor.5.1.0.pack)
 
-[e2studio BSP安装教程](https://github.com/renesas/cpk_examples/blob/main/docs/r01an7244cc0110-ra.pdf)
+[e2studio BSP安装教程](https://zh-support.renesas.com/knowledgeBase/21373750)      [（PDF版下载）](https://github.com/renesas/cpk_examples/blob/main/docs/r01an7244cc0110-ra.pdf)
 
 打开e2studio, 使用BSP模版创建Blinky工程。
 

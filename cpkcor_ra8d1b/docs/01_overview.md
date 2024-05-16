@@ -11,10 +11,10 @@ CPKCOR-RA8D1B核心板
 3. [硬件配置](03_hardware.md)
 4. [通孔扩展接口](04_th_expansion.md)
 5. [板对板扩展接口](05_btb_expansion.md)
-6. [调试电路](06_debug.md)
-7. [USB 2.0高速](07_usbhs.md)
-8. [片外存储](08_storage.md)
-9. [电源和外接设置](09_powerdesign.md)
+6. [RA8的调试接口](06_debug.md)
+7. [RA8 USB 2.0 高速接口](07_usbhs.md)
+8. [RA8的外接存储扩展](08_storage.md)
+9. [CPKCOR-RA8D1B的电源设计](09_powerdesign.md)
 
 CPKCOR-RA8D1B的原理图可以在瑞萨官网下载。
 
