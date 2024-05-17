@@ -47,7 +47,7 @@ MD管脚和P201复用，用来确定芯片RESET后的工作状态。MD=0表示�
 
 在芯片复位时，P201管脚会被硬件逻辑设置成输入并有片内上拉，即不接任何外部电路时，MD=1。如果这一设计已经可以满足您系统的要求，那就无需预留外部下拉电阻。
 - 详见手册`19.2.5 Port mn Pin Function Select Register` Note 1: `The initial value of P201 is 0x0000_0100`
-- 核心板山没有预留MD控制电路，如有需要，请在用户扩展板上实现MD控制。
+- 核心板上没有预留MD控制电路，如有需要，请在用户扩展板上实现MD控制。
 
 ![alt text](images/03_hardware/image-2.png)
 
