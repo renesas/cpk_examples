@@ -16,7 +16,7 @@ CPKCOR-RA8D1B核心板
 8. [RA8的外接存储扩展](08_storage.md)
 9. [CPKCOR-RA8D1B的电源设计](09_powerdesign.md)
 
-CPKCOR-RA8D1B的原理图可以在瑞萨官网下载。
+CPKCOR-RA8D1B的原理图[在此下载](CPKCOR_RA8x1x_V2_schmatic_release.pdf)，可以在瑞萨官网下载。
 
 ### CPKCOR-RA8D1B简介
 
