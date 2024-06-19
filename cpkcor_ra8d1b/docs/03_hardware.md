@@ -158,4 +158,4 @@ RA8 MCU的端口复用功能比较复杂，在文档中无法详尽描述各种�
 在后续的[CPKCOR-RA8D1B 板对板扩展接口](05_btb_expansion.md)章节中，会详细介绍接口的扩展能力和设计思路。
 
 
-[返回目录](01_overview.md)             [CPKCOR-RA8D1B 通孔扩展接口](04_th_expansion.md)
+[返回目录](01_overview.md)             [下一篇：CPKCOR-RA8D1B 通孔扩展接口](04_th_expansion.md)
