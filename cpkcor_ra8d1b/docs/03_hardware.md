@@ -37,6 +37,8 @@ RA8 MCU上的副时钟管脚是独用的，没有和GPIO复用，一般接一个
 
 ![alt text](images/03_hardware/image-1.png)
 
+RA8 MCU还支持使用USB全速接口进行USB Boot，此时对系统时钟也有一定要求，具体可以查看[RA8的调试和烧录接口](06_debug.md)章节。
+
 系统控制管脚包括RESET和MD。
 
 RA8的RESET电路里包含了上电复位电路（POR），无需外部延时（阻容电路或RESET芯片），详见手册`5.3.2 Power-On RESET`章节，上电时如果RESET管脚为高电平，POR电路会开始工作，为片内各个部分提供RESET信号。
@@ -85,7 +87,7 @@ MD管脚和P201复用，用来确定芯片RESET后的工作状态。MD=0表示�
 
 在RA MCU复位后，SWD/JTAG调试接口使用的P2端口上I/O缺省设置为调试口，以便调试器可以连接到MCU。详见手册`Table 19.8 Register settings for input/output pin function (PORT2)`。如果需要将这些端口在应用程序中作为GPIO来使用，需要进行对应的设置。如果作为GPIO使用了，那需要再次连接调试器时，要配合RESET复位才能实现连接。
 
-核心板上还预留了J902通孔接口，可以外接其他调试器，更多调试相关的内容会在后续的[RA8的调试接口](06_debug.md)章节中有详细的解释。
+核心板上还预留了J902通孔接口，可以外接其他调试器，更多调试相关的内容会在后续的[RA8的调试和烧录接口](06_debug.md)章节中有详细的解释。
 
 ### 高速 USB 2.0 双向接口
 
