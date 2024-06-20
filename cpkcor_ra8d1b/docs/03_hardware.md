@@ -74,11 +74,11 @@ MD管脚和P201复用，用来确定芯片RESET后的工作状态。MD=0表示�
 
 ### 调试电路
 
-核心板上已经搭载了Segger Jlink-OB电路，使用的主控是瑞萨的RA4M2 MCU。
+核心板上已经搭载了Segger JLink-OB电路，使用的主控是瑞萨的RA4M2 MCU。
 
-此版本的Jlink OB提供了SWD调试功能和一个USB CDC串口，可以同时实现调试和串口通信，用户使用时无需再外接一个串口芯片。核心板上使用RA8的串口3（P408/P409）和Jlink-OB的串口进行通信。
+此版本的JLink OB提供了SWD调试功能和一个USB CDC串口，可以同时实现调试和串口通信，用户使用时无需再外接一个串口芯片。核心板上使用RA8的串口3（P408/P409）和JLink-OB的串口进行通信。
 
-此版本的Jlink OB还支持RA MCU的扩展功能。包括：
+此版本的JLink OB还支持RA MCU的扩展功能。包括：
 - **RA MCU 的SCI-Boot模式**，通过控制RA8 MCU的RESET和MD信号使RA MCU进入SCI Boot，并通过RA MCU的P208和P209实现串口通信。（CPKCOR-RA8D1B核心板预留了和Jlink OB的这个接口，但没有使用）
 - **RA8D1/M1/T1的SWD-Boot模式**，通过控制RA8 MCU的RESET信号，在RESET低电平时向SWD接口的寄存器写入特定内容，RESET拉高后，RA8 MCU即进入SWD Boot模式，通过SWD接口和调试器通信（CPKCOR-RA8D1B缺省支持这个模式）。
 
