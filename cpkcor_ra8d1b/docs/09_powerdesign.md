@@ -24,7 +24,7 @@ USB接口上有防反向二极管，经过2A限流后为核心板提供5V电源�
 
 ![alt text](images/09_powerdesign/image-5.png)
 
-由于板上已经实装了1.8V的LDO，在设计上预留了R108，用于将1.8V连接到VCC2。如果您需要再扩展底板上评估1.8V的Octa-Memory/HyperRAM，可以直接修改R107和R108。R107和R108在PCB上为互斥封装排布，在PCB顶层的右上角。
+由于板上已经实装了1.8V的LDO，在设计上预留了R108，用于将1.8V连接到VCC2。如果您需要在扩展底板上评估1.8V的Octa-Memory/HyperRAM，可以直接修改R107和R108。R107和R108在PCB上为互斥封装排布，在PCB顶层的右上角。
 
   ![alt text](images/09_powerdesign/image-3.png)
 
