@@ -18,7 +18,7 @@
 
 ### 硬件连接：
 
-- 1根USB Type A->Type C或Type-C->Type C线 （支持Type-C 2.0即可）连接HCDC板的JDBG和调试所用PC。
+- 1根USB Type A->Type C或Type-C->Type C线连接HCDC板的JDBG和调试所用PC。
 
 - 1根USB Type-C->Type-C线连接HCDC板的JUSB和PCDC板的JUSB。
 
