@@ -15,12 +15,12 @@
 如果您使用Keil/MDK或IAR Embedded Workbench for ARM，瑞萨也提供可以适用于这些第三方开发环境的配置工具RA Smart Configurator （RASC），可以通过RASC进行芯片管脚和软件协议栈配置等工作，并自动生成对应开发环境的项目工程。RASC可以支持
 - Windows 10 及 Windows 11
 - Linux
+
+最新版的e2studio + FSP 及 RASC可以从瑞萨官网下载，[下载连接](https://www.renesas.cn/cn/zh/software-tool/flexible-software-package-fsp)
+
+本手册内容基于 Windows 10 + e2studio 2024-04集成环境 + FSP 5.3.0，很多样例程序基于[FSP 5.3.0版本](https://github.com/renesas/fsp/releases/tag/v5.3.0)，在[Github的Release页面](https://github.com/renesas/fsp/releases)还可以下载各个版本的FSP。
   
 ![alt text](images/02_unbox/image-2.png)
-
-[下载地址](https://github.com/renesas/fsp/releases)
-
-本手册内容基于 Windows 10 + e2studio 2024-04集成环境 + FSP 5.3.0。
 
 Windows环境下双击`setup_fsp_v5_3_0_e2s_v2024-04.exe`即可，如果您不需要指定安装位置，那一直下一步就可以了。安装过程中会添加MCU调试器的驱动程序，需要您选择信任这些驱动。
 

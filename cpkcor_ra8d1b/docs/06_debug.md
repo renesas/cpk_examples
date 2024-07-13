@@ -4,7 +4,7 @@
 
 RA8 MCU 支持以下调试接口：SWD，JTAG，跟踪调试接口（SWO单线和TPIU四线），除了调试软件，还可以通过调试接口实现MCU片内Flash的烧录，以及外部Flash烧录（例如J-Flash配合JLink使用）。
 
-除了使用调试器进行Flash烧录，RA8 MCU本身也支持Boot模式，进入Boot模式后，RA8 MCU内置的工厂Boot程序会和上位机通信，实现Flash烧录和其他功能（如产品声明周期管理，Trustzone边界设定等）。有关工程Boot程序的详情，请参考[RA8D1工厂Boot程序应用笔记](https://www.renesas.cn/cn/zh/document/apn/renesas-boot-firmware-ra8d1-mcu-group)。
+除了使用调试器进行Flash烧录，RA8 MCU本身也支持Boot模式，进入Boot模式后，RA8 MCU内置的工厂Boot程序会和上位机通信，实现Flash烧录和其他功能（如产品生命周期管理，Trustzone边界设定等）。有关工程Boot程序的详情，请参考[RA8D1工厂Boot程序应用笔记](https://www.renesas.cn/cn/zh/document/apn/renesas-boot-firmware-ra8d1-mcu-group)。
 
 RA8 MCU支持的Boot模式主要有以下几种: 串口Boot（通过UART9的P209/P208端口），USB Boot（通过USB FS接口），SWD/JTAG Boot。其中串口Boot和USB Boot不需要额外的硬件工具，SWD/JTAG则需要对应的调试器或烧录器配合使用。
 
@@ -70,7 +70,7 @@ RA8 MCU的一些设定功能无法通过调试功能实现（即无法通过用�
 
 综上所述，使用SWD接口，可以同时实现调试功能和Boot功能。
 
-RA8 MCU和其他RA6/RA4 MCU一样，都有MD管脚，用来控制芯片是否进入Boot模式。但SWD/JTAG Boot是RA8上新添加的功能，所以MD管脚的控制逻辑和其他系列MCU不同。判断RA8 MCU进入那种工作模式请参考硬件手册3.4章节 - “工作模式切换”，简单整理为下图。
+RA8 MCU和其他RA6/RA4 MCU一样，都有MD管脚，用来控制芯片是否进入Boot模式。但SWD/JTAG Boot是RA8上新添加的功能，所以MD管脚的控制逻辑和其他系列MCU不同。判断RA8 MCU进入哪种工作模式请参考硬件手册3.4章节 - “工作模式切换”，简单整理为下图。
 
 ![alt text](images/06_debug/image-3.png)
 

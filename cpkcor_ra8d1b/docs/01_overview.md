@@ -36,7 +36,7 @@ CPKCOR-RA8D1B板上使用224BGA封装的RA8D1 MCU（U1），支持MIPI-DSI显示
 
 ![alt text](images/01_overview/CPKCOR_RA8D1B_V1_Top.png)
 
-在开发版的底面，预留了丰富的扩展接口，包括：
+在开发板的底面，预留了丰富的扩展接口，包括：
 
 - TF卡槽，支持3.3V信号电平（DS和HS速度模式）
 - J1，J2 两个80管脚的高密度板对板连接器
