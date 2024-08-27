@@ -72,7 +72,7 @@ RA8 MCU的一些设定功能无法通过调试功能实现（即无法通过用�
 
 RA8 MCU和其他RA6/RA4 MCU一样，都有MD管脚，用来控制芯片是否进入Boot模式。但SWD/JTAG Boot是RA8上新添加的功能，所以MD管脚的控制逻辑和其他系列MCU不同。判断RA8 MCU进入哪种工作模式请参考硬件手册3.4章节 - “工作模式切换”，简单整理为下图。
 
-![alt text](images/06_debug/image-3.png)
+![alt text](images/06_debug/image-5.png)
 
 可见MD管脚为低电平时，RA8和RA4/6 MCU一样，会进入串口/USB Boot模式。但MD管脚为高电平时，调试器可以在RESET为低时写入控制寄存器，从而实现SWD/JTAG Boot。
 
