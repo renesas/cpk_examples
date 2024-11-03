@@ -1,8 +1,5 @@
-## 开始使用CPKCOR-RA8D1B核心板
+## 开始使用CPKHMI-RA8D1B核心板
 
-核心板使用开窗铁盒包装，购买时不附带线缆，需要自备USB-TypeC线。
-
-![alt text](images/02_unbox/image-1.png)
 
 ### 下载和安装开发环境
 
@@ -31,7 +28,7 @@ Windows环境下双击`setup_fsp_v5_3_0_e2s_v2024-04.exe`即可，如果您不�
 
 ![alt text](images/02_unbox/image.png)
 
-打开Windows设备管理器，确认有一个`USB Serial Device`，即Jlink自带的USB转串口。此外还有一个`BULK interface`，这个就是Jlink调试器。调试器和串口可以同时使用。
+打开Windows设备管理器，确认有一个`JlinK CDC UART Port`，即Jlink自带的USB转串口。此外还有一个`BULK interface`，这个就是Jlink调试器。调试器和串口可以同时使用。
 
 ![alt text](images/02_unbox/image-3.png)
 
@@ -39,7 +36,7 @@ Windows环境下双击`setup_fsp_v5_3_0_e2s_v2024-04.exe`即可，如果您不�
 
 为了方便大家使用核心板上的各种功能，我们提供一个基础的BSP包，按照板载硬件（存储器、按键、LED等）的连接设置好了对应的I/O口，您可以直接开始使用板上的各种设备。
 
-[BSP下载地址](./Renesas.RA_board_ra8d1_cpkcor.5.1.0.pack)
+[BSP下载地址](./Renesas.RA_board_ra8d1_cpkhmi.5.2.0.pack)
 
 [e2studio BSP安装教程](https://zh-support.renesas.com/knowledgeBase/21373750)      [（PDF版下载）](https://github.com/renesas/cpk_examples/blob/main/docs/r01an7244cc0110-ra.pdf)
 
@@ -55,7 +52,7 @@ Windows环境下双击`setup_fsp_v5_3_0_e2s_v2024-04.exe`即可，如果您不�
 
 ![alt text](images/02_unbox/image-7.png)
 
-瑞萨为CPKCOR-RA8d1B核心板提供多种[样例代码](https://github.com/renesas/cpk_examples/tree/main/cpkcor_ra8d1b)，您可以根据需要选择查看。
+瑞萨为CPKHMI-RA8D1B核心板提供多种[样例代码](https://github.com/renesas/cpk_examples/tree/main/cpkhmi_ra8d1b)，您可以根据需要选择查看。
 
 
 [返回目录](01_overview.md)             [下一篇：核心板硬件概述](03_hardware.md)
