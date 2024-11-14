@@ -15,6 +15,8 @@ CPKHMI-RA8D1B核心板
 7. [RA8 USB 2.0 高速接口](07_usbhs.md)
 8. [RA8的外接存储扩展](08_storage.md)
 9. [CPKHMI-RA8D1B的电源设计](09_powerdesign.md)
+10. [CPKHMI-RA8D1B的以太网](10_ether.md)
+11. [CPKHMI-RA8D1B的MIPI-DSI接口](11_mipidsi.md)    
 
 CPKHMI-RA8D1B的原理图[在此下载](CPKHMI_RA8D1B_schematic_release.pdf)，也可以在瑞萨官网下载。
 
