@@ -20,7 +20,7 @@ USB接口上有防反向二极管，经过2A限流后为核心板提供5V电源�
 
 ![alt text](images/09_powerdesign/image-1.png)
 
-核心板的RA8电源设计采用了电阻硬件跳线方式，缺省的配置是VCC直接连接到AVCC_MIPI, VCC2, VBATT和模拟电源（AVCC0，VREFH，VREFL0）。LDO ISL80505IRAJZ为MIPI-DSI接口提供1.8V电源，如下图所示。
+核心板的RA8电源设计采用了电阻硬件跳线方式，缺省的配置是VCC直接连接到AVCC_MIPI, VCC2, VBATT和模拟电源（AVCC0，VREFH，VREFH0）。LDO ISL80505IRAJZ为MIPI-DSI接口提供1.8V电源，如下图所示。
 
 ![alt text](images/09_powerdesign/image-5.png)
 
@@ -78,7 +78,7 @@ MIPI电源的三个管脚可以向扩展板提供电源，但主要的作用是�
 ![alt text](images/09_powerdesign/image-9.png)
 
 
-综上所述，核心板作为独立的开发板工作时，使用USB供电，通过LDO为RA8 MCU系统提供3.3V供电，同时另一个LDO为MIPI-DSI提供1.8V供电。配合扩展板工作时，可为扩展板提供5V，3.3V和1.8V电源和模拟参考电源，也可以配合跳线电阻，由扩展板反向为核心板提供某些电源，满足不同的评估和原型系统的需求。
+综上所述，核心板作为独立的开发板工作时，使用USB供电，通过LDO为RA8 MCU系统提供3.3V供电，同时另一个LDO为MIPI-DSI提供1.8V供电。配合扩展板工作时，可为扩展板提供5V、3.3V和1.8V电源和模拟参考电源，也可以配合跳线电阻，由扩展板反向为核心板提供某些电源，满足不同的评估和原型系统的需求。
 
 
 [返回目录](01_overview.md)      

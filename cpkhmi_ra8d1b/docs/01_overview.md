@@ -26,13 +26,13 @@ CPKHMI-RA8D1B板上使用224BGA封装的RA8D1 MCU（U1），支持MIPI-DSI显示
 板上除了实现RA8D1最小系统外，还搭载了实用的外设功能，包括：
 
 - 32位SDRAM（U2），16M字节容量
-- OSPI Flash（U3），64M字节容量
+- OSPI NOR Flash（U3），64M字节容量
 - USB 2.0高速主机/设备，JUSB Type-C 2.0接口，支持主/从功能自动切换
 - MIPI-DSI显示输出接口，支持触摸屏（I2C）
 - 百兆以太网接口，支持PoE供电
 - 板载Segger Jlink调试器，同时支持一路虚拟串口，JDBG Type-C 2.0 设备接口
   - Jlink工作指示LED（橙色）
-- 电源LED（白色），用户LED（绿色），复位按键和用户按键
+- 电源LED（白色），用户LED-PA01（绿色），复位按键和用户按键-P008
 - 2.54mm间距的通孔扩展接口
   - J901 串行口扩展
   - J902 外接调试器接口
