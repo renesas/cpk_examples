@@ -38,7 +38,7 @@ CPKCOR-RA8D1B上使用了16位SDRAM扩展数据存储，板载SDRAM型号是华�
 
 ### QSPI Flash扩展
 
-核心板上使用了瑞萨的AT25SF128A QSPI Flash扩展存储空间，容量位16M字节（128Mbit）。QSPI Flash使用的是OPSI接口上的CS1寻址空间，地址从0x9000_0000开始至0x90FF_FFFF。
+核心板上使用了QSPI Flash扩展存储空间，容量位16M字节（128Mbit），支持瑞萨的AT25SF128A和华邦的W25Q128JV。QSPI Flash使用的是OPSI接口上的CS1寻址空间，地址从0x9000_0000开始至0x90FF_FFFF。
 
 核心板通过J2引出了完整的OSPI接口，包括两个CS和差分时钟线。如果您需要再外接扩展板上使用OSPI接口，请修改CPKCOR-RA8D1B上的电阻设置：
 - 拆除R606，核心板上SCK和SCKN已经以差分线形式连接到J2
