@@ -10,7 +10,7 @@
    
 ### 硬件要求：
 
-- 1块Renesas RA8开发板：CPKCOR-RA8D1B
+- 1块Renesas RA8开发板：CPKCOR-RA8D1B （板上QSPI Flash为Renesas AT25SF128A或者Winbond W25Q128JVPIQ）
 
 - 1根USB Type A->Type C或Type-C->Type C线 （支持Type-C 2.0即可）
 

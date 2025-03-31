@@ -16,6 +16,10 @@
 #define LED4_OFF    R_PORT4->PCNTR3_b.PORR = (1 << 12) // LED_LD12 Off, Low
 
 uint8_t test_data[256];
+uint8_t Flash_Type = 0;
+#define AT25SF128A    (1)
+#define W25Q128JVPIQ  (2)
+#define W25Q128JW     (3)
 
 void fsp_assert(fsp_err_t err);
 void ospi_test_wait_until_wip(void);
@@ -66,14 +70,26 @@ void hal_entry(void)
     memset(&direct_command, 0, sizeof(direct_command));
     direct_command.command        = 0x90;
     direct_command.command_length = 0x1;
-    direct_command.address        = 0x0000;
-    direct_command.address_length = 0x2;
-    direct_command.dummy_cycles   = 0x8;
+    direct_command.address        = 0x0000;//0x000000;
+    direct_command.address_length = 0x2;//0x3;
+    direct_command.dummy_cycles   = 0x8;//0;
     direct_command.data_length    = 0x2;
     err = R_OSPI_B_DirectTransfer (g_ospi0.p_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);
     fsp_assert (err);
-    //if(!((direct_command.data == 0xEF17) || (direct_command.data == 0x17EF)))
-    if(!((direct_command.data == 0x1F17) || (direct_command.data == 0x171F)))
+
+    if((direct_command.data == 0xEF17) || (direct_command.data == 0x17EF))//For CPKCOR W25Q128JVPIQ
+    {
+        Flash_Type = W25Q128JVPIQ;
+    }
+    else if((direct_command.data == 0x1F17) || (direct_command.data == 0x171F))//For CPKCOR AT25SF128A
+    {
+        Flash_Type = AT25SF128A;
+    }
+    else if((direct_command.data == 0xEF18) || (direct_command.data == 0x18EF))//For CPKDIS W25Q128JW
+    {
+        Flash_Type = W25Q128JW;
+    }
+    else
     {
         __BKPT(0);
     }
@@ -144,6 +160,97 @@ void hal_entry(void)
     SCB_InvalidateDCache_by_Addr((volatile void *)0x90040000, 256);
 #endif
 
+    for (uint32_t i = 0; i < sizeof(test_data); i++)
+    {
+        uint8_t data = *(dest + i);
+        if (test_data[i] != data)
+        {
+            fsp_assert (FSP_ERR_ASSERTION);
+        }
+    }
+#endif
+
+    //For CPKCOR AT25SF128A
+    if (AT25SF128A == Flash_Type)
+    {
+        /* Read Status Register Byte 2 */
+        memset(&direct_command, 0, sizeof(direct_command));
+        direct_command.command        = 0x35;
+        direct_command.command_length = 0x1;
+        direct_command.address        = 0x0;
+        direct_command.address_length = 0x0;
+        direct_command.dummy_cycles   = 0x0;
+        direct_command.data_length    = 0x1;
+        err = R_OSPI_B_DirectTransfer (g_ospi0.p_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);
+        fsp_assert (err);
+
+        /* Set Write Enable for Volatile Status Register via 1S-1S-1S protocol */
+        memset(&direct_command, 0, sizeof(direct_command));
+        direct_command.command        = 0x50;
+        direct_command.command_length = 0x1;
+        err = R_OSPI_B_DirectTransfer (g_ospi0.p_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);
+        fsp_assert (err);
+        ospi_test_wait_until_wip();
+
+        /* Set QE bit to 1 to enable Quad */
+        memset(&direct_command, 0, sizeof(direct_command));
+        direct_command.command        = 0x31;
+        direct_command.command_length = 0x1;
+        direct_command.data           = 0x02;
+        direct_command.data_length    = 0x1;
+        err = R_OSPI_B_DirectTransfer (g_ospi0.p_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);
+        fsp_assert (err);
+
+        /* Read Status Register Byte 2 */
+        memset(&direct_command, 0, sizeof(direct_command));
+        direct_command.command        = 0x35;
+        direct_command.command_length = 0x1;
+        direct_command.address        = 0x0000;
+        direct_command.address_length = 0x0;
+        direct_command.dummy_cycles   = 0x0;
+        direct_command.data_length    = 0x1;
+        err = R_OSPI_B_DirectTransfer (g_ospi0.p_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);
+    }
+
+    err = R_OSPI_B_SpiProtocolSet(g_ospi0.p_ctrl, SPI_FLASH_PROTOCOL_1S_4S_4S);
+    fsp_assert (err);
+
+    /* Check Manufacture/Device ID via 1S-4S-4S protocol */
+    memset(&direct_command, 0, sizeof(direct_command));
+    direct_command.command        = 0x94;
+    direct_command.command_length = 0x1;
+    direct_command.address        = 0x000000;
+    direct_command.address_length = 0x3;
+    direct_command.dummy_cycles   = 0x6;
+    direct_command.data_length    = 0x2;
+    err = R_OSPI_B_DirectTransfer (g_ospi0.p_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);
+    fsp_assert (err);
+    //if(!((direct_command.data == 0xEF17) || (direct_command.data == 0x17EF)))//For CPKCOR W25Q128JVPIQ
+    if(!((direct_command.data == 0x1F17) || (direct_command.data == 0x171F)))//For CPKCOR AT25SF128A
+    {
+        __BKPT(0);
+    }
+
+#if 1
+#if BSP_CFG_DCACHE_ENABLED
+    SCB_InvalidateDCache_by_Addr((volatile void *)0x90000000, 256);
+#endif
+    dest = (uint8_t*) 0x90000000U;
+    for (uint32_t i = 0; i < sizeof(test_data); i++)
+    {
+        uint8_t data = *(dest + i);
+        if (test_data[i] != data)
+        {
+            fsp_assert (FSP_ERR_ASSERTION);
+        }
+    }
+#endif
+
+#if 1
+#if BSP_CFG_DCACHE_ENABLED
+    SCB_InvalidateDCache_by_Addr((volatile void *)0x90040000, 256);
+#endif
+    dest = (uint8_t*) 0x90040000U;
     for (uint32_t i = 0; i < sizeof(test_data); i++)
     {
         uint8_t data = *(dest + i);
