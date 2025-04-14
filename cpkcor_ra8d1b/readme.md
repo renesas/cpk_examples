@@ -9,7 +9,7 @@ CPKCOR-RA8D1B核心板
 本目录下是存放CPKCOR-RA8D1B核心板的样例程序，包括：
 
 RA8x1 MCU核心功能使用样例
-- [Helium Intrinsic指令样例代码](/helium_intrinsic_cpkcor_ra8d1b_ep)
+- [Helium Intrinsic指令样例代码](../cpkcor_ra8d1b/helium_intrinsic_cpkcor_ra8d1b_ep)
 
 片外存储功能样例
 - [16位SDRAM样例程序](/sdram_cpkcor_ra8d1_ep)
@@ -20,7 +20,7 @@ RA8x1 MCU核心功能使用样例
 - [TF卡 FAT + FreeRTOS](/sdhi_freertos_fat_cpkcor_ra8d1b_ep)
 
 裸机运行的USB样例
-- [USB PCDC 样例代码](/usb_pcdc_baremetal_cpkcor_ra8d1_expansion_ep)
+- [USB PCDC 样例代码](../cpkcor_ra8d1b/usb_pcdc_baremetal_cpkcor_ra8d1_expansion_ep)
 
 基于FREERTOS的USB样例
 - [USB HCDC 样例代码](/usb_hcdc_freertos_cpkcor_ra8d1b_ep)
