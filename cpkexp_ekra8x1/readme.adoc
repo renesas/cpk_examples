@@ -4,7 +4,7 @@
 
 CPKEXP-EKRA8X1 是适用于CPK-RA8x1系列核心板的通用扩展板，扩展板上提供了和EK-RA8x1类似的接口，其中部分接口和EK-RA8x1管脚兼容，可以方便地评估RA8x1 MCU的大部分功能。
 
-点击查看 link:/docs/01_overview.adoc[CPKEXP-EKRA8X1使用手册]
+点击查看 link:../cpkexp_ekra8x1/docs/01_overview.adoc[CPKEXP-EKRA8X1使用手册]
 
 本目录下是存放CPKEXP-EKRA8X1扩展板配合各个CPK-RA8x1核心板的样例程序，主要用于评估和演示扩展板上特有的一些功能，以及配合外接模块的一些样例程序。
 各个样例程序所需的硬件配置请对应样例程序的Readme文件。
