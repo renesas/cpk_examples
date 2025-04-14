@@ -1,0 +1,22 @@
+:scripts: cjk
+
+== CPKEXP-EKRA8x1扩展板
+
+CPKEXP-EKRA8X1 是适用于CPK-RA8x1系列核心板的通用扩展板，扩展板上提供了和EK-RA8x1类似的接口，其中部分接口和EK-RA8x1管脚兼容，可以方便地评估RA8x1 MCU的大部分功能。
+
+点击查看 link:/docs/01_overview.adoc[CPKEXP-EKRA8X1使用手册]
+
+本目录下是存放CPKEXP-EKRA8X1扩展板配合各个CPK-RA8x1核心板的样例程序，主要用于评估和演示扩展板上特有的一些功能，以及配合外接模块的一些样例程序。
+各个样例程序所需的硬件配置请对应样例程序的Readme文件。
+
+板载LCD（H0233S001）相关样例程序
+
+* 整理中
+
+OV7725摄像头样例程序
+
+* 整理中
+
+以太网样例程序
+
+* 以太网PHY部分的设计和CPKHMI完全兼容，请参考link:../cpkhmi_ra8d1b/[CPKHMI-RA8D1B样例程序]
