@@ -6,7 +6,7 @@ CPKHMI-RA8D1B核心板
 
 点击查看[CPKHMI-RA8D1B 核心板使用手册](../cpkhmi_ra8d1b/docs/01_overview.md) 。
 
-本目录下是存放CPKHMI-RA8D1B核心板特有外设的的样例程序，其他CPK-RA8x1核心板通用功能的样例程序，请参考[CPKCOR-RA8D1B样例程序](cpkcor_ra8d1b/) 。
+本目录下是存放CPKHMI-RA8D1B核心板特有外设的的样例程序，其他CPK-RA8x1核心板通用功能的样例程序，请参考[CPKCOR-RA8D1B样例程序](../cpkcor_ra8d1b/) 。
 
 32位SDRAM相关的样例
 - [SDRAM配置样例程序](../cpkhmi_ra8d1b/sdram_cpkhmi_ra8d1_ep)
