@@ -1,10 +1,13 @@
 :scripts: cjk
 
 = CPKEXP-EKRA8X1 通用扩展板使用手册
+:toc:
+
+本使用手册主要包含以下内容，可以点击跳转到您想了解的部分。
 
 - [x] <<CPKEXP-EKRA8x1 简介,01. 简介>>
-- [ ] link:02_displaycam.adoc[02. 显示和摄像头]
-- [ ] link:03_communication.adoc[03. 通信接口]
+- [x] link:02_displaycam.adoc[02. 显示和摄像头]
+- [x] link:03_communication.adoc[03. 通信接口]
 - [ ] link:04_ecoexpansion.adoc[04. 生态系统扩展接口]
 - [ ] link:05_generalexpansion.adoc[05. 通用扩展接口]
 - [ ] link:06_powermisc.adoc[06. 电源和按键]
@@ -19,7 +22,7 @@ CPKEXP-EKRA8X1 是适用于CPK-RA8x1系列核心板的通用扩展板，扩展�
 
 原理图下载：link:CPKEXP-EKRA8X1_V1_SCH.pdf[CPKEXP-EKRA8X1 V1版原理图]
 
-image::images/01_overview/CPKEXP-EKRA8x1_top.png[]
+image::images/01_overview/CPKEXP-EKRA8X1.png[]
 
 通用扩展板可以配合以下核心板使用:
 
@@ -27,6 +30,12 @@ image::images/01_overview/CPKEXP-EKRA8x1_top.png[]
 * CPKHMI-RA8D1B
 
 CPK-RA8x1核心板可以贴装不同类型的RA8x1 MCU，配合通用扩展板时能实现的功能也有所不同，请参考不同核心板J1和J2接口的信号定义。
+
+安装核心板时，请将核心板的螺丝孔和扩展板的螺丝孔位置对准，用力按下核心板，确认连接可靠即可。
+
+取下核心板时，接插件连接较为紧密，且两个板子间空间较小（缺省连接器合高1.5mm），建议使用塑料撬棒，在各个螺丝孔位置轻轻将核心板与扩展板分离。
+
+image::images/01_overview/image-8.png[0,400]
 
 == CPKEXP-EKRA8x1通用扩展板支持的功能
 
@@ -69,22 +78,19 @@ CPK-RA8x1核心板可以贴装不同类型的RA8x1 MCU，配合通用扩展板�
 
 CPKCOR-RA8D1B核心板 + CPKEXP-EKRA8x1扩展板，组成CPK-RA8x1开发套件，本手册以此套件为例，介绍通用扩展板的各个功能。
 
-image::images/01_overview/CPKEXPwCPKCOR.png[0,400]
-
 核心板上RA8x1 MCU的大部分功能管脚都通过2个80Pin的高密高速接口J1/J2连接到扩展板的各个接口，可以进行灵活的配置。
 开发板套件在缺省状态下（出厂设置），可以直接使用以下接口。
 
 * 核心板上的所有功能，包括SDRAM，QSPI NOR Flash，JLink，USB-HS，MicroSD卡，J901扩展口。
-* MIPI-DSI接口，连接分辨率为480x222的LCD屏。
+* LCD接口，通过MIPI-DSI连接分辨率为222x480的LCD屏。
 * OV7725摄像头接口（背面），直接连接OV7725 24Pin的摄像头模组。
 * USB-FS Type-C 2.0接口，缺省配置为Device，可通过跳线配置为Host。
 * 1路CAN-FD接口。
-* QSPI NAND Flash（背面）。
 * Arduino UNO 扩展接口。
 * PMOD接口，Type 2A扩展SPI模式。
 * 两个Grove接口，I^2^C模式。
 
-image::images/01_overview/image-1.png[0,800]
+image::images/01_overview/CPKEXP-EKRA8x1_b.jpg[0,800]
 
 === 缺省配置的BSP现在和跳线设置
 
@@ -96,16 +102,16 @@ image::images/01_overview/image-1.png[0,800]
 
 BSP缺省配置对应的跳线及开关设置如下。
 
-1. USB-FS接口设置为USB Device，并将P407作为USB-FS的VBUS检测引脚（可以支持USB Boot）。红色跳线块为USB电源设置，绿色为信号连接。
+1.USB-FS接口设置为USB Device，并将P407作为USB-FS的VBUS检测引脚（可以支持USB Boot）。红色跳线块为USB电源设置，绿色为信号连接。
 
 image::images/01_overview/image-2.png[0,400]
 
-2. 显示输出缺省使用板载2.33寸LCD（H0233S001），跳线设置如下。红色为LCD电源（3.3V），LCD接口模式为MIPI-DSI（IM0=0，IM1=1），LCD背光设置为常亮（BLK-EN=VCC）。
+2.显示输出缺省使用板载2.33寸LCD（H0233S001），跳线设置如下。红色为LCD电源（3.3V），LCD接口模式为MIPI-DSI（IM0=0，IM1=1），LCD背光设置为常亮（BLK-EN=VCC）。
     这个跳线模组采用了安全设计，使用2pin跳线块时，即使不小心插错跳线块，也不会造成系统短路或MCU管脚短接。
    
 image::images/01_overview/image-3.png[0,600]
 
-3. CEU摄像头和以太网复用，BSP缺省使用CEU摄像头功能，以太网PHY的RESET信号拉低。以太网RMII接口数据线上的跳线可以不用断开，但REFCLK50需要断开（以太网PHY的REFCLK50管脚一直有时钟信号输出，会干扰CEU接口的数据）。
+3.CEU摄像头和以太网复用，BSP缺省使用CEU摄像头功能，以太网PHY的RESET信号拉低。以太网RMII接口数据线上的跳线可以不用断开，但REFCLK50需要断开（以太网PHY的REFCLK50管脚一直有时钟信号输出，会干扰CEU接口的数据）。
 
 image::images/01_overview/image-5.png[0,300]
 
@@ -113,11 +119,11 @@ image::images/01_overview/image-5.png[0,300]
 
 image::images/01_overview/image-7.png[0,300]
 
-4. CAN-FD使用CAN-FD收发器1，P208/P209端口作为CAN-FD功能使用，P005作为Standby控制。
+4.CAN-FD使用CAN-FD收发器1，P208/P209端口作为CAN-FD功能使用，P005作为Standby控制。
 
 image::images/01_overview/image-4.png[0,400]
 
-5. Grove2接口功能为I3C/I2C/Analog可选，缺省使用I2C功能，S2和S3开关拨到中间位置。
+5.Grove2接口功能为I3C/I2C/Analog可选，缺省使用I2C功能，S2和S3开关拨到中间位置。
 
 image::images/01_overview/image-6.png[0,400]
 
