@@ -11,11 +11,11 @@ CPKEXP-EKRA8X1 是适用于CPK-RA8x1系列核心板的通用扩展板，扩展�
 
 板载LCD（H0233S001）相关样例程序
 
-link:../cpkexp_ra8ek/mipi_cpkexp_ra8d1_ep[MIPI显示设置样例]
+link:/mipi_cpkexp_ra8d1_ep[MIPI显示设置样例]
 
 OV7725摄像头样例程序
 
-link:../cpkexp_ra8ek/ceu_cpkexp_ra8d1_ep[CEU摄像头输入及显示样例]
+link:/ceu_cpkexp_ra8d1_ep[CEU摄像头输入及显示样例]
 
 以太网样例程序
 
