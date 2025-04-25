@@ -8,10 +8,10 @@
 - [x] <<CPKEXP-EKRA8x1 简介,01. 简介>>
 - [x] link:02_displaycam.adoc[02. 显示和摄像头]
 - [x] link:03_communication.adoc[03. 通信接口]
-- [ ] link:04_ecoexpansion.adoc[04. 生态系统扩展接口]
-- [ ] link:05_generalexpansion.adoc[05. 通用扩展接口]
-- [ ] link:06_powermisc.adoc[06. 电源和按键]
-- [ ] link:07_newboarddesign.adoc[07. 设计您自己的扩展板]
+- [x] link:04_ecoexpansion.adoc[04. 生态系统扩展接口]
+- [x] link:05_generalexpansion.adoc[05. 通用扩展接口]
+- [x] link:06_powermisc.adoc[06. 电源和按键]
+- [x] link:07_newboarddesign.adoc[07. 设计您自己的扩展板]
 
 
 == CPKEXP-EKRA8x1 简介
