@@ -637,6 +637,9 @@
       <configSetting altId="p509.sdram.dq31" configurationId="p509"/>
       <configSetting altId="p509.gpio_speed.gpio_speed_h" configurationId="p509.gpio_drivecapacity"/>
       <configSetting altId="p509.gpio_mode.gpio_mode_peripheral" configurationId="p509.gpio_mode"/>
+      <configSetting altId="p510.output.high" configurationId="p510"/>
+      <configSetting altId="p510.gpio_speed.gpio_speed_h" configurationId="p510.gpio_drivecapacity"/>
+      <configSetting altId="p510.gpio_mode.gpio_mode_out.high" configurationId="p510.gpio_mode"/>
       <configSetting altId="p600.ospi.om_rsto1" configurationId="p600"/>
       <configSetting altId="p600.gpio_mode.gpio_mode_peripheral" configurationId="p600.gpio_mode"/>
       <configSetting altId="p601.sdram.dq0" configurationId="p601"/>
