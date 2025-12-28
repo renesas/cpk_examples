@@ -4,6 +4,8 @@
 #include "filex_dir_operation.h"
 #include "filex_file_operation.h"
 
+#include "perf_counter/perf_counter.h"
+
 static UINT conv_month_to_int(CHAR * p_month);
 static UINT file_system_init(void);
 static UINT file_system_operation(ULONG request);
@@ -158,6 +160,148 @@ static UINT file_system_init(void)
     return fx_status;
 }
 
+/*
+ * Create a file with 1M size to do the read/write SPEED test.
+ * 1 - check the file, if exist, check the file size.
+ */
+#define BENCHMARK_FILE_NAME		"/filex_benchmark.txt"
+#define BENCHMARK_TEST_SIZE		(64 * 1024 * 1024)
+static char benchmark_buffer[4096];
+
+static int check_sdcard(FX_MEDIA *media)
+{
+	unsigned long available_space;
+	int status;
+
+    status = fx_media_space_available(media, &available_space);
+	if (status != FX_SUCCESS) {
+		APP_PRINT("get media space fail.\n");
+		return status;
+	}
+
+	if (available_space < BENCHMARK_TEST_SIZE) {
+		APP_PRINT("No enough space to do benchmark test, need 0x%x\n",
+				BENCHMARK_TEST_SIZE);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int read_speed_test(FX_MEDIA *media, char *path)
+{
+	size_t size = BENCHMARK_TEST_SIZE;
+	uint32_t ms, speed, read_size;
+	FX_FILE file;
+    UINT status;
+
+	APP_PRINT("%s\n", __func__);
+    status = fx_file_open(media, &file, path, FX_OPEN_FOR_READ);
+    if (status != FX_SUCCESS) {
+        APP_PRINT("open %s fail: %u\n", path, status);
+        return - 1;
+    }
+
+	ms = (uint32_t)get_system_ms();
+	while (size > 0) {
+		status = fx_file_read(&file, benchmark_buffer, 4096, &read_size);
+		if (status != FX_SUCCESS) {
+			APP_PRINT("write %s fail %d.\n", path, status);
+			return status;
+		}
+		size -= 4096;
+	}
+	ms = (uint32_t)get_system_ms() - ms;
+
+    fx_file_close(&file);
+
+	speed = (BENCHMARK_TEST_SIZE >> 10) * 1000 / ms;
+	APP_PRINT("-----> Read speed (%u Bytes use %u ms) %uKB/s\n",
+			BENCHMARK_TEST_SIZE, ms, speed);
+
+	return 0;
+}
+
+static int write_speed_test(FX_MEDIA *media, char *path)
+{
+	size_t size = BENCHMARK_TEST_SIZE;
+	uint32_t ms, speed;
+	FX_FILE file;
+    UINT status;
+
+	APP_PRINT("%s please wait ...\n", __func__);
+    status = fx_file_open(media, &file, path, FX_OPEN_FOR_WRITE);
+    if (status != FX_SUCCESS) {
+        APP_PRINT("open %s fail: %u\n", path, status);
+        return - 1;
+    }
+
+	memset(benchmark_buffer, 'h', 4096);
+
+	ms = (uint32_t)get_system_ms();
+	while (size > 0) {
+		status = fx_file_write(&file, benchmark_buffer, 4096);
+		if (status != FX_SUCCESS) {
+			APP_PRINT("write %s fail %d.\n", path, status);
+			return status;
+		}
+
+		size -= 4096;
+	}
+	ms = (uint32_t)get_system_ms() - ms;
+
+    fx_file_close(&file);
+
+	speed = (BENCHMARK_TEST_SIZE >> 10) * 1000 / ms;
+	APP_PRINT("-----> Write speed (%u Bytes use %u ms) %uKB/s\n",
+			BENCHMARK_TEST_SIZE, ms, speed);
+
+	return 0;
+}
+
+static int check_and_manage_file(FX_MEDIA *media, char *path)
+{
+    UINT attributes;
+    ULONG file_size;
+    UINT status;
+
+    status = fx_directory_information_get(media, path,
+			&attributes, &file_size, NULL, NULL, NULL, NULL, NULL, NULL);
+	if (status == FX_SUCCESS) {
+		status = fx_file_delete(media, path);
+		if (status != FX_SUCCESS) {
+			APP_PRINT("delete %s fail.\n", path);
+			return status;
+		}
+	}
+
+    status = fx_file_create(media, path);
+    if (status != FX_SUCCESS && status != FX_ALREADY_CREATED) {
+        APP_PRINT("fail to create %s: %u\n", path, status);
+        return status;
+    }
+
+	return 0;
+}
+
+static fsp_err_t benchmark_test(void)
+{
+	APP_PRINT("%s\n", __func__);
+	if (check_sdcard(&g_fx_media))
+		return -1;
+
+	if (check_and_manage_file(&g_fx_media,
+				BENCHMARK_FILE_NAME))
+		return -1;
+
+	init_cycle_counter(true);
+
+	write_speed_test(&g_fx_media, BENCHMARK_FILE_NAME);
+	read_speed_test(&g_fx_media, BENCHMARK_FILE_NAME);
+
+	return 0;
+}
+
 static UINT file_system_operation(ULONG request)
 {
     UINT fx_status = FX_SUCCESS;
@@ -218,6 +362,17 @@ static UINT file_system_operation(ULONG request)
             PRINT_INFO_STR("Delete a file ...\r\n\r\n");
             fx_status = file_delete();
             break;
+
+		case REQUEST_FILE_SPEED_TEST:
+            PRINT_INFO_STR("File read/write speed test ...\r\n\r\n");
+			fx_status = media_open();
+			if (fx_status != FX_SUCCESS) {
+				APP_PRINT("open media fail.\n");
+				break;
+			}
+			benchmark_test();
+			media_close();
+			break;
 
         default:
             PRINT_INFO_STR("This request is not supported\r\n\r\n");

@@ -7,10 +7,25 @@
 ### 1.2 Stack中添加“FreeRTOS+FAT”，详细的属性设置请参考例程
 ![alt text](images/Picture1-1.png)
 ### 1.3 在卡槽中插入SD卡后，连接调试PC和JDBG。
+
+**注：如果时大容量的SD卡，请事先在PC端将SD卡格式化成FAT32文件系统格式。**
+
 ### 1.4 在e2 studio中调试代码，代码自由运行。PC端打开J-Link RTT Viewer，会显示如下Log打印：
-![alt text](images/Picture2-1.jpg)
-### 1.6 键入相应的指令，如“2”，格式化SD卡：
-![alt text](images/Picture3-1.png)
+![](images/menu.png)
+### 1.6 键入相应的指令，进行相关测试：
+
+支持的指令如下：
+
+| 指令 | 说明                                         |
+| ---- | -------------------------------------------- |
+| 1    | 在sd卡上创建ra_sdhi.txt，并写入10K数据       |
+| 2    | 格式化SD card                                |
+| 3    | 安全移除SD卡                                 |
+| 4    | 显示sd卡上文件内容                           |
+| 5    | 挂载初始化SD卡（只支持在安全移除SD卡后操作） |
+| 6    | 测试SD卡的读写速度                           |
+
+![](images/cmd.png)
 操作的结果会在RTT Viewer中打印。更多细节，请参考代码中的内容。
 
 ## 2. 支持的电路板：

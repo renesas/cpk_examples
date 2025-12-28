@@ -12,7 +12,7 @@
 
 #include "hal_data.h"
 #include "common_utils.h"
-#include "Graphics\graphics.h"
+#include "Graphics/graphics.h"
 
 #define LCD_BITS_PER_PIXEL        (32)
 #define LCD_XSTRIDE_PHYS          (((DISPLAY_BUFFER_STRIDE_PIXELS_INPUT0 * LCD_BITS_PER_PIXEL + 0x1FF) & 0xFFFFFE00) / LCD_BITS_PER_PIXEL)

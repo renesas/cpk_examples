@@ -1,7 +1,7 @@
 1. 例程概述：
-此示例项目演示了基于 Renesas FSP 的 Renesas RA MCU 上的 AGT 在周期模式和单次模式下的功能。
-在 RTTviewer 上提供任何输入时，AGT 通道 0 以单次模式启动。当 AGT 通道 0 到期时，AGT 通道 1 以周期模式启动。
-周期模式下的计时器会在用户指定的时间段内定期到期并使板载 LED 按照用户输入的周期进行闪烁。
+    此示例项目演示了基于 Renesas FSP 的 Renesas RA MCU 上的 AGT 在周期模式和单次模式下的功能。
+    在 RTTviewer 上提供任何输入时，AGT 通道 0 以单次模式启动。当 AGT 通道 0 到期时，AGT 通道 1 以周期模式启动。
+    周期模式下的计时器会在用户指定的时间段内定期到期并使板载 LED 按照用户输入的周期进行闪烁。
 
 ![main_menu](images/main_menu.png)
 
@@ -21,8 +21,9 @@ e2studio：0x22000040
 ![alt text](images/RTT_Viewer_setting.png)
 
 
-2) 如果修改、编译和下载了例程，请在构建配置文件夹中生成的 .map 文件中找到块地址（RAM 中名为 _SEGGER_RTT 的变量）。
-![alt text](images/RTT_adreess.png)
+2. 如果修改、编译和下载了例程，请在构建配置文件夹中生成的 .map 文件中找到块地址（RAM 中名为 _SEGGER_RTT 的变量）。
+    ![alt text](images/RTT_adreess.png)
+3. 按照RTT_Viewer中打印的提示进行操作，可以设置AGT周期以及开始或暂停AGT运行：
+    ![alt text](images/Snipaste_2025-10-23_13-28-14.png)
 
-3) 按照RTT_Viewer中打印的提示进行操作，可以设置AGT周期以及开始或暂停AGT运行：
-![alt text](images/running.png)
+  

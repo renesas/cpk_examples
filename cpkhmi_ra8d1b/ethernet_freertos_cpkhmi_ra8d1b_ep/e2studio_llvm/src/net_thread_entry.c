@@ -5,6 +5,11 @@
 #include "common_utils.h"
 #include "usr_app.h"
 
+#define TCP_SERVER_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 4 )
+#define TCP_SERVER_TASK_PRIORITY       ( tskIDLE_PRIORITY + 2 )
+#define UDP_SERVER_TASK_STACK_SIZE     ( configMINIMAL_STACK_SIZE * 4 )
+#define UDP_SERVER_TASK_PRIORITY       ( tskIDLE_PRIORITY + 2 )
+
 /* Domain for the DNS Host lookup is used in this Example Project.
  * The project can be built with different *gp_domain_name to validate the DNS client
  */
@@ -34,10 +39,10 @@ uint8_t  *gp_remote_ip_address = (uint8_t *)USR_TEST_PING_IP;
      * get the Address using the PC IPconfig details.
      */
     static  uint8_t ucMACAddress[ 6 ]       = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
-    static  uint8_t ucIPAddress[ 4 ]        = {192, 168, 0, 52};
+    static  uint8_t ucIPAddress[ 4 ]        = {192, 168, 1, 52};
     static  uint8_t ucNetMask[ 4 ]          = {255, 255, 255, 0};
-    static  uint8_t ucGatewayAddress[ 4 ]   = {192, 168, 0, 3};
-    static  uint8_t ucDNSServerAddress[ 4 ] = {10, 60, 1, 2};
+    static  uint8_t ucGatewayAddress[ 4 ]   = {192, 168, 1, 1};
+    static  uint8_t ucDNSServerAddress[ 4 ] = {192, 168, 1, 1};
 #endif
 
 
@@ -131,6 +136,8 @@ void vApplicationPingReplyHook( ePingReplyStatus_t eStatus, uint16_t usIdentifie
             break;
     }
 }
+
+extern void create_tcp_udp_server(void);
 
 /*******************************************************************************************************************//**
 * @brief      This is the User Thread for the EP.
@@ -227,7 +234,7 @@ void net_thread_entry(void *pvParameters)
         {
             if(!(PRINT_DOWN_MSG_DISABLE & usr_print_ability))
             {
-                 APP_PRINT("\r\nNetwork is Down");
+                 APP_PRINT("\r\nNetwork is Down\n");
                  usr_print_ability |= PRINT_DOWN_MSG_DISABLE;
             }
             else
@@ -235,6 +242,7 @@ void net_thread_entry(void *pvParameters)
                  APP_PRINT(".");
             }
         }
+        create_tcp_udp_server();
         vTaskDelay(100);
     }
 }

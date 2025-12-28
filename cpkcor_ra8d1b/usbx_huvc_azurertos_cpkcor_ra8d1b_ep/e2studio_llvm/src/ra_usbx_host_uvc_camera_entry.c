@@ -3,6 +3,7 @@
 #include "ux_host_class_video.h"
 #include "ra_usbx_host_uvc_common.h"
 #include "common_utils.h"
+#include "perf_counter/perf_counter.h"
 
 
 
@@ -133,6 +134,9 @@ void ra_usbx_host_uvc_camera_entry(void)
     UCHAR    is_eof;
     ULONG    cur_frame = 0;
     ULONG    frame_bytes_sent = 0;
+    uint32_t ms_start;
+    uint32_t ms_cur;
+    uint32_t total_transfer = 0;
 
     g_detach_attach = false;
 
@@ -174,6 +178,8 @@ void ra_usbx_host_uvc_camera_entry(void)
     set_video_parameters_start_video();
     APP_PRINT("\r\n%s %d\r\n",__FUNCTION__,__LINE__);
 
+    init_cycle_counter(0);
+
     while (1)
     {
         tx_event_flags_get (&g_usb_camera_device_connected_event_flags0, USB_CAMERA_DEVICE_CONNECT_FLAG, TX_OR, &event_fvlaue, TX_WAIT_FOREVER);
@@ -188,6 +194,9 @@ void ra_usbx_host_uvc_camera_entry(void)
 
                     /* Save the video stream header. */
                     //p_uvc_stream_header = (uvc_stream_header_t *)(video_data_nx_packet_ptrs[completed_transfer_index] -> nx_packet_prepend_ptr + VIDEO_DATA_NX_PACKET_PTR_OFFSET);
+		    if (ms_start == 0)
+			    ms_start = (uint32_t)get_system_ms();
+
                     p_uvc_stream_header = (uvc_stream_header_t *)(buffer_ptr[completed_transfer_index]);
                     if (p_uvc_stream_header->bmHeaderInfo & UVC_STREAM_HEADER_HEADERINFO_ERR)
                     {
@@ -232,7 +241,8 @@ void ra_usbx_host_uvc_camera_entry(void)
                         if (is_eof)
                         {
                             cur_frame++;
-                            APP_PRINT("per frame len: 0x%x total frames: 0x%x\n", frame_bytes_sent,cur_frame);
+			    total_transfer++;
+                            APP_DBG_PRINT("per frame len: 0x%x total frames: 0x%x\n", frame_bytes_sent,cur_frame);
                             cnt = 0;
                             /* Reset variables for next frame. */
                             frame_bytes_sent = 0;
@@ -251,8 +261,21 @@ void ra_usbx_host_uvc_camera_entry(void)
                  }
 
                 completed_transfer_index++;
-                if (completed_transfer_index == MAX_NUM_BUFFERS)
+		ms_cur = (uint32_t)get_system_ms();
+
+		if ((ms_cur - ms_start) >= 1000 && cur_frame > 0) {
+			APP_PRINT("Camera data transfer bandwith %uKB/s %ufps @(%u * %u)\r\n",
+					(PIC_WIDTH * PIC_HEIGHT * 2 * total_transfer) /
+					1024 * 1000 / (ms_cur - ms_start),
+					total_transfer * 1000 / (ms_cur - ms_start),
+					PIC_WIDTH, PIC_HEIGHT);
+			ms_start = 0;
+			total_transfer = 0;
+		}
+
+                if (completed_transfer_index == MAX_NUM_BUFFERS) {
                     completed_transfer_index = 0;
+		}
             }
         }
         else

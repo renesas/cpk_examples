@@ -23,6 +23,7 @@
 #include "usb_hmsc_thread.h"
 #include "common_utils.h"
 #include "usb_hmsc_ep.h"
+#include "perf_counter/perf_counter.h"
 
 /*******************************************************************************************************************//**
  * @addtogroup usb_hmsc_ep
@@ -90,6 +91,109 @@ void usb_hmsc_thread_entry(void *pvParameters)
     }
 }
 
+#define TEST_FILE_PATH	"/speed.txt"
+#define TEST_FILE_SIZE	(64 * 1024 * 1024)
+
+static void delete_file(const char *filePath)
+{
+    FF_Stat_t fileStat;
+
+    if (ff_stat(filePath, &fileStat) == 0) {
+	    if (ff_remove(filePath) != 0)
+		    APP_PRINT("Error: Failed to delete file \"%s\".\n", filePath);
+    }
+}
+
+static int write_speed_test(const char *path)
+{
+	size_t size = 0, wsize;
+	FF_FILE *file;
+	uint32_t ms;
+
+	APP_PRINT("%s ... \n", __func__);
+	memset(g_write_data, 'h', 4096);
+
+	file = ff_fopen(TEST_FILE_PATH, "w");
+	if (!file) {
+		APP_PRINT("open %s fail.\n", path);
+		return -1;
+	}
+
+	ms = (uint32_t)get_system_ms();
+	while (size < TEST_FILE_SIZE) {
+		wsize = ff_fwrite(g_write_data, 1, 4096, file);
+		if (wsize != 4096) {
+			APP_PRINT("%s: write 4096 data to file failed.\n", __func__);
+			goto out;
+		}
+		size += 4096;
+	}
+	ms = (uint32_t)get_system_ms() - ms;
+
+	APP_PRINT("---- write %u bytes use %u ms. Write speed: %u KB/s\n",
+			size, ms, (size >> 10) * 1000 / ms);
+
+out:
+	ff_fclose(file);
+
+	return 0;
+}
+
+static int read_speed_test(const char *path)
+{
+	size_t size = 0, rsize;
+	FF_FILE *file;
+	uint32_t ms;
+
+	APP_PRINT("%s ... \n", __func__);
+
+	file = ff_fopen(TEST_FILE_PATH, "r");
+	if (!file) {
+		APP_PRINT("open %s fail.\n", path);
+		return -1;
+	}
+
+	ms = (uint32_t)get_system_ms();
+	while (size < TEST_FILE_SIZE) {
+		rsize = ff_fread(g_write_data, 1, 4096, file);
+		if (rsize != 4096) {
+			APP_PRINT("%s: read 4096 data to file failed.\n", __func__);
+			goto out;
+		}
+		size += 4096;
+	}
+	ms = (uint32_t)get_system_ms() - ms;
+
+	APP_PRINT("----> read %u bytes use %u ms. Read speed: %u KB/s\n",
+			size, ms, (size >> 10) * 1000 / ms);
+
+out:
+	ff_fclose(file);
+
+	return 0;
+}
+
+static int usb_speed_test(void)
+{
+	int err;
+
+	APP_PRINT("%s please wait ...\n", __func__);
+
+	err = check_usb_connection();
+	if (!err)
+		return err;
+
+	delete_file(TEST_FILE_PATH);
+
+	init_cycle_counter(false);
+
+	/* Do read/write speed test */
+	write_speed_test(TEST_FILE_PATH);
+	read_speed_test(TEST_FILE_PATH);
+
+	return 0;
+}
+
 /*******************************************************************************************************************//**
  * @brief     This function initiates the USB operation by calling respective functions.
  * @param[IN]   Converted RTT input
@@ -119,6 +223,10 @@ void process_usb_operation(uint8_t input_buffer)
             APP_PRINT (USB_HMSC_MENU);
         }
         break;
+	case USB_TEST:
+	    usb_speed_test();
+            APP_PRINT(USB_HMSC_MENU);
+	    break;
         case USB_INIT:
         {
             if(true == b_usb_hmsc_close)

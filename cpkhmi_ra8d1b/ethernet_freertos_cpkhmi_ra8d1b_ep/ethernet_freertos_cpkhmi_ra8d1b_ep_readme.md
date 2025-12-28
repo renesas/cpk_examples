@@ -27,12 +27,38 @@
 
 ### 1.5 使用RTT-viewer查看调试信息
 
-![alt text](images/rtt_log.jpg)
+![alt text](images/Snipaste_2025-10-27_14-20-12.png)
 
-## 2. 支持的电路板：
+## 2. TCP/UDP性能测试
+
+本测试用例默认会启动一个TCP server和一个UDP server，可以利用这两个Server进行一些TCP/UDP相关的性能测试。其中TCP服务器的端口为5001，UDP服务器的端口为5002，请按照以下步骤进行TCP及UDP相关测试
+
+### 2.1. 安装windows tcp/udp测试软件
+
+windows上我们可以使用fbench这个工具来进行tcp/udp的性能测试，fbench工具的下载地址为：
+
+https://fbench.sourceforge.net/
+
+根据提示下载对应安装包，安装即可。
+
+![](images/fbench.png)
+
+### 2.2 fbench TCP测试
+
+请按照以下设置进行TCP测试，注意IP地址需要换成板子实际IP。
+
+![](images/tcp_test.png)
+
+### 2.2 fbench UDP测试
+
+请按照以下设置进行UDP测试，注意IP地址需要换成板子实际IP。
+
+![](images/udp_test.png)
+
+## 3. 支持的电路板：
 CPKHMI-RA8D1B
 
-## 3. 硬件要求：
+## 4. 硬件要求：
 1块瑞萨 RA8D1 HMI板：CPKHMI-RA8D1B
 
 1根 Type-C USB 数据线
@@ -41,6 +67,6 @@ CPKHMI-RA8D1B
 
 1个 路由器
 
-## 4. 硬件连接：
+## 5. 硬件连接：
 通过Type-C USB 数据线将 CPKHMI-RA8D1B板上的 USB 调试端口（JDBG）连接到主机 PC
 连接网线到板子

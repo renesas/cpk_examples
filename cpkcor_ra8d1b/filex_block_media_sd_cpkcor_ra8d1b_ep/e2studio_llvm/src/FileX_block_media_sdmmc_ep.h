@@ -34,11 +34,13 @@
                                        "\r\n2. Enter 2 to create a directory on SD card after checking available space."\
                                        "\r\nCreate a text file inside the directory, write and read pre-defined data"\
                                        "\r\n3. Enter 3 to display SD card content."\
+                                       "\r\n4. Enter 4 to do SDcard Read/Write speed test."\
                                        "\r\nUser Input:  "
 #define MAIL_BODY                      "This is a test message for testing the testing of filex_blockmedia API"
 #define FORMAT_CARD                   (1U)
 #define FILE_CREATION                 (2U)
 #define DISPLAY_CONTENT               (3U)
+#define BENCHMARK_TEST		      (4U)
 
 
 

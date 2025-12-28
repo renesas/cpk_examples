@@ -40,6 +40,7 @@
 #define USB_SAFELY_EJECT        (3u)              // RTT Input selection for safely eject operation
 #define USB_INIT                (4u)              // RTT Input selection for Re-initialization of USB
                                                   // Valid only after Safely_Eject option is executed.
+#define USB_TEST		(5U)		  // RTT Input selection for speed test.
 
 #define WRITE_ITEM_SIZE         (10240u)          // The number of elements to read
 #define SUCCESS                 (0)
@@ -51,7 +52,8 @@
                                 "\r\n 1. Write 10k data from app_buffer to ra_usb.txt file\r\n"\
                                 "\r\n 2. Format USB Drive\r\n"\
                                 "\r\n 3. Safely Eject the USB Drive\r\n"\
-                                "\r\n 4. Initialize FreeRTOS+FAT (Valid only after Safely_Eject option is executed)\r\n"
+                                "\r\n 4. Initialize FreeRTOS+FAT (Valid only after Safely_Eject option is executed)\r\n" \
+                                "\r\n 5. Do USB MSC read/write speed test\r\n"
 
 /* Function Declarations */
 void process_usb_operation(uint8_t p_input_buffer);     /* Processes USB operations */

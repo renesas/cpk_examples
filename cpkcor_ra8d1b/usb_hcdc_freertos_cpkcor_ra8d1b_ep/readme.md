@@ -1,5 +1,7 @@
 **该示例工程由 瑞萨电子-王瑾 提供，2024年5月7日**
 
+- 2025年10月24日更新至 FSP6.2.0
+
 ### 工程概述
 
 - 该示例工程演示了基于瑞萨FSP的瑞萨RA MCU基于FreeRTOS USB HCDC的基本功能。
@@ -7,7 +9,7 @@
 ### 支持的开发板 / 演示板：
 
 - CPKCOR-RA8D1B
-   
+  
 ### 硬件要求：
 
 - 2块Renesas RA8开发板：CPKCOR-RA8D1B，1块作为Host，1块作为Device（烧录usb_pcdc_cpkcor_ra8d1b_ep代码）。
@@ -27,11 +29,11 @@
 - 无
 
 ### 软件开发环境：
-   
+
 - FSP版本
-  - FSP 5.3.0
+  - FSP 6.2.0
 - 集成开发环境和编译器：
-  - e2studio v2024-04 + LLVM v17.0.1
+  - e2studio v2025-10 + LLVM v18.1.3
   
 ### 第三方软件
 - 无	   

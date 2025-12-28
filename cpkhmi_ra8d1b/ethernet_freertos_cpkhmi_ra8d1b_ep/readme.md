@@ -1,5 +1,7 @@
 该示例工程由 瑞萨电子-凌滔 提供，2024年7月3日
 
+- 2025年10月17日更新至 FSP6.2.0
+
 #### 工程概述:
 * 该示例工程演示了基于CPKHMI-RA8D1B的FreeRTOS + TCP网络通信程序，它包括DHCP client,DNS cleint和ICMP部分例子。 
 
@@ -21,9 +23,9 @@ CPKHMI-RA8D1B
 
 #### 软件开发环境：
 * FSP版本
-  * FSP 5.3.0
+  * FSP 6.2.0
 * 集成开发环境和编译器：
-  * e2studio v2024-04 + LLVM for ARM 17.0.1
+  * e2studio v2025-10 + LLVM for ARM 18.1.3
 
 #### 第三方软件
 * 无

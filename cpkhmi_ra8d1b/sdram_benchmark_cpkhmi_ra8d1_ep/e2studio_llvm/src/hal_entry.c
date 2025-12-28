@@ -55,15 +55,15 @@ volatile uint32_t DWT_delta=0;
 
 volatile uint32_t SRAM_write_buff_Cache[SDRAM_EXAMPLE_DATALEN];
 volatile uint32_t SRAM_read_buff_Cache[SDRAM_EXAMPLE_DATALEN];
-volatile uint32_t SRAM_write_buff_Nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".nocache");
-volatile uint32_t SRAM_read_buff_Nocache[SDRAM_EXAMPLE_DATALEN]  BSP_PLACE_IN_SECTION(".nocache");
+volatile uint32_t SRAM_write_buff_Nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".ram_nocache");
+volatile uint32_t SRAM_read_buff_Nocache[SDRAM_EXAMPLE_DATALEN]  BSP_PLACE_IN_SECTION(".ram_nocache");
 
-volatile uint32_t dtcm_write_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_data");
-volatile uint32_t dtcm_read_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_data");
+volatile uint32_t dtcm_write_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_from_flash");
+volatile uint32_t dtcm_read_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_from_flash");
 
 
 volatile uint32_t sdram_cache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".sdram");
-volatile uint32_t sdram_nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".nocache_sdram");
+volatile uint32_t sdram_nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".sdram_nocache");
 
 
 
@@ -318,35 +318,6 @@ void hal_entry(void)
     /* Enter non-secure code */
     R_BSP_NonSecureEnter();
 #endif
-}
-
-/*******************************************************************************************************************//**
- * This function is called at various points during the startup process.  This implementation uses the event that is
- * called right before main() to set up the pins.
- *
- * @param[in]  event    Where at in the start up process the code is currently at
- **********************************************************************************************************************/
-void R_BSP_WarmStart(bsp_warm_start_event_t event)
-{
-    if (BSP_WARM_START_RESET == event)
-    {
-#if BSP_FEATURE_FLASH_LP_VERSION != 0
-
-        /* Enable reading from data flash. */
-        R_FACI_LP->DFLCTL = 1U;
-
-        /* Would normally have to wait tDSTOP(6us) for data flash recovery. Placing the enable here, before clock and
-         * C runtime initialization, should negate the need for a delay since the initialization will typically take more than 6us. */
-#endif
-    }
-
-    if (BSP_WARM_START_POST_C == event)
-    {
-        /* C runtime environment and system clocks are setup. */
-
-        /* Configure pins. */
-        IOPORT_CFG_OPEN (&IOPORT_CFG_CTRL, &IOPORT_CFG_NAME);
-    }
 }
 
 #if BSP_TZ_SECURE_BUILD

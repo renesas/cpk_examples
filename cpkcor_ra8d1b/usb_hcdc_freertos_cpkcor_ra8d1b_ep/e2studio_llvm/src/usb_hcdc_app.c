@@ -14,6 +14,8 @@
 #include <common_utils.h>
 #include "usb_hcdc_thread.h"
 
+#include "perf_counter/perf_counter.h"
+
 /*******************************************************************************************************************//**
  * @addtogroup usb_hcdc_ep
  * @{
@@ -80,7 +82,7 @@ void usb_hcdc_task(void)
          /* Handle error */
          if(pdTRUE != err_queue)
          {
-             handle_error (err_queue, "Error in receiving USB event message through queue");
+             handle_error ((fsp_err_t)err_queue, "Error in receiving USB event message through queue");
          }
 
         switch (event_info->event)
@@ -267,6 +269,92 @@ void usb_rtos_callback (usb_event_info_t *p_event_info, usb_hdl_t cur_task, usb_
         g_err_flag = true;
     }
 } /* End of function usb_rtos_callback */
+
+#define TEST_BUFSZ	512
+#define PACKET_CNT	2048
+#define TEST_SIZE	(TEST_BUFSZ * PACKET_CNT)
+
+static fsp_err_t hcdc_write_1m_data(void)
+{
+	usb_event_info_t *ev = NULL;
+	BaseType_t err_queue = pdFALSE;
+	uint32_t size = TEST_SIZE;
+	fsp_err_t err;
+
+	memset(g_rcv_buf, 't', sizeof(g_rcv_buf));
+	APP_PRINT("start CDC write speed test ...\n");
+
+	/*
+	 * Send 1M data and left one write complete msg for
+	 * main loop.
+	 */
+	do {
+		err_queue = xQueueReceive(g_usb_queue, &ev, portMAX_DELAY);
+		if (pdTRUE != err_queue) {
+			APP_PRINT("get queue msg from USB failed.\n");
+			break;
+		}
+
+		switch (ev->event) {
+		case USB_STATUS_WRITE_COMPLETE:
+			break;
+		default:
+			APP_PRINT("receive unknown event in %s\n", __func__);
+			break;
+		}
+
+		err = R_USB_Write(&g_basic_ctrl, g_rcv_buf,
+				sizeof(g_rcv_buf), ev->device_address);
+		if (FSP_SUCCESS != err) {
+			APP_PRINT("write data to cdc device fail. %d\n", err);
+			return err;
+		}
+
+		size -= sizeof(g_rcv_buf);
+
+	} while (size > 0);
+
+	return 0;
+}
+
+static fsp_err_t hcdc_read_1m_data(void)
+{
+	usb_event_info_t *ev = NULL;
+	BaseType_t err_queue = pdFALSE;
+	uint32_t size = 0;
+	fsp_err_t err;
+
+	APP_PRINT("start CDC read speed test ...\n");
+
+	while (size < TEST_SIZE) {
+		err_queue = xQueueReceive(g_usb_queue, &ev, portMAX_DELAY);
+		if (pdTRUE != err_queue) {
+			APP_PRINT("get queue msg from USB failed.\n");
+			break;
+		}
+
+		switch (ev->event) {
+		case USB_STATUS_WRITE_COMPLETE:
+			break;
+		case USB_STATUS_READ_COMPLETE:
+			size += ev->data_size;
+			break;
+		default:
+			APP_PRINT("receive unknown event in %s\n", __func__);
+			break;
+		}
+
+		err = R_USB_Read(&g_basic_ctrl, g_rcv_buf,
+				sizeof(g_rcv_buf), ev->device_address);
+		if (err != FSP_SUCCESS) {
+			APP_PRINT("case USB_Read fail.\n");
+			return err;
+		}
+	}
+
+	return 0;
+}
+
 /*******************************************************************************************************************//**
   * @brief This function is to do data process with peripheral device
   * @param[IN]   event_info             data process in HCDC event type
@@ -275,64 +363,56 @@ void usb_rtos_callback (usb_event_info_t *p_event_info, usb_hdl_t cur_task, usb_
 void usb_data_process(usb_event_info_t *event_info)
 {
     fsp_err_t err = FSP_SUCCESS;
-    if (USB_CLASS_HCDC == event_info->type)
-    {
-        if (RESET_VALUE < event_info->data_size)
-        {
+    if (USB_CLASS_HCDC == event_info->type) {
+        if (RESET_VALUE < event_info->data_size) {
             /* Send the received data to USB Host */
-            switch(g_snd_buf[ZERO_INDEX])
-            {
-                case KIT_INFO:
-                {
+            switch(g_snd_buf[ZERO_INDEX]) {
+		case KIT_INFO:
                     g_snd_buf[ZERO_INDEX]= NEXT_STEPS;
-                }
-                break;
+		    break;
                 case NEXT_STEPS:
-                {
                     g_snd_buf[ZERO_INDEX]= CARRIAGE_RETURN;
-                }
-                break;
+		    break;
                 case CARRIAGE_RETURN:
-                {
-                    g_snd_buf[ZERO_INDEX]= KIT_INFO;
-                }
-                break;
+                    g_snd_buf[ZERO_INDEX] = WRITE_1M_DATA;
+		    break;
+		case WRITE_1M_DATA:
+		    g_snd_buf[ZERO_INDEX] = READ_1M_DATA;
+		    break;
+		case READ_1M_DATA:
+		    g_snd_buf[ZERO_INDEX] = KIT_INFO;
+		    break;
                 default:
-                {
-                    /* No operation */
-                }
-                break;
+		    break;
             }
 
+	    g_rcv_buf[event_info->data_size] = 0;
+            APP_PRINT("\r\n Received data :%s", g_rcv_buf);
+
+	    /* Write next command to the PCDC device */
             err = R_USB_Write (&g_basic_ctrl, g_snd_buf, CDC_WRITE_DATA_LEN,
                          event_info->device_address);
             if (FSP_SUCCESS != err)
-            {
-                handle_error (err, "**R_USB_Write API FAILED**");
-            }
-            APP_PRINT("\r\n Received data :%s", g_rcv_buf);
-        }
-        else
-        {
+		    handle_error (err, "**R_USB_Write API FAILED**");
+
+	    if (g_snd_buf[ZERO_INDEX] == WRITE_1M_DATA)
+		    hcdc_write_1m_data();
+	    else if (g_snd_buf[ZERO_INDEX] == READ_1M_DATA)
+		    hcdc_read_1m_data();
+        } else {
             /* Send the data reception request when the zero-length packet is received. */
             err = R_USB_Read (&g_basic_ctrl,g_rcv_buf, event_info->data_size,
                         event_info->device_address);
             if (FSP_SUCCESS != err)
-            {
                 handle_error (err, "**R_USB_Read API FAILED**");
-            }
         }
-    }
-    else
-    {
+    } else {
         /* Class notification "SerialState" receive start */
-        err = R_USB_Read (&g_basic_ctrl, (uint8_t *) &g_serial_state,
+        err = R_USB_Read(&g_basic_ctrl, (uint8_t *) &g_serial_state,
         USB_HCDC_SERIAL_STATE_MSG_LEN,event_info->device_address);
         /* Error Handle */
         if (FSP_SUCCESS != err)
-        {
             handle_error (err, "**R_USB_Read API FAILED**");
-        }
     }
 } /* End of function usb_data_process */
 

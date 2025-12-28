@@ -34,6 +34,7 @@
 #define FORMAT                (3U)          //RTT Input selection for format operation.
 #define STATUS                (4U)          //RTT Input selection for statusGet.
 #define REFRESH               (5U)          //RTT Input selection for Refresh.
+#define SPEED_TEST	      (6U)	    //RTT Input selection for speed test.
 #define WRITE_READ_ID_1       (1U)          //RTT Input selection for write/read integer data to/from RECORD_ID1.
 #define WRITE_READ_ID_2       (2U)          //RTT Input selection for write/read char data to/from RECORD_ID2.
 #define WRITE_READ_ID_3       (3U)          //RTT Input selection for write/read float data to/from RECORD_ID3.
@@ -51,6 +52,7 @@
                                 "\r\n   used to erase the entire data flash used by VEEPROM)."\
                                 "\r\n4. Enter 4 for StatusGet operation."\
                                 "\r\n5. Enter 5 for Refresh operation."\
+                                "\r\n6. Enter 6 for VEE read/write speed test."\
                                 "\r\nUser Input:  "
 
 /* vee flash Sub-Menu options for write operation*/

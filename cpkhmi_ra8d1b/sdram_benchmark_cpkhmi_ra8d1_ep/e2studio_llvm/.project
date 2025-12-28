@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>sdram_mipi_cpkhmi_ra8d1_ep_llvm</name>
+	<name>sdram_benchmark_cpkhmi_ra8d1_ep</name>
 	<comment></comment>
 	<projects>
 	</projects>

@@ -17,7 +17,7 @@
 
 ### 1.5 使用RTT-viewer查看调试信息
 
-![alt text](images/rtt_log.jpg)
+![alt text](images/Snipaste_2025-10-27_14-46-49.png)
 
 
 ## 2. 支持的电路板：

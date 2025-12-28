@@ -49,3 +49,16 @@ CPKCOR-RA8D1B
 所以，对应的QSPI. FLASH的地址范围为0x9000_0000~0x9FFF_FFFF。
 
 ![alt text](images/Picture7-1.png)
+
+## 6. QSPI速度读写测试
+
+在代码流程的最后，会提示输入确认是否需要进行QSPI的读写速度测试，通过RTTViewer界面输入1即可进行QSPI读写速度测试，如下图：
+
+![](images/qspi_test.png)
+
+
+
+包含以下测试项：
+
+1. QSPI flash擦除测试
+2. 读写速度测试。

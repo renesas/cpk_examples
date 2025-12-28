@@ -63,7 +63,7 @@ fsp_err_t vee_flash_init(void)
 fsp_err_t vee_write_operation(uint32_t const rec_id, void *  p_data, uint32_t bytes)
 {
     fsp_err_t err                = FSP_SUCCESS;
-    uint16_t write_time_out      = UINT16_MAX;
+    uint32_t write_time_out      = 0xfffffff;
 
     /* Write the data to a Virtual EEPROM Record. */
     err = RM_VEE_FLASH_RecordWrite(&g_vee_ctrl, rec_id, p_data, bytes);

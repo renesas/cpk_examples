@@ -22,6 +22,8 @@
 /** Menu selection keys **/
 #define KIT_INFO              ('1')
 #define NEXT_STEPS            ('2')
+#define WRITE_1M_DATA	      ('3')
+#define READ_1M_DATA	      ('4')
 #define CARRIAGE_RETURN       ('\r')
 
 

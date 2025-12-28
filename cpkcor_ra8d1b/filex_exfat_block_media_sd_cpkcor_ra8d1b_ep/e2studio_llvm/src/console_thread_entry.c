@@ -200,6 +200,9 @@ static UINT console_handle(menu_t * p_menu, uint8_t * p_input, ULONG * p_request
                 case SELECT_FILE_DELETE:
                     *p_request = REQUEST_FILE_DELETE;
                     break;
+				case SELECT_FILE_SPEED_TEST:
+					*p_request = REQUEST_FILE_SPEED_TEST;
+					break;
 
                 case SELECT_FILE_GO_BACK:
                     *p_menu = MENU_MAIN;

@@ -16,20 +16,23 @@
 #define UDP_SERVER      (3)
 #define UDP_CLIENT      (4)
 
-//#define PROTOCOL_TYPE  TCP_SERVER
+#define PROTOCOL_TYPE  TCP_SERVER
 //#define PROTOCOL_TYPE  TCP_CLIENT
-#define PROTOCOL_TYPE  UDP_SERVER
+//#define PROTOCOL_TYPE  UDP_SERVER
 //#define PROTOCOL_TYPE  UDP_CLIENT
 
 #define SERVER_ADDRESS              IP_ADDRESS(192,168,1,104)   // server IP
-#define TCP_PORT                    56789                       // tcp port
-#define UDP_PORT                    50000                       // udp port
-
+#define TCP_PORT                    5001                       // tcp port
+#define UDP_PORT                    5002                       // udp port
 
 
 #define MAX_TCP_CLIENTS (5)
 #define IPERF_BUFSZ     (4 * 1024)
 #define MAX_PACKET_SIZE  (1500)
+
+#define STATIC_IP_ADDRESS     IP_ADDRESS(192, 168, 0, 52)
+#define STATIC_NETMASK        IP_ADDRESS(255, 255, 255, 0)
+#define STATIC_GATEWAY        IP_ADDRESS(192, 168, 0, 3)
 
 /* Function declarations*/
 /* Define the function to call for running a DHCP Client session. */
@@ -91,6 +94,7 @@ void network_thread_entry(void)
     /* create the ip instance.*/
     ip_init0();
 
+#if 1
     /* Initialize the dhcp client.*/
     dhcp_client_init0();
 
@@ -105,19 +109,25 @@ void network_thread_entry(void)
         nx_dhcp_delete(&g_dhcp_client0);
         app_rtt_print_data(RTT_OUTPUT_MESSAGE_APP_ERR_TRAP, sizeof(UINT *), &status);
     }
+#else
+    // 设置静态 IP 地址
+    nx_ip_address_set(&g_ip0, STATIC_IP_ADDRESS, STATIC_NETMASK);
+
+    // 设置默认网关（可选）
+    nx_ip_gateway_address_set(&g_ip0, STATIC_GATEWAY);
+#endif
     app_rtt_print_data(RTT_OUTPUT_MESSAGE_APP_INFO_STR, sizeof("DHCPV4 Client EP completed."), "DHCPV4 Client EP completed.");
     netcomm_process();
 }
 
 void netcomm_process(void)
 {
-    UINT               status  = NX_SUCCESS;
-
-
+    UINT status  = NX_SUCCESS;
     NX_PACKET *data_packet;
     ULONG bytes_read;
+    static UCHAR data_buffer[2048];
+    uint32_t total_bytes = 0;
 
-    UCHAR data_buffer[500];
 #if (PROTOCOL_TYPE==TCP_SERVER) || (PROTOCOL_TYPE==TCP_CLIENT)
     ULONG socket_state;
     /* Enable NX TCP Module */
@@ -156,8 +166,6 @@ void netcomm_process(void)
 #endif
 
 #if (PROTOCOL_TYPE==TCP_SERVER)
-
-
     status = nx_tcp_server_socket_listen(&g_ip0,TCP_PORT, &g_tcp_socket,MAX_TCP_CLIENTS, NULL); 
     if(NX_SUCCESS != status)
     {
@@ -172,57 +180,38 @@ void netcomm_process(void)
 
     while (true)
     {
-        nx_tcp_socket_info_get(&g_tcp_socket,NULL,NULL, NULL,NULL, NULL, NULL,NULL,&socket_state,NULL,NULL,NULL);          
+        status = nx_tcp_server_socket_accept(&g_tcp_socket, TX_WAIT_FOREVER);
+         if (status != NX_SUCCESS)
+         {
+             APP_PRINT("Socket accept failed: 0x%x\n", status);
+             continue;
+         }
 
+         APP_PRINT("TCP Client connected\n");
 
-        if(socket_state != NX_TCP_ESTABLISHED)
-        {
-            status = nx_tcp_server_socket_accept(&g_tcp_socket,TX_WAIT_FOREVER); /* wait for connection */
+         while (1)
+         {
+             status = nx_tcp_socket_receive(&g_tcp_socket, &data_packet, NX_WAIT_FOREVER);
+             if (status == NX_SUCCESS)
+             {
+                 status = nx_packet_data_retrieve(data_packet, data_buffer, &bytes_read);
+                 nx_packet_release(data_packet);
+                 total_bytes += bytes_read;
+                 // APP_PRINT("Received %d bytes\r\n", bytes_read);
+             }
+             else
+             {
+                 APP_PRINT("Receive failed or disconnected: 0x%x read total %u bytes data\n",
+                           status, total_bytes);
+                 break;
+             }
 
-            if (status)
-            {
-                APP_PRINT ("socket accept failed: 0x%x\n", status);
-            }
-        }
+             tx_thread_sleep(10);
+         }
 
-        if((socket_state == NX_TCP_ESTABLISHED)&&(status == NX_SUCCESS))
-        {
-
-            while (1)
-            {                   
-                /* receive the TCP client data */
-                status = nx_tcp_socket_receive(&g_tcp_socket,&data_packet, NX_WAIT_FOREVER);  /* wait forever */
-                if (status == NX_SUCCESS)
-                {
-                    /* received data */
-                    status = nx_packet_data_retrieve(data_packet,data_buffer,&bytes_read);
-
-                    if (status == NX_SUCCESS)
-                    {
- 
-                       APP_PRINT("received %d data \r\n ",bytes_read);
-
-                    }
-                    // release buffer is necessary
-                    nx_packet_release(data_packet);                   
-
-                    tx_thread_sleep (10);
-                }
-                else
-                {
-                    /* disconnection */
-                    nx_tcp_socket_disconnect(&g_tcp_socket,NX_WAIT_FOREVER);
-
-
-                    nx_tcp_server_socket_unaccept(&g_tcp_socket);
-
-                    /* relisten */
-                    nx_tcp_server_socket_relisten(&g_ip0,TCP_PORT,&g_tcp_socket);
-                }
-            }
-            tx_thread_sleep (10);
-        }
-
+         nx_tcp_socket_disconnect(&g_tcp_socket, NX_WAIT_FOREVER);
+         nx_tcp_server_socket_unaccept(&g_tcp_socket);
+         nx_tcp_server_socket_relisten(&g_ip0, TCP_PORT, &g_tcp_socket);
     }
 
 #elif (PROTOCOL_TYPE==TCP_CLIENT)
@@ -284,9 +273,7 @@ void netcomm_process(void)
 
             if (status == NX_SUCCESS)
             {
-
-               APP_PRINT("received %d data \r\n ",bytes_read);
-
+               // APP_PRINT("received %d data \r\n ",bytes_read);
             }
             // release buffer is necessary
             nx_packet_release(data_packet);

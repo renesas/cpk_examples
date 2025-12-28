@@ -18,7 +18,7 @@
 #define DIR_ROOT_NAME               "\\"
 
 
-#define FILE_SYSTEM_REQUEST_MASK    (0x00001FFC)
+#define FILE_SYSTEM_REQUEST_MASK    (0x00007FFC)
 
 #define MAIN_OPTION                 "\r\nMain Menu option:"\
                                     "\r\n  1. Media operation."\
@@ -49,7 +49,8 @@
                                     "\r\n    2. Write To File."\
                                     "\r\n    3. Read From File."\
                                     "\r\n    4. Delete File."\
-                                    "\r\n    5. Go back Main Menu."\
+                                    "\r\n    5. Write/Read speed test."\
+                                    "\r\n    6. Go back Main Menu."\
                                     "\r\n    User Input:  "
 
 #define VOLUME_LABEL_LEN            (12U)
@@ -70,7 +71,8 @@ typedef enum e_request_event
     REQUEST_FILE_WRITE                  = 1U << 10,
     REQUEST_FILE_READ                   = 1U << 11,
     REQUEST_FILE_DELETE                 = 1U << 12,
-    REQUEST_COMPLETED                   = 1U << 13
+    REQUEST_FILE_SPEED_TEST             = 1U << 13,
+    REQUEST_COMPLETED                   = 1U << 14
 } request_event_t;
 
 /* Enumerate for RTT event  */

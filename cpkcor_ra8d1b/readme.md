@@ -6,7 +6,9 @@ CPKCOR-RA8D1B核心板
 
 点击查看[CPKCOR-RA8D1B 核心板使用手册](../cpkcor_ra8d1b/docs/01_overview.md) 。
 
-本目录下是存放CPKCOR-RA8D1B核心板的样例程序，包括：
+本目录下是存放CPKCOR-RA8D1B核心板的样例程序。
+如果您没有同步代码库的需求，也可以直接下载样例程序的ZIP包使用。
+
 
 RA8x1 MCU核心功能使用样例
 - [Helium Intrinsic指令样例代码](../cpkcor_ra8d1b/helium_intrinsic_cpkcor_ra8d1b_ep)

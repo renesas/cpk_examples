@@ -55,15 +55,15 @@ volatile uint32_t DWT_delta=0;
 
 volatile uint32_t SRAM_write_buff_Cache[SDRAM_EXAMPLE_DATALEN];
 volatile uint32_t SRAM_read_buff_Cache[SDRAM_EXAMPLE_DATALEN];
-volatile uint32_t SRAM_write_buff_Nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".nocache");
-volatile uint32_t SRAM_read_buff_Nocache[SDRAM_EXAMPLE_DATALEN]  BSP_PLACE_IN_SECTION(".nocache");
+volatile uint32_t SRAM_write_buff_Nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".ram_nocache");
+volatile uint32_t SRAM_read_buff_Nocache[SDRAM_EXAMPLE_DATALEN]  BSP_PLACE_IN_SECTION(".ram_nocache");
 
-volatile uint32_t dtcm_write_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_data");
-volatile uint32_t dtcm_read_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_data");
+volatile uint32_t dtcm_write_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_from_flash");
+volatile uint32_t dtcm_read_buffer[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".dtcm_from_flash");
 
 
 volatile uint32_t sdram_cache[SDRAM_EXAMPLE_DATALEN]  BSP_PLACE_IN_SECTION(".sdram");
-volatile uint32_t sdram_nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".nocache_sdram");
+volatile uint32_t sdram_nocache[SDRAM_EXAMPLE_DATALEN] BSP_PLACE_IN_SECTION(".sdram_nocache");
 
 
 

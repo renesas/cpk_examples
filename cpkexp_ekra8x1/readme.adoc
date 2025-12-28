@@ -9,14 +9,18 @@ CPKEXP-EKRA8X1 是适用于CPK-RA8x1系列核心板的通用扩展板，扩展�
 本目录下是存放CPKEXP-EKRA8X1扩展板配合各个CPK-RA8x1核心板的样例程序，主要用于评估和演示扩展板上特有的一些功能，以及配合外接模块的一些样例程序。
 各个样例程序所需的硬件配置请对应样例程序的Readme文件。
 
-板载LCD（H0233S001）相关样例程序
+由于CPKEXP-EK-RA8P1的样例程序较为复杂，每个样例程序都有对应压缩包可供下载，如果您没有同步代码库的需求，可以直接下载ZIP包使用。
 
-link:../cpkexp_ekra8x1/mipi_cpkexp_ra8d1_ep/[MIPI显示设置样例]
+link:../cpkexp_ekra8x1/arm2d_cpkexp_ra8d1_ep/[ARM-2D 演示程序]
 
-OV7725摄像头样例程序
+link:../cpkexp_ekra8x1/quickstart_cpkexp_ra8x1_ep/[CPKEXP_EKRA8x1开箱演示程序]
 
-link:../cpkexp_ekra8x1/ceu_cpkexp_ra8d1_ep/[CEU摄像头输入及显示样例]
+link:../cpkexp_ekra8x1/mipi_cpkexp_ra8d1_ep/[H0233S001 LCD MIPI显示设置样例]
+
+link:../cpkexp_ekra8x1/ceu_cpkexp_ra8d1_ep/[OV7725CEU摄像头输入及显示样例]
+
+link:../cpkexp_ekra8x1/usb_pcdc_baremetal_cpkexp_ra8d1_ep/[USB-FS 从设备的CDC样例程序]
 
 以太网样例程序
 
-* 以太网PHY部分的设计和CPKHMI完全兼容，请参考link:../cpkhmi_ra8d1b/[CPKHMI-RA8D1B样例程序]
+* 以太网PHY部分的设计和CPKHMI完全兼容，请参考link:../cpkhmi_ra8d1b/[CPKHMI-RA8D1B的样例程序]

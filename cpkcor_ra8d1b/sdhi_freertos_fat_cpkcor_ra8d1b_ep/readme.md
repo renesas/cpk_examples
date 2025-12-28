@@ -7,7 +7,7 @@
 ### 支持的开发板 / 演示板：
 
 CPKCOR-RA8D1B
-   
+
 ### 硬件要求：
 
 1块Renesas RA8开发板：CPKCOR-RA8D1B。
@@ -27,14 +27,14 @@ CPKCOR-RA8D1B
 请 ${\color{red}{\text{务必在断电情况下插拔MicroSD卡}}}$。
 
 ### 软件开发环境：
-   
+
 * FSP版本
-  * FSP 5.3.0
+  * FSP 5.8.0
 * 集成开发环境和编译器：
-  * e2studio v2024-04 + LLVM v17.0.1
+  * e2studio v2025-01 + LLVM v18.1.3
 * 第三方软件
   * 无 
-	   
+	  
 
 ### 详细的样例程序配置和使用，请参考下面的文件。
 

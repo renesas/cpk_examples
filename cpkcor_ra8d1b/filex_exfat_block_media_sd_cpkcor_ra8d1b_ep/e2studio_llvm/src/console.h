@@ -28,7 +28,8 @@
 #define SELECT_FILE_WRITE               (2U)
 #define SELECT_FILE_READ                (3U)
 #define SELECT_FILE_DELETE              (4U)
-#define SELECT_FILE_GO_BACK             (5U)
+#define SELECT_FILE_SPEED_TEST          (5U)
+#define SELECT_FILE_GO_BACK             (6U)
 
 
 #define PRINT_MENU(menu)                (send_data_to_rtt(RTT_OUTPUT_APP_MENU, sizeof(UINT *), &(menu)))

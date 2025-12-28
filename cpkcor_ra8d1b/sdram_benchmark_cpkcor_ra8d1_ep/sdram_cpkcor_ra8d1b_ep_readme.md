@@ -14,18 +14,17 @@
 把SRAM cacheable的数据写到SDRAM，SDRAM在 non-cacheable时，速度是最快的。所以如果需要写SDRAM时，最好是enable D-Cache，并且把目标SDRAM的buffer放到.noncache_sdram 这个 section
 
 
-![alt text](images/sdram_benchmark.jpg)
+![alt text](images/Snipaste_2025-10-24_15-17-41.png)
 
 
 ## 4. 支持的电路板：
-CPKHMI-RA8D1B
+CPKCOR-RA8D1B
 
 ## 5. 硬件要求：
-1块瑞萨 RA8D1 HMI板：CPKHMI-RA8D1B
+1块瑞萨 RA8D1 CPKCOR板：CPKCOR-RA8D1B
 
 1根 Type-C USB 数据线
 
 
 ## 6. 硬件连接：
-通过Type-C USB 数据线将 CPKHMI-RA8D1B板上的 USB 调试端口（JDBG）连接到主机 PC
-连接屏幕到板子
+通过Type-C USB 数据线将 CPKCORI-RA8D1B板上的 USB 调试端口（JDBG）连接到主机 PC

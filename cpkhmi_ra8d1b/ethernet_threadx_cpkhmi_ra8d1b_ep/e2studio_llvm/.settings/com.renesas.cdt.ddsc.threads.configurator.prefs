@@ -1,5 +1,11 @@
 collapse/module.azure.nxd.ip.1168008394=false
+collapse/module.azure.nxd.ip.1377267560=false
+collapse/module.azure.nxd_dhcp_client.1023653960=false
 collapse/module.azure.nxd_dhcp_client.519460257=false
+collapse/module.driver.ether_on_ether.1920448765=false
 collapse/module.driver.ether_on_ether.494188456=false
+collapse/module.driver.ether_phy_on_ether_phy.1803554670=false
+collapse/module.driver.ether_phy_on_ether_phy.533152836=false
+collapse/module.middleware.rm_netxduo_ether.1664887824=false
 collapse/module.middleware.rm_netxduo_ether.1709776704=false
 eclipse.preferences.version=1

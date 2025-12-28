@@ -53,7 +53,7 @@
 
 /* Functions declarations */
 fsp_err_t ceu_init(uint8_t * const p_buffer, uint32_t width, uint32_t height);
-fsp_err_t ceu_operation (uint8_t * const p_buffer);
+fsp_err_t ceu_operation (uint8_t * const p_buffer, uint32_t *used_ms);
 //fsp_err_t ceu_operation (uint8_t * const p_buffer, uint32_t width, uint32_t height);
 void ycbcr_to_rgb888_transform(void * ycbcr_buffer_pointer, void * rgb_buffer_pointer, uint32_t width, uint32_t height);
 void yuv422_to_rgb888(const void* inbuf, void* outbuf, uint16_t width, uint16_t height);

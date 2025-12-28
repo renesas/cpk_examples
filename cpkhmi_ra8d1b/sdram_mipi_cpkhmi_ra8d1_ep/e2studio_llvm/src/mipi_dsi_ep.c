@@ -1078,6 +1078,8 @@ void mipi_dsi_start_display(void)
     APP_PRINT("Before start GLCDC, time:%d\r\n", DWT_count_to_us(DWT_delta) );
 
     APP_PRINT("Before start GLCDC, speed:%dMB/s\r\n", (g_hz_size*g_vr_size*2)/(DWT_count_to_us(DWT_delta)) );
+    APP_PRINT("Before start GLCDC, FPS @%u*%u achive %ufps\r\n", g_hz_size, g_vr_size, SystemCoreClock / DWT_delta);
+
 //    APP_PRINT("Before start GLCDC, speed:%dMB/s\r\n", (g_hz_size*g_vr_size*4)/(DWT_count_to_us(DWT_delta)) ); // 32bit
 
 
@@ -1139,17 +1141,15 @@ void mipi_dsi_start_display(void)
 
      APP_PRINT("After start GLCDC, DWT count:%d\r\n", DWT_delta);
      APP_PRINT("After start GLCDC, time:%d\r\n", DWT_count_to_us(DWT_delta) );
-
      APP_PRINT("After start GLCDC, speed:%dMB/s\r\n", (g_hz_size*g_vr_size*2)/(DWT_count_to_us(DWT_delta)) );
+     APP_PRINT("After start GLCDC, FPS @%u*%u achive %ufps\r\n", g_hz_size, g_vr_size, SystemCoreClock / DWT_delta);
+
 //     APP_PRINT("After start GLCDC, speed:%dMB/s\r\n", (g_hz_size*g_vr_size*4)/(DWT_count_to_us(DWT_delta)) );
 //     APP_PRINT("After start GLCDC, FPS:%d\r\n", 1000000/DWT_count_to_us(DWT_delta) );
      R_BSP_SoftwareDelay(500,1000);
-while(1){
-//        show_pattern(simple);
-
-    }
-
-
+     while(1){
+	     show_pattern(simple);
+     }
 }
 
 /*******************************************************************************************************************//**

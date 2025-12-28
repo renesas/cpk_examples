@@ -11,6 +11,7 @@
 #include "common_utils.h"
 #include "sdhi_ep.h"
 
+#include "perf_counter/perf_counter.h"
 
 extern EventGroupHandle_t g_SDHI_EventGroupHandle;
 
@@ -91,6 +92,125 @@ void sdhi_thread_entry(void *pvParameters)
     }
 }
 
+#define TEST_FILE_PATH	"/speed.txt"
+#define TEST_FILE_SIZE	(64 * 1024 * 1024)
+
+static void delete_file(const char *filePath)
+{
+    FF_Stat_t fileStat;
+
+    // Check if the file exists
+    if (ff_stat(filePath, &fileStat) == 0) {
+        if (ff_remove(filePath) != 0)
+            APP_PRINT("Error: Failed to delete file \"%s\".\n", filePath);
+    }
+}
+
+static int sdcard_is_connected(void)
+{
+	if (false != mount_failed) {
+		APP_PRINT("sdcard is not mounted or formated.\n");
+		return -1;
+	}
+
+	if (RM_FREERTOS_PLUS_FAT_EVENT_MEDIA_REMOVED == xEventGroupValue) {
+		APP_PRINT("%s: sdcard is removed.\n", __func__);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int write_speed_test(const char *path)
+{
+	size_t size = 0, wsize;
+	FF_FILE *file;
+	uint32_t ms;
+
+	APP_PRINT("%s ... \n", __func__);
+	memset(g_write_data, 'h', 4096);
+
+	file = ff_fopen(TEST_FILE_PATH, "w");
+	if (!file) {
+		APP_PRINT("open %s fail.\n", path);
+		return -1;
+	}
+
+	ms = (uint32_t)get_system_ms();
+	while (size < TEST_FILE_SIZE) {
+		wsize = ff_fwrite(g_write_data, 1, 4096, file);
+		if (wsize != 4096) {
+			APP_PRINT("%s: write 4096 data to file failed.\n", __func__);
+			goto out;
+		}
+		size += 4096;
+	}
+	ms = (uint32_t)get_system_ms() - ms;
+
+	APP_PRINT("---- write %u bytes use %u ms. Write speed: %u KB/s\n",
+			size, ms, (size >> 10) * 1000 / ms);
+
+out:
+	ff_fclose(file);
+
+	return 0;
+}
+
+static int read_speed_test(const char *path)
+{
+	size_t size = 0, rsize;
+	FF_FILE *file;
+	uint32_t ms;
+
+	APP_PRINT("%s ... \n", __func__);
+
+	file = ff_fopen(TEST_FILE_PATH, "r");
+	if (!file) {
+		APP_PRINT("open %s fail.\n", path);
+		return -1;
+	}
+
+	ms = (uint32_t)get_system_ms();
+	while (size < TEST_FILE_SIZE) {
+		rsize = ff_fread(g_write_data, 1, 4096, file);
+		if (rsize != 4096) {
+			APP_PRINT("%s: read 4096 data to file failed.\n", __func__);
+			goto out;
+		}
+		size += 4096;
+	}
+	ms = (uint32_t)get_system_ms() - ms;
+
+	APP_PRINT("----> read %u bytes use %u ms. Read speed: %u KB/s\n",
+			size, ms, (size >> 10) * 1000 / ms);
+
+out:
+	ff_fclose(file);
+
+	return 0;
+}
+
+static int sdcard_speed_test(void)
+{
+	int err;
+
+	APP_PRINT("%s please wait ...\n", __func__);
+
+	err = sdcard_is_connected();
+	if (err)
+		return err;
+
+	delete_file(TEST_FILE_PATH);
+
+	init_cycle_counter(false);
+
+	/* Do read/write speed test */
+	write_speed_test(TEST_FILE_PATH);
+	read_speed_test(TEST_FILE_PATH);
+
+	return 0;
+}
+
 /*******************************************************************************************************************//**
  * @brief     This function initiates the SD Card operation by calling respective functions.
  * @param[IN]   Converted RTT input
@@ -163,6 +283,11 @@ static void process_sd_operation(uint8_t input_buffer)
             APP_PRINT (SDHI_MENU);
         }
         break;
+
+		case SD_SPEED_TEST:
+			sdcard_speed_test();
+            APP_PRINT(SDHI_MENU);
+			break;
 
         default:
         {

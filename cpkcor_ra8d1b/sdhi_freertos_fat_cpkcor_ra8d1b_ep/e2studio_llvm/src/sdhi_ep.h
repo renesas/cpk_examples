@@ -31,6 +31,7 @@
 #define SD_DISPLAY_CWD          (4u)              // To display CWD content
 #define SD_INIT                 (5u)              // RTT Input selection for Re-initialization of SDHI
                                                   // Valid only after Safely_Eject option is executed.
+#define SD_SPEED_TEST		(6u)
 
 #define BUFFER_SIZE             (10240u)          // The number of elements to read
 #define FF_FS_ADD_FAILURE       (0)
@@ -42,6 +43,7 @@
                                 "2. Format SD Card Device\n"\
                                 "3. Safely Remove the SD Card\n"\
                                 "4. Display content of Current Working Directory\n"\
-                                "5. Initialize FreeRTOS+FAT (Valid only after Safely_Eject option is executed)\n"
+                                "5. Initialize FreeRTOS+FAT (Valid only after Safely_Eject option is executed)\n" \
+                                "6. Test SD card read/write speed.\n"
 
 #endif /* SDHI_EP_H_ */

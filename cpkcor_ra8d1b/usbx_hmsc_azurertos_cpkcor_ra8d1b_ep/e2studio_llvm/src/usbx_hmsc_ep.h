@@ -42,6 +42,7 @@
                                 "\r\n3. Enter 3 to Read the data from file and compare."\
                                 "\r\n4. Enter 4 to Display current working directory content."\
                                 "\r\n5. Enter 5 to Safely Eject the USB Pendrive."\
+                                "\r\n6. Enter 6 to do read/write speed test."\
                                 "\r\nUser Input:  "
 
 /* macros to print info, error and trap the error.*/
@@ -93,6 +94,7 @@
 #define READ                   (3U)          //RTT Input selection for read operation.
 #define DISPLAY                (4U)          //RTT Input selection to display working directory content
 #define EJECT                  (5U)          //RTT Input selection for write operation
+#define SPEED_TEST	       (6U)	     //RTT Input selecction for read/write speed test
 /* Structure to store time */
 typedef struct st_time_format_params
 {

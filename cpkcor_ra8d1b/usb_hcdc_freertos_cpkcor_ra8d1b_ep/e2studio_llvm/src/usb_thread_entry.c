@@ -9,16 +9,17 @@
 * SPDX-License-Identifier: BSD-3-Clause
 */
 
-#include "usb_thread.h"
+#include "FreeRTOS.h"
+#include "task.h"
 #include "usb_hcdc_app.h"
 
 /* USB Thread entry function */
 /* pvParameters contains TaskHandle_t */
 void usb_thread_entry(void *pvParameters)
 {
-    FSP_PARAMETER_NOT_USED (pvParameters);
+    (void)(pvParameters);
     usb_hcdc_task();
-    while (true)
+    while (1)
     {
         vTaskDelay (1);
     }

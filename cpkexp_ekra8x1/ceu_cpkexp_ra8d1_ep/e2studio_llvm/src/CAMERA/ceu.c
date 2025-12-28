@@ -31,6 +31,8 @@
 #include "ov5640.h"
 #include "math.h"
 
+#include "perf_counter/perf_counter.h"
+
 /* External variable */
 
 /* Global variable */
@@ -89,7 +91,7 @@ fsp_err_t ceu_init(uint8_t * const p_buffer, uint32_t width, uint32_t height)
  *  @retval     Any Other Error code apart from FSP_SUCCES
  **********************************************************************************************************************/
 //fsp_err_t ceu_operation (uint8_t * const p_buffer, uint32_t width, uint32_t height)
-fsp_err_t ceu_operation (uint8_t * const p_buffer)
+fsp_err_t ceu_operation (uint8_t * const p_buffer, uint32_t *used_ms)
 {
     fsp_err_t err = FSP_SUCCESS;
     uint32_t timeout = R_FSP_SystemClockHzGet(FSP_PRIV_CLOCK_ICLK) / 10;
@@ -102,6 +104,8 @@ fsp_err_t ceu_operation (uint8_t * const p_buffer)
 //    APP_ERR_RETURN(err, " ** R_CEU_CaptureStart API FAILED ** \r\n");
 
     /*  Wait until CEU callback triggers */
+    
+    int64_t ms = get_system_ms();
     while (true != g_capture_ready)
     {
         /* Start checking for time out to avoid infinite loop */
@@ -112,6 +116,8 @@ fsp_err_t ceu_operation (uint8_t * const p_buffer)
             APP_ERR_RETURN(FSP_ERR_TIMEOUT, " ** CEU Callback event not received ** \r\n");
         }
     }
+    ms = get_system_ms() - ms;
+    *used_ms = ms;
 
     /* Print success notice */
 //    APP_PRINT("\r\nCEU Capture Successful !\r\n");

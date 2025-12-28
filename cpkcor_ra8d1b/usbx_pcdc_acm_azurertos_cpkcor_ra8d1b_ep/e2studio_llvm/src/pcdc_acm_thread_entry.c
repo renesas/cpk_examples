@@ -26,6 +26,7 @@
 #include "ux_device_class_cdc_acm.h"
 #include "usbx_pcdc_acm_ep.h"
 #include "common_utils.h"
+#include "perf_counter/perf_counter.h"
 /*******************************************************************************************************************//**
  * @addtogroup ubsx_pcdc_acm_ep
  * @{
@@ -178,6 +179,8 @@ void pcdc_acm_thread_entry(void)
         PRINT_INFO_STR("USB instance deactivated");
     }
 
+    init_cycle_counter(false);
+
     /* usb pcdc operations will echo the user input on serial terminal*/
     while (true)
     {
@@ -222,6 +225,96 @@ static void usb_connection_status_check(void)
 
 }
 
+static __attribute__((aligned(8))) char menu[] = {
+	"\r\nEnter any Key to echo back the entered data"
+	"or 1 for read speed test 2 for write speed test \r\nUser Input :"
+};
+
+static __attribute__((aligned(8))) char help_msg[] = {
+     "\r\nplease send 1M data to PCDC device.\r\n"
+};
+
+static __attribute__((aligned(8))) unsigned char test_buf[512];
+
+#define TEST_BUFSZ	512
+#define TEST_SIZE	(1024 * 1024)
+#define TEST_LOOP	(TEST_SIZE / TEST_BUFSZ)
+
+static unsigned int pcdc_read_speed_test(void)
+{
+	unsigned long size, asize, tsize = 0;
+	unsigned int status;
+	uint32_t ms;
+	int first = 1;
+
+	status = ux_device_class_cdc_acm_write(g_cdc,
+			(UCHAR *)help_msg, sizeof(help_msg), &asize);
+	if (status != UX_SUCCESS)
+		return status;
+
+	size = TEST_SIZE;
+	while (size > 0) {
+		asize = size > TEST_BUFSZ ? TEST_BUFSZ : size;
+		status = ux_device_class_cdc_acm_read(g_cdc, test_buf, asize, &asize);
+		if (status != UX_SUCCESS)
+			return status;
+
+		if (first) {
+			ms = (uint32_t)get_system_ms();
+			first = 0;
+		} else {
+			tsize += asize;
+		}
+
+		size -= asize;
+	}
+
+	ms = (uint32_t)get_system_ms() - ms;
+
+	R_BSP_SoftwareDelay(3, BSP_DELAY_UNITS_SECONDS);
+
+	asize = sprintf((char *)test_buf, "\r\nReceive %luB data use %u ms, PCDC read speed is %lu K/s\r\n",
+			tsize, ms, (tsize >> 10) * 1000 / ms);
+
+	return ux_device_class_cdc_acm_write(g_cdc, (unsigned char *)test_buf, asize, &asize);
+}
+
+static unsigned int pcdc_write_speed_test(void)
+{
+	unsigned int status;
+	unsigned long size, asize;;
+	uint32_t ms;
+
+	memset(test_buf, 't', sizeof(test_buf));
+	test_buf[TEST_BUFSZ - 1] = '\n';
+	test_buf[TEST_BUFSZ - 2] = '\r';
+
+	ms = (uint32_t)get_system_ms();
+	size = TEST_SIZE;
+	while (size > 0) {
+		status = ux_device_class_cdc_acm_write(g_cdc, (unsigned char *)test_buf, TEST_BUFSZ, &asize);
+		if (status != UX_SUCCESS)
+			return status;
+		size -= TEST_BUFSZ;
+	}
+	ms = (uint32_t)get_system_ms() - ms;
+
+	asize = sprintf((char *)test_buf, "\r\nSend 1M data use %u ms, PCDC write speed is %u K/s\r\n",
+			ms, (TEST_SIZE >> 10) * 1000 / ms);
+
+	return ux_device_class_cdc_acm_write(g_cdc, (unsigned char *)test_buf, asize, &asize);
+}
+
+static unsigned int handle_pcdc_msg(unsigned char *buf, uint32_t data_size)
+{
+	if (buf[0] == '1')
+		return pcdc_read_speed_test();
+	else if (buf[0] == '2')
+		return pcdc_write_speed_test();
+	else
+		return ux_device_class_cdc_acm_write(g_cdc, g_buf, data_size, &g_actual_length);
+}
+
 /*******************************************************************************************************************//**
  * @brief     In this function, it performs the usb write/read operation and echo back the user input on serial terminal
  * @param[IN] none
@@ -244,8 +337,8 @@ static void usbx_pcdc_operations(void)
     }
 
     /* USB writes the display message on serial terminal */
-    status = ux_device_class_cdc_acm_write (g_cdc, (UCHAR*) "\r\nEnter any Key to echo back the entered data \r\nUser Input :", WRITE_DATA_LEN,
-            &g_actual_length);
+    status = ux_device_class_cdc_acm_write (g_cdc, (UCHAR*)menu,
+		    sizeof(menu), &g_actual_length);
     /* Error Handle */
     if (UX_SUCCESS != status)
     {
@@ -264,13 +357,12 @@ static void usbx_pcdc_operations(void)
         PRINT_ERR_STR("ux_device_class_cdc_acm_read api failed..");
         ERROR_TRAP(status);
     }
+
     /* update the data length from the read input */
     data_size = g_actual_length;
-    /* Write back the read data on to the serial terminal */
-    status = ux_device_class_cdc_acm_write (g_cdc, g_buf, data_size, &g_actual_length);
-    /* Error Handle */
-    if (UX_SUCCESS != status)
-    {
+
+    status = handle_pcdc_msg(g_buf, data_size);
+    if (UX_SUCCESS != status) {
         PRINT_ERR_STR("ux_device_class_cdc_acm_write api failed..");
         ERROR_TRAP(status);
     }
