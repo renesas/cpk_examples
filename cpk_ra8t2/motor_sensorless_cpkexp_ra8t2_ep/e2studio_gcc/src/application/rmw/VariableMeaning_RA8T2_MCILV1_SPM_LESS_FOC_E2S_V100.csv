@@ -1,0 +1,65 @@
+﻿com_u1_sw_userif,User interface switch,
+com_u1_mode_system,State management,
+com_f4_ref_speed_rpm,Speed reference (mechanical angle) [rpm],
+com_u2_mtr_pp,Number of pole pairs,
+com_f4_mtr_r,Resistance,[Ω]
+com_f4_mtr_ld,d-axis Inductance ,[H]
+com_f4_mtr_lq,q-axis Inductance ,[H]
+com_f4_mtr_m,Magnetic Flux ,[Wb]
+com_f4_mtr_j,Inertia ,[kgm^2]
+com_f4_current_omega,Natural frequency of current control system ,[Hz]
+com_f4_current_zeta,Damping ratio of current control system,
+com_f4_speed_omega,Natural frequency of speed control system ,[Hz]
+com_f4_speed_zeta,Damping ratio of speed control system,
+com_f4_e_obs_omega,Natural frequency of BEMF estimation system ,[Hz]
+com_f4_e_obs_zeta,Damping ratio of BEMF estimation system,
+com_f4_pll_est_omega,Natural frequency of position estimation system ,[Hz]
+com_f4_pll_est_zeta,Damping ratio of position estimation system,
+com_f4_ref_id,d-axis current reference in open loop mode ,[A]
+com_f4_ol_id_up_step,d-axis current reference ramping up rate,
+com_f4_ol_id_down_step,d-axis current reference ramping down rate,
+com_f4_id_down_speed_rpm,Speed when start to subtract d-axis current reference (mechanical angle) ,[rpm]
+com_f4_id_up_speed_rpm,Speed when start to add d-axis current reference (mechanical angle) ,[rpm]
+com_f4_max_speed_rpm,Maximum speed value (mechanical angle) ,[rpm]
+com_f4_overspeed_limit_rpm,Speed limit (mechanical angle) ,[rpm]
+com_f4_overcurrent_limit,Over current limit ,[A]
+com_f4_iq_limit,q-axis current limit ,[A]
+com_f4_limit_speed_change,Change speed limit (electrical angle) ,[rad/s]
+com_u1_enable_write,Enabled to rewriting variables,
+g_f4_id_ref_monitor,The reference d-axis current value,[A]
+g_f4_id_ad_monitor,The d-axis current value,[A]
+g_f4_iq_ref_monitor,The reference q-axis current value,[A]
+g_f4_iq_ad_monitor,The q-axis current value,[A]
+g_f4_iu_ad_monitor,U-phase current value,[A]
+g_f4_iv_ad_monitor,V-phase current value,[A]
+g_f4_iw_ad_monitor,W-phase current value,[A]
+g_f4_vdc_ad_monitor,Main Line Voltage,[V]
+g_f4_vd_ref_monitor,The reference d-axis voltage value,[V]
+g_f4_vq_ref_monitor,The reference q-axis voltage value,[V]
+g_f4_refu_monitor,U-phase reference voltage value,[V]
+g_f4_refv_monitor,V-phase reference voltage value,[V]
+g_f4_refw_monitor,W-phase reference voltage value,[V]
+g_f4_ed_monitor,Estimated d-axis component of flux due to the permanent magnet,[V]
+g_f4_eq_monitor,Estimated q-axis component of flux due to the permanent magnet,[V]
+g_f4_phase_err_monitor,Estimated phase error from actual rotor electrical angle,[rad]
+g_f4_angle_rad_monitor,Angle of rotor,[rad]
+g_f4_speed_est_monitor,Speed value,[rad/s]
+g_f4_speed_ref_monitor,Command speed value for speed PI control,[rad/s]
+g_u1_state_id_ref_monitor,The d-axis current command status,
+g_u1_state_iq_ref_monitor,The q-axis current command status,
+g_u1_state_speed_ref_monitor,The speed command status,
+g_f4_speed_kp_monitor,Kp for speed loop,
+g_f4_speed_ki_monitor,Ki for speed loop,
+g_f4_current_kp_d_monitor,Kp for d-axis current loop,
+g_f4_current_ki_d_monitor,Ki for d-axis current loop,
+g_f4_current_kp_q_monitor,Kp for q-axis current loop,
+g_f4_current_ki_q_monitor,Ki for q-axis current loop,
+g_f4_k_e_obs_1_d_monitor,BEMF observer gain 1 for d-axis,
+g_f4_k_e_obs_2_d_monitor,BEMF observer gain 2 for d-axis,
+g_f4_k_e_obs_1_q_monitor,BEMF observer gain 1 for q-axis,
+g_f4_k_e_obs_2_q_monitor,BEMF observer gain 2 for q-axis,
+g_f4_kp_est_speed_monitor,The proportional gain for PLL,
+g_f4_ki_est_speed_monitor,The integral gain for PLL,
+g_f4_speed_rpm_monitor,Speed value,[rpm]
+g_u1_enable_write,Enable to rewriting variables(Read only),
+g_u2_chk_error,Error number,
