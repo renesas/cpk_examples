@@ -1,0 +1,123 @@
+:imagesdir: images
+:sectnums:
+:sectnumlevels: 2
+
+= Keil MDK - 基于perf_counter工程进行用户代码性能测试
+:toc:
+:toc-title: 目录
+
+== 添加用户代码并进行调试
+
+=== 生成工程文件
+
+先用 RASC 导入工程后进入以下界面，在该界面无需任何配置，直接点击右上角的 `Generate Project Content` 即可
+
+image::Snipaste_2026-01-09_13-40-02.png[role="thumb", width=800]
+
+NOTE: 打开示例工程前先确认 Keil MDK 已设置为使用 UTF-8 编码
+
+image::Snipaste_2026-01-14_10-21-46.png[role="thumb", width=640]
+
+=== 示例工程结构
+
+示例工程已经添加好进行性能评估所需的文件。
+
+image::Snipaste_2026-01-14_10-24-18.png[role="thumb", width=320]
+
+用户程序入口为 hal_entry.c 中的 `hal_entry()`，下面是示例工程的 hal_entry。
+当需要评估其它代码时，只需要把待评估的代码放进 `+__cycleof__+` 的花括号内。
+为了方便观察输出结果，建议把小括号里自定义的名字也根据实际代码功能进行修改。
+
+[source,c,subs="verbatim,attributes"]
+----
+/* 等待任意输入，如果不需要，这个 while 循环可以删除 */
+printf("Input any character to start coremark\r\n");
+while (1) {
+    R_BSP_SoftwareDelay(2, BSP_DELAY_UNITS_SECONDS);
+    if (CONSOLE_HasData()) {
+        break;
+    }
+    else {
+        printf("Input any character to start coremark\r\n");
+    }
+}
+printf("Coremark running, please wait...\r\n");
+/* 获取到了输入，开始执行 */
+__cycleof__("Coremark") {
+    /* 要评估其它代码的性能，注释下面这条语句，然后在后面添加要评估的代码 */
+    coremark_main();
+};
+----
+
+=== 使用的预定义宏
+
+示例工程使用预定义宏的方式来对程序行为进行控制，使用的宏同 e2studio 下 Release 配置，对于宏的含义，可以查看 xref:perf_counter_addusercode_e2.adoc#Debug与Release配置的不同[Debug与Release配置的不同] 获取，并根据需要进行修改，下图显示了示例工程添加的预定义宏。
+
+image::Snipaste_2026-01-14_10-37-12.png[role="thumb", width=800]
+
+在调试代码时，请修改为使用Systick和RTTViewer进行性能评估和输入输出，优化选项建议选-O2。在 `via/rasc_armclang.via` 和 `via/rasc_armlink.via` 修改优化等级
+
+image::Snipaste_2026-01-14_17-10-30.png[role="thumb", width=800]
+
+调试时使用 SysTick 和 RTTViewer ，配置的宏如下图
+
+image::Snipaste_2026-01-14_17-09-04.png[role="thumb", width=800]
+
+=== 评添加用户代码并进行性能评估
+
+现在假设需要评估一个函数 `foo()` 的运行时间，它的定义如下，代码放在I-TCM中
+[source,c,subs="verbatim,attributes"]
+----
+ITCM_CODE
+void foo(uint32_t num)
+{
+	while (num--) {
+		__asm volatile (
+			"NOP"
+		);
+	}
+}
+----
+
+测试性能的代码如下，我们还可以通过`get_system_us()` 来获得系统运行时间，和perf_counter的测试结果进行一个比较。
+
+[source,c,subs="verbatim,attributes"]
+----
+int64_t time_start = get_system_us();
+__cycleof__("foo") {
+    /* 要评估其它代码的性能，注释下面这条语句，然后在后面添加要评估的代码 */
+    // coremark_main();
+    foo(100000000);
+};
+int64_t time_end = get_system_us();
+printf("Total time: %lld us\r\n", time_end - time_start);
+----
+
+=== 调试
+
+编译完成后点击调试符号进行调试
+
+image::Snipaste_2026-01-09_13-50-19.png[role="thumb", width=800]
+
+之后可以在 RTT Viewer 中查看结果。最后一行的乱码是由于 RTT Viewer 软件不支持UTF-8编码。
+
+image::Snipaste_2026-01-13_17-30-59.png[role="thumb", width=480]
+
+
+== 修改编译优化选项进行性能评估
+
+调试完成后，修改优化选项为项目所需的值（例如使用-Omax --lto），参考 xref:perf_counter_cpknet_ra8t2_ep_readme.adoc#修改编译优化选项[修改编译优化选项] 
+
+改为中文输出，使用PMU和串口进行性能评估和通信。
+
+image::Snipaste_2026-01-14_10-37-12_01.png[role="thumb", width=640]
+
+您可以拷贝以下完整的字符串
+[source,c,subs="verbatim,attributes"]
+----
+_LANGUAGE=0x0804,__PERFC_USE_PMU_PORTING__=1,__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1,CONSOLE_CFG_USE_UART=1
+----
+
+重新编译烧录后，PC端打开一个串口终端，连接J-Link的UART端口，波特率 2,000,000，8-N-1，可以看到结果如下：
+
+image::Snipaste_2026-01-14_10-03-01.png[role="thumb", width=640]

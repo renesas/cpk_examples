@@ -1,0 +1,146 @@
+:imagesdir: images
+
+:sectnums:
+:sectnumlevels: 2
+
+= e^2^studio - 基于perf_counter工程进行用户代码性能测试
+:toc:
+:toc-title: 目录
+
+== 添加用户代码并进行调试
+
+=== 切换到Debug配置
+
+e^2^studio 的项目可以有多个不同的构建配置，示例工程中都使用了 Release 配置已获取最高性能，这也是预留的 hex 文件的生成配置。
+
+如果要使用该工程测试用户代码，则建议先切换到Debug配置，添加用户代码并进行调试，先确保代码功能和测试功能都能正常运行。
+
+
+首先导入工程，然后双击工程目录下的 configuration.xml 打开 FSP Configuration，这里不需要对里面的配置做任何改动，直接点击右上角的 `Generate Project Content` 生成工程文件。
+
+image::Snipaste_2026-01-09_10-35-03.png[role="thumb", width=800]
+
+
+. 可以右键单击工程名选择 C/C++ Project Settings 打开工程属性配置界面
+. 在弹出的对话框中选择 C/C++ 构建 -> 设置，然后点击管理配置
+. 在弹出的对话框中选中 Debug，然后选择设置为活跃，最后点击确定，切换到 Debug 配置
+. 点击工程属性配置界面下方的 `应用并关闭` 
+
+image::Snipaste_2026-01-09_10-41-17_01.png[role="thumb", width=800]
+
+==== Debug与Release配置的不同
+
+Debug 和 Release 定义了不同的预定义宏以让程序实现不同的行为，主要体现以下方面
+
+* Debug 配置将 C 库的标准输入输出用 RTT View 实现（Debug时已经使用了JLink调试器），而 Release 使用 UART 实现（无需连接调试器）。在 Debug 配置下查看消息，需要使用 Segger的RTT Viewer。
+** 定义 `CONSOLE_CFG_USE_RTT=1` 使用 RTT View 作为输入输出
+** 定义 `CONSOLE_CFG_USE_UART=1` 使用 UART 作为输入输出
+** 二者都没定义则无输入输出
+* *PC端的RTT Viewer 不支持Unicode，如果输出中文字符，会显示为乱码*，所以 Debug 的语言配置为英文，而 Release 使用中文。
+** Debug 未定义宏 `_LANGUAGE=0x0804`，使用英文；Release 定义了该宏，使用中文
+* Debug 使用 SysTick 测量时间，而 Release 使用 PMU 测量时间 （PMU是调试电路的一部分，调试功能可能会影响PMU的运行）。
+** 使用 PMU 需定义宏 `+__PERFC_USE_PMU_PORTING__=1+` 和 宏 `+__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1+`
+* Release 配置将 coremark 的代码和数据放在 ITCM 和 DTCM 以提升性能
+** `PUT_DATA_IN_DTCM=1`: 把数据放在 DTCM。可以根据变量类型使用宏 `DTCM_BSS` 或 `DTCM_DATA` 或 `DTCM_ZERO` 来修饰变量，让变量放在 DTCM 中
+** `PUT_CODE_IN_ITCM=1`: 把代码放在 ITCM。可以用 `ITCM_CODE` 来修饰函数定义，这样，如果开启了这个宏，那么这段函数会被放在 ITCM 里。
+
+NOTE: 要将代码或变量放进指定段，不要修改链接脚本，FSP 每次生成时都会覆盖链接脚本。建议使用与示例工程相同的方式，例如 `DTCM_BSS` 展开为 `+__attribute__((section(".dtcm_noinit")))+`，section 的名字在链接脚本 `fsp_gen.lld` 中定义，FSP 对 RA8P1 可用的内存区域均有对应 section 定义。
+
+可以在配置中修改这些宏来修改行为。在工程的 C/C++ 属性设置中可以查看。下图中红色框内的是手动添加的宏，其它的是 FSP 自动添加的预定义宏
+
+image::Snipaste_2026-01-13_17-45-12_01.png[role="thumb", width=800]
+
+=== 示例工程结构
+
+用户代码和第三方代码均位于 src 目录下
+
+[source,powershell,subs="verbatim,attributes"]
+----
+│  hal_entry.c
+│  hal_warmstart.c
+├─source
+└─third
+    ├─coremark
+    ├─perf_counter
+    └─SEGGER_RTT
+----
+
+用户程序入口为 hal_entry.c 中的 `hal_entry()`，下面是示例工程的 hal_entry。
+当需要评估其它代码时，只需要把待评估的代码放进 `+__cycleof__+` 的花括号内。
+为了方便观察输出结果，建议把小括号里自定义的名字也根据实际代码功能进行修改。
+
+[source,c,subs="verbatim,attributes"]
+----
+/* 等待任意输入，如果不需要，这个 while 循环可以删除 */
+printf("Input any character to start coremark\r\n");
+while (1) {
+    R_BSP_SoftwareDelay(2, BSP_DELAY_UNITS_SECONDS);
+    if (CONSOLE_HasData()) {
+        break;
+    }
+    else {
+        printf("Input any character to start coremark\r\n");
+    }
+}
+printf("Coremark running, please wait...\r\n");
+/* 获取到了输入，开始执行 */
+__cycleof__("Coremark") {
+    /* 要评估其它代码的性能，注释下面这条语句，然后在后面添加要评估的代码 */
+    coremark_main();
+};
+----
+
+=== 添加用户代码并进行性能评估
+
+现在假设需要评估一个函数 `foo()` 的运行时间，它的定义如下，代码放在I-TCM中。
+
+[source,c,subs="verbatim,attributes"]
+----
+ITCM_CODE
+void foo(uint32_t num)
+{
+	while (num--) {
+		__asm volatile (
+			"NOP"
+		);
+	}
+}
+----
+
+测试性能的代码如下，我们还可以通过`get_system_us()` 来获得系统运行时间，和perf_counter的测试结果进行一个比较。
+
+[source,c,subs="verbatim,attributes"]
+----
+int64_t time_start = get_system_us();
+__cycleof__("foo") {
+    /* 要评估其它代码的性能，注释下面这条语句，然后在后面添加要评估的代码 */
+    // coremark_main();
+    foo(100000000);
+};
+int64_t time_end = get_system_us();
+printf("Total time: %lld us\r\n", time_end - time_start);
+----
+
+=== 调试
+
+右键单击项目资源管理器中的工程，选择 `调试方式` 下的 `Renesas GDB Hardware Ddebugging`，进入调试
+
+image::Snipaste_2026-01-09_11-46-40.png[role="thumb", width=800]
+
+如果多个配置下都有 elf 文件，那么会弹出下面这个界面，双击选择 Debug 下的 elf 文件
+
+image::Snipaste_2026-01-09_11-49-56.png[role="thumb", width=480]
+
+进入调试界面后，点两次运行按钮，让程序自由运行
+
+image::Snipaste_2026-01-09_11-37-55_01.png[role="thumb", width=800]
+
+之后可以在 RTT Viewer 中查看结果。最后一行的乱码是由于 RTT Viewer 软件不支持UTF-8编码。
+
+image::Snipaste_2026-01-13_17-30-59.png[role="thumb", width=480]
+
+== 切换到Release配置
+
+步骤同 <<切换到Debug配置>>，在配置中选择 Release 为活跃。重新编译后，用烧录工具烧录 Release 文件夹下的 hex 文件。运行结果如下，PC端使用串口，可以通过 Putty 查看，中文也可以正确显示。
+
+image::Snipaste_2026-01-14_10-03-01.png[arole="thumb", width=600]

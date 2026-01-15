@@ -6,21 +6,19 @@ CPK-RA8T2开发套件由核心板CPKNET-RA8T2 + 扩展板CPKEXP-ECSMCB组合而�
 
 本目录下仅存放适用于该硬件组合配置的样例代码和link:../cpk_r8t2/docs/21_overview.html[使用手册]。
 
-image::cpk-ra8t2.png[]
+image::cpk_ra8t2.png[]
 
 如果您需要查看可在CPKNET-RA8T2核心板上独立运行的样例代码及文档，请参考 link:../cpknet_ra8t2/[CPKNET-RA8T2]。
 
 如果您需要使用其他核心板配合CPKEXP-ECSMCB扩展板使用，请参考本代码仓库下对应的目录（核心板名称_ecsmcb）。
 
 由于CPK-RA8T2的样例程序较为复杂，每个样例程序都准备了对应压缩包供下载，如果您没有同步代码库的需求，可以直接下载ZIP包使用。
+
 各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
-link:../cpk_r8t2/ecat_402_cpknet_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的CiA402应用]
-
-link:../cpk_r8t2/ecat_io_cpknet_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的I/O应用]
-
-link:../cpk_r8t2/motor_encoder_cpkexp_ra8t2_ep/[RA8T2 增量型编码器电机控制样例]
-
-link:../cpk_r8t2/motor_sensorless_cpkexp_ra8t2_ep/[RA8T2 无位置传感器电机控制样例]
+. link:../cpk_r8t2/ecat_402_cpknet_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的CiA402应用]
+. link:../cpk_r8t2/ecat_io_cpknet_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的I/O应用]
+. link:../cpk_r8t2/motor_encoder_cpkexp_ra8t2_ep/[RA8T2 增量型编码器电机控制样例]
+. link:../cpk_r8t2/motor_sensorless_cpkexp_ra8t2_ep/[RA8T2 无位置传感器电机控制样例]
 
 Ver. 20251201
