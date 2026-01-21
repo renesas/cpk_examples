@@ -1,0 +1,150 @@
+:scripts: cjk
+
+:imagesdir: ./images/ra8_nvm_programming
+
+:sectnums:
+:sectnumlevels: 2
+
+= 开发验证过程中RA8 MCU的程序/数据烧录
+:toc:
+:toc-title: 目录
+
+== 简介
+
+本文档仅介绍最基本的程序烧录功能，使用于在开发和验证过程中，将程序和数据烧录到MCU片内存储空间或开发板上的片外存储空间，脱离调试器独立运行。
+
+*如果您需要了解量产烧录以及产品生命周期管理、安全密钥注入等相关内容，请参考对应MCU的硬件手册和瑞萨官方的应用笔记，或联系瑞萨代理商咨询。*
+
+RA8 MCU内部有多种非易失存储空间和系统设置需要通过烧录功能进行写入（即使您使用调试功能，本质上是调用烧录功能将数据写入芯片中）。
+
+RA8 MCU可用的烧录接口如下：
+
+* 片上调试接口
+    ** SWD接口和JTAG接口
+* 片内预置的Boot启动程序（由瑞萨在芯片生产时写入芯片中）
+    ** SCI-Boot：通过RA8 MCU的SCI9
+    ** USB-Boot：通过RA8 MCU的USB2.0全速接口
+    ** SWD-Boot：通过SWD接口配合特殊的启动时序
+
+本文档仅介绍使用SWD-Boot实现基本的程序和数据写入。
+
+== 硬件连接
+
+目前有多种硬件调试器可以支持RA8 MCU的SWD-Boot
+
+* Segger J-Link，目前瑞萨所有的RA8开发板都有板载J-Link调试器
+* 瑞萨的EZ-Cube3调试器，可从瑞萨代理商或link:https://item.szlcsc.com/23857072.html[立创商城]购买
+* 瑞萨的E2/E2-Lite调试器，可从瑞萨代理商处购买
+
+本档以J-Link和CPK-RA8P1开发板为例，通过USB-C线缆连接上位机和开发板上的JDBG口，确认连接正常（橙色LED常亮）。
+
+image::cpkhmi_ra8p1_jlinkconnect.png[J-Link连接成功, role="thumb", width=480]
+
+== 软件安装和连接
+
+瑞萨官方的烧录工具是link:https://www.renesas.cn/zh/software-tool/renesas-flash-programmer-programming-gui[Renesas Flash Programmer - RFP]，支持Windows 10/11、Linux、MacOS。
+
+RFP仅通过Boot模式（支持所有三种Boot模式）和RA8 MCU进行连接。
+
+安装完成后，会有一个图形界面应用程序，本文档仅涉及图形界面部分。
+
+* RFP也支持通过命令行方式进行烧录控制，配合其他软件（如Powershell，Python等），可以快速实现自动化烧录流程。
+
+启动RFP后，通过 `File/NewProject...` 新建一个烧录工程，注意选择J-Link调试器和SWD接口。（这边可以看到RFP以及J-Link也支持其他连接模式
+
+image::image.png[新建RA8P1 RFP工程, role="thumb"]
+
+连接成功后即可看到目标器件信息。如果您的硬件没有准备好，连接时会报错，但烧录工程还是会生成好的。此时可以检查连接后，使用 `Read Device Information` 获取目标器件信息。
+
+== 基本的烧录功能
+
+=== 设置支持的存储区域。
+
+#以下重要：取消勾选OTP区域#
+
+一般开发和验证阶段，不会对MCU的OTP（只能写入一次）区域进行操作，为了防止程序/数据错误对芯片造成不可逆的设置，建议取消勾选OTP区域。
+
+只有在完全理解和确认您需要操作OTP区域的前提下，再确认勾选OTP区域。
+
+image::image-1.png[取消勾选OTP, role="thumb"]
+
+#以上重要：取消勾选OTP区域#
+
+=== 添加镜像文件并烧录
+
+确认勾选了基本的烧录功能
+
+image::image-2.png[基本烧录功能选择, role="thumb"]
+
+添加烧录镜像文件
+
+image::image-3.png[镜像文件选择, role="thumb"]
+
+确认烧录流程后点击Start开始烧录，结果会显示绿色的OK或红色的NG
+
+image::image-4.png[镜像烧录, role="thumb"]
+
+
+== 基础的程序保护
+
+RA8 MCU支持完整的产品生命周期管理和密钥管理功能，RFP软件也支持所有的管理和密钥功能。
+如果您需要为写入MCU的内容添加保护，这里介绍了最低限度的保护措施，防止您写入片内存储区域的程序和数据被第三方读出。
+
+#以下所描述的设置仅限开发验证时使用，量产时的请使用完整的安全保护设置#
+
+=== 设置DLM
+
+* DLM/Set Option ： Set
+* Target State ： OEM_PL0
+* DLM Key ： 不设置
+
+#！！！注意：不要选择LCK_BOOT！！！#
+
+#！！！注意：不要选择LCK_BOOT！！！#
+
+#！！！注意：不要选择LCK_BOOT！！！#
+
+image::image-5.png[DLM设置, role="thumb"]
+
+=== 设置Flash Option写入
+
+DLM设置区域属于配置选项，需要在设置中勾选Flash Option。
+后续写入步骤与前述流程相同。
+
+image::image-6.png[Flash Option设置, role="thumb"]
+
+=== 重新初始化
+
+设置DLM状态到OEM_PL0后，芯片就无法使用调试功能，只能运行程序。
+
+如果您需要重新开启调试功能，可以选择重新初始化。
+此时，RA8 MCU片内的 #所有信息# 都会被抹除，芯片回到出厂状态。
+
+image::image-7.png[芯片初始化, role="thumb", width=480]
+
+P.S. RA8 MCU 当然可以支持保留存储区内容的状态回退，详情参考RA8 MCU手册的 `Device Lifecycle Management` 章节
+
+== 有关J-Flash Lite
+
+RA8 开发板均板载J-Link调试器，也可以使用J-Flash Lite进行烧录。
+
+J-Flash Lite软件通过调试接口（非Boot接口）和RA8 MCU进行连接，只能对存储区域进行程序/数据写入，#无法进行其他设置（如DLM设置代码保护功能）#。使用时请留意。
+
+== 其他参考资料
+
+. link:https://www.renesas.com/en/document/apn/renesas-boot-firmware-ra8p1-mcu-group[RA8P1 MCU Boot接口的文档]
+. link:https://www.renesas.com/en/document/apn/implementing-production-programming-tools-ra-cortex-m85-device-lifecycle-management[RA MCU如何在烧录时写入外部Flash] （需要配合RFP 3.22或更高版本使用）
+
+
+
+
+
+
+
+
+
+
+
+
+
+

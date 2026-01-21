@@ -33,25 +33,25 @@ Original Author: Shay Gal-on
         Returns:
         NULL.
 */
-DTCM_DATA
+DATA_AREA_DATA
 static ee_u16 list_known_crc[]   = { (ee_u16)0xd4b0,
                                    (ee_u16)0x3340,
                                    (ee_u16)0x6a79,
                                    (ee_u16)0xe714,
                                    (ee_u16)0xe3c1 };
-DTCM_DATA
+DATA_AREA_DATA
 static ee_u16 matrix_known_crc[] = { (ee_u16)0xbe52,
                                      (ee_u16)0x1199,
                                      (ee_u16)0x5608,
                                      (ee_u16)0x1fd7,
                                      (ee_u16)0x0747 };
-DTCM_DATA
+DATA_AREA_DATA
 static ee_u16 state_known_crc[]  = { (ee_u16)0x5e47,
                                     (ee_u16)0x39bf,
                                     (ee_u16)0xe5a4,
                                     (ee_u16)0x8e3a,
                                     (ee_u16)0x8d84 };
-ITCM_CODE void *
+CODE_AREA void *
 iterate(void *pres)
 {
     ee_u32        i;
@@ -85,9 +85,9 @@ ee_s32 get_seed_32(int i);
 #endif
 
 #if (MEM_METHOD == MEM_STATIC)
-DTCM_DATA ee_u8 static_memblk[TOTAL_DATA_SIZE];
+DATA_AREA_DATA ee_u8 static_memblk[TOTAL_DATA_SIZE];
 #endif
-DTCM_DATA char *mem_name[3] = { "Static", "Heap", "Stack" };
+DATA_AREA_DATA char *mem_name[3] = { "Static", "Heap", "Stack" };
 /* Function: main
         Main entry routine for the benchmark.
         This function is responsible for the following steps:
@@ -108,7 +108,7 @@ DTCM_DATA char *mem_name[3] = { "Static", "Heap", "Stack" };
 */
 
 #if MAIN_HAS_NOARGC
-ITCM_CODE MAIN_RETURN_TYPE
+CODE_AREA MAIN_RETURN_TYPE
 coremark_main(void)
 {
     int   argc = 0;

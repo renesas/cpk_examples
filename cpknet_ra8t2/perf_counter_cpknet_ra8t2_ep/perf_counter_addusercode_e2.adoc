@@ -41,14 +41,14 @@ Debug 和 Release 定义了不同的预定义宏以让程序实现不同的行�
 * Debug 使用 SysTick 测量时间，而 Release 使用 PMU 测量时间 （PMU是调试电路的一部分，调试功能可能会影响PMU的运行）。
 ** 使用 PMU 需定义宏 `+__PERFC_USE_PMU_PORTING__=1+` 和 宏 `+__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1+`
 * Release 配置将 coremark 的代码和数据放在 ITCM 和 DTCM 以提升性能
-** `PUT_DATA_IN_DTCM=1`: 把数据放在 DTCM。可以根据变量类型使用宏 `DTCM_BSS` 或 `DTCM_DATA` 或 `DTCM_ZERO` 来修饰变量，让变量放在 DTCM 中
-** `PUT_CODE_IN_ITCM=1`: 把代码放在 ITCM。可以用 `ITCM_CODE` 来修饰函数定义，这样，如果开启了这个宏，那么这段函数会被放在 ITCM 里。
+** `__DATA_AREA=DATA_DTCM`: 把数据放在 DTCM。可以根据变量类型使用宏 `DATA_AREA_BSS` 或 `DATA_AREA_DATA` 或 `DATA_AREA_ZERO` 来修饰变量，让变量放在 DTCM 中
+** `__CODE_AREA=CODE_ITCM`: 把代码放在 ITCM。可以用 `CODE_AREA` 来修饰函数定义，这样，如果开启了这个宏，那么这段函数会被放在 ITCM 里。
 
 NOTE: 要将代码或变量放进指定段，不要修改链接脚本，FSP 每次生成时都会覆盖链接脚本。建议使用与示例工程相同的方式，例如 `DTCM_BSS` 展开为 `+__attribute__((section(".dtcm_noinit")))+`，section 的名字在链接脚本 `fsp_gen.lld` 中定义，FSP 对 RA8T2 可用的内存区域均有对应 section 定义。
 
 可以在配置中修改这些宏来修改行为。在工程的 C/C++ 属性设置中可以查看。下图中红色框内的是手动添加的宏，其它的是 FSP 自动添加的预定义宏
 
-image::Snipaste_2026-01-13_17-45-12_01.png[role="thumb", width=800]
+image::Snipaste_2026-01-13_17-45-12_01.png[role="thumb", width=8010
 
 === 示例工程结构
 
@@ -96,7 +96,7 @@ __cycleof__("Coremark") {
 
 [source,c,subs="verbatim,attributes"]
 ----
-ITCM_CODE
+CODE_AREA
 void foo(uint32_t num)
 {
 	while (num--) {

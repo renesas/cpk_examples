@@ -43,7 +43,7 @@ the switch/if behaviour, we are using a small moore machine.
         Go over the input twice, once direct, and once after introducing some
    corruption.
 */
-ITCM_CODE ee_u16
+CODE_AREA ee_u16
 core_bench_state(ee_u32 blksize,
                  ee_u8 *memblock,
                  ee_s16 seed1,
@@ -112,20 +112,20 @@ core_bench_state(ee_u32 blksize,
 }
 
 /* Default initialization patterns */
-DTCM_DATA
+DATA_AREA_DATA
 static ee_u8 *intpat[4]
     = { (ee_u8 *)"5012", (ee_u8 *)"1234", (ee_u8 *)"-874", (ee_u8 *)"+122" };
-DTCM_DATA
+DATA_AREA_DATA
 static ee_u8 *floatpat[4] = { (ee_u8 *)"35.54400",
                               (ee_u8 *)".1234500",
                               (ee_u8 *)"-110.700",
                               (ee_u8 *)"+0.64400" };
-DTCM_DATA
+DATA_AREA_DATA
 static ee_u8 *scipat[4]   = { (ee_u8 *)"5.500e+3",
                             (ee_u8 *)"-.123e-2",
                             (ee_u8 *)"-87e+832",
                             (ee_u8 *)"+0.6e-12" };
-DTCM_DATA
+DATA_AREA_DATA
 static ee_u8 *errpat[4]   = { (ee_u8 *)"T0.3e-1F",
                             (ee_u8 *)"-T.T++Tq",
                             (ee_u8 *)"1T3.4e4z",
@@ -141,7 +141,7 @@ static ee_u8 *errpat[4]   = { (ee_u8 *)"T0.3e-1F",
         The seed parameter MUST be supplied from a source that cannot be
    determined at compile time
 */
-ITCM_CODE void
+CODE_AREA void
 core_init_state(ee_u32 size, ee_s16 seed, ee_u8 *p)
 {
     ee_u32 total = 0, next = 0, i;
@@ -199,7 +199,7 @@ core_init_state(ee_u32 size, ee_s16 seed, ee_u8 *p)
 #endif
 }
 
-ITCM_CODE static ee_u8
+CODE_AREA static ee_u8
 ee_isdigit(ee_u8 c)
 {
     ee_u8 retval;
@@ -218,7 +218,7 @@ ee_isdigit(ee_u8 c)
    end state is returned (either specific format determined or invalid).
 */
 
-ITCM_CODE enum CORE_STATE
+CODE_AREA enum CORE_STATE
 core_state_transition(ee_u8 **instr, ee_u32 *transition_count)
 {
     ee_u8 *         str = *instr;

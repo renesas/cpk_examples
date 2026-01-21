@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>R7KA8P1KF:CPU0</Device>
           <Vendor>Renesas</Vendor>
-          <PackID>Renesas.RA_DFP.6.0.0</PackID>
+          <PackID>Renesas.RA_DFP.6.3.0</PackID>
           <PackURL>https://www2.renesas.eu/Keil_MDK_Packs/</PackURL>
           <Cpu>CPUTYPE("Cortex-M85") DSP TZ MVE(FP) FPU3(DFPU) PACBTI CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -338,7 +338,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>@./via/rasc_armclang.via</MiscControls>
-              <Define>_LANGUAGE=0x0804,__PERFC_USE_PMU_PORTING__=1,__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1,CONSOLE_CFG_USE_UART</Define>
+              <Define>_LANGUAGE=0x0804,__PERFC_USE_PMU_PORTING__=1,__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1,CONSOLE_CFG_USE_UART=1</Define>
               <Undefine></Undefine>
               <IncludePath>.\source;.\third</IncludePath>
             </VariousControls>

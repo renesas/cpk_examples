@@ -302,11 +302,11 @@
 									<listOptionValue builtIn="false" value="_RA_CORE=CPU0"/>
 									<listOptionValue builtIn="false" value="_RA_ORDINAL=1"/>
 									<listOptionValue builtIn="false" value="_LANGUAGE=0x0804"/>
+									<listOptionValue builtIn="false" value="__CODE_AREA=CODE_ITCM"/>
+									<listOptionValue builtIn="false" value="__DATA_AREA=DATA_DTCM"/>
 									<listOptionValue builtIn="false" value="__PERFC_USE_PMU_PORTING__=1"/>
 									<listOptionValue builtIn="false" value="__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1"/>
 									<listOptionValue builtIn="false" value="CONSOLE_CFG_USE_UART=1"/>
-									<listOptionValue builtIn="false" value="PUT_DATA_IN_DTCM=1"/>
-									<listOptionValue builtIn="false" value="PUT_CODE_IN_ITCM=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths.629937763" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/ra_gen}&quot;"/>

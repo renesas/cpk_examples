@@ -68,7 +68,7 @@ image::Snipaste_2026-01-14_17-09-04.png[role="thumb", width=800]
 现在假设需要评估一个函数 `foo()` 的运行时间，它的定义如下，代码放在I-TCM中
 [source,c,subs="verbatim,attributes"]
 ----
-ITCM_CODE
+CODE_AREA
 void foo(uint32_t num)
 {
 	while (num--) {
@@ -115,7 +115,7 @@ image::Snipaste_2026-01-14_10-37-12_01.png[role="thumb", width=640]
 您可以拷贝以下完整的字符串
 [source,c,subs="verbatim,attributes"]
 ----
-_LANGUAGE=0x0804,__PERFC_USE_PMU_PORTING__=1,__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1,CONSOLE_CFG_USE_UART=1
+_LANGUAGE=0x0804,__PERFC_USE_PMU_PORTING__=1,__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1,__CODE_AREA=CODE_ITCM,__DATA_AREA=DATA_DTCM,CONSOLE_CFG_USE_UART=1
 ----
 
 重新编译烧录后，PC端打开一个串口终端，连接J-Link的UART端口，波特率 2,000,000，8-N-1，可以看到结果如下：

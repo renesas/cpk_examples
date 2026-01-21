@@ -338,7 +338,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>@./via/rasc_armclang.via</MiscControls>
-              <Define>_LANGUAGE=0x0804,__PERFC_USE_PMU_PORTING__=1,__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1,CONSOLE_CFG_USE_UART=1,PUT_CODE_IN_ITCM=1,PUT_DATA_IN_DTCM=1</Define>
+              <Define>_LANGUAGE=0x0804,__PERFC_USE_PMU_PORTING__=1,__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1,__CODE_AREA=CODE_ITCM,__DATA_AREA=DATA_DTCM,CONSOLE_CFG_USE_UART=1</Define>
               <Undefine></Undefine>
               <IncludePath>.\source;.\third</IncludePath>
             </VariousControls>

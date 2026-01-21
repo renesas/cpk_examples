@@ -31,6 +31,8 @@ link:perf_counter_addusercode_mdk.adoc[Keil MDK - 基于perf_counter工程进行
 
 在 `perf_counter_cpkhmi_ra8p1_ep` 文件夹下已提供三个编译好的 hex 文件，分别对应三种环境，可以用瑞萨的RFP烧录工具或Segger的J-Flash Lite烧录后运行。其中使用 e^2^studio 开发环境的工程均使用 Release 配置编译生成，性能表现均会优于 Debug 配置。
 
+有关如何烧录编译好的镜像文件，请参考link:../../docs/ra8_nvm_programming.adoc[RA8 MCU的程序烧录]
+
 * #perf_counter_llvm_release.hex# : e^2^studio + llvm 21.1.1
 * #perf_counter_gcc_release.hex# : e^2^studio + arm-none-eabi-gcc 13.2.1.arm-13-7
 * #perf_counter_keil.hex# : Keil MDK + ARMCC6.23
@@ -141,7 +143,7 @@ image::Snipaste_2026-01-09_10-39-18_02.png[role="thumb", width=640]
 
 image::Snipaste_2026-01-13_15-35-26.png[role="thumb", width=800]
 
-=== Keil MDK + ac6
+=== Keil MDK + Arm Compiler 6
 
 ==== RASC 打开工程
 

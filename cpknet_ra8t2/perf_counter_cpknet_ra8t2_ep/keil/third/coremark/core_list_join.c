@@ -66,7 +66,7 @@ list_head *core_list_mergesort(list_head *   list,
                                list_cmp      cmp,
                                core_results *res);
 
-ITCM_CODE ee_s16
+CODE_AREA ee_s16
 calc_func(ee_s16 *pdata, core_results *res)
 {
     ee_s16 data = *pdata;
@@ -117,7 +117,7 @@ calc_func(ee_s16 *pdata, core_results *res)
 
         Can be used by mergesort.
 */
-ITCM_CODE ee_s32
+CODE_AREA ee_s32
 cmp_complex(list_data *a, list_data *b, core_results *res)
 {
     ee_s16 val1 = calc_func(&(a->data16), res);
@@ -130,7 +130,7 @@ cmp_complex(list_data *a, list_data *b, core_results *res)
 
         Can be used by mergesort.
 */
-ITCM_CODE ee_s32
+CODE_AREA ee_s32
 cmp_idx(list_data *a, list_data *b, core_results *res)
 {
     if (res == NULL)
@@ -141,7 +141,7 @@ cmp_idx(list_data *a, list_data *b, core_results *res)
     return a->idx - b->idx;
 }
 
-ITCM_CODE void
+CODE_AREA void
 copy_info(list_data *to, list_data *from)
 {
     to->data16 = from->data16;
@@ -155,7 +155,7 @@ copy_info(list_data *to, list_data *from)
         - Single remove/reinsert
         * At the end of this function, the list is back to original state
 */
-ITCM_CODE ee_u16
+CODE_AREA ee_u16
 core_bench_list(core_results *res, ee_s16 finder_idx)
 {
     ee_u16     retval = 0;
@@ -247,7 +247,7 @@ core_bench_list(core_results *res, ee_s16 finder_idx)
         Pointer to the head of the list.
 
 */
-ITCM_CODE list_head *
+CODE_AREA list_head *
 core_list_init(ee_u32 blksize, list_head *memblock, ee_s16 seed)
 {
     /* calculated pointers for the list */
@@ -332,7 +332,7 @@ core_list_init(ee_u32 blksize, list_head *memblock, ee_s16 seed)
         Returns:
         Pointer to new item.
 */
-ITCM_CODE list_head *
+CODE_AREA list_head *
 core_list_insert_new(list_head * insert_point,
                      list_data * info,
                      list_head **memblock,
@@ -373,7 +373,7 @@ core_list_insert_new(list_head * insert_point,
         Returns:
         Removed item.
 */
-ITCM_CODE list_head *
+CODE_AREA list_head *
 core_list_remove(list_head *item)
 {
     list_data *tmp;
@@ -404,7 +404,7 @@ core_list_remove(list_head *item)
         The item that was linked back to the list.
 
 */
-ITCM_CODE list_head *
+CODE_AREA list_head *
 core_list_undo_remove(list_head *item_removed, list_head *item_modified)
 {
     list_data *tmp;
@@ -431,7 +431,7 @@ core_list_undo_remove(list_head *item_removed, list_head *item_modified)
         Returns:
         Found item, or NULL if not found.
 */
-ITCM_CODE list_head *
+CODE_AREA list_head *
 core_list_find(list_head *list, list_data *info)
 {
     if (info->idx >= 0)
@@ -461,7 +461,7 @@ core_list_find(list_head *list, list_data *info)
         Found item, or NULL if not found.
 */
 
-ITCM_CODE list_head *
+CODE_AREA list_head *
 core_list_reverse(list_head *list)
 {
     list_head *next = NULL, *tmp;
@@ -496,7 +496,7 @@ core_list_reverse(list_head *list)
         but the algorithm could theoretically modify where the list starts.
 
  */
-ITCM_CODE list_head *
+CODE_AREA list_head *
 core_list_mergesort(list_head *list, list_cmp cmp, core_results *res)
 {
     list_head *p, *q, *e, *tail;
