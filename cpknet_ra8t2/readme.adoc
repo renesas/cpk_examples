@@ -14,7 +14,8 @@ image::cpknet_ra8t2.png[width=480]
 
 各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
-link:../cpknet_ra8t2/perf_counter_cpknet_ra8t2_ep/[在CPKNET-RA8T2上使用 perf_counter 进行性能测试]
+. link:../cpknet_ra8t2/perf_counter_cpknet_ra8t2_ep/[在CPKNET-RA8T2上使用 perf_counter 进行性能测试]
+. link:../cpknet_ra8t2/memconfig_benchmark_cpknet_ra8t2_ep/[RA8T2程序/数据存储位置对性能的影响评测样例]
 
 
-Ver. 20260114
+Ver. 20260122

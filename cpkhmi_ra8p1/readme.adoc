@@ -6,7 +6,7 @@
 
 image::cpkhmi_ra8p1.png[width=480]
 
-如果您需要查看RA8P1在缺省扩展板上运行的样例代码及文档，请参考 link:../cpk_ra8t2/[CPK-RA8P1]。
+如果您需要查看RA8P1 MCU在缺省扩展板上运行的样例代码及文档，请参考 link:../cpk_ra8p1/[CPK-RA8P1]。
 
 如果您需要使用本核心板配合其他扩展板，请参考本代码仓库下对应的目录（cpkhmi_ra8p1_扩展板名称）。
 
@@ -15,6 +15,6 @@ image::cpkhmi_ra8p1.png[width=480]
 各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
 . link:../cpkhmi_ra8p1/perf_counter_cpkhmi_ra8p1_ep/[在CPKHMI-RA8P1上使用 perf_counter 进行性能测试]
+. link:../cpkhmi_ra8p1/memconfig_benchmark_cpkhmi_ra8p1_ep/[RA8P1程序/数据存储位置对性能的影响评测样例]
 
-
-Ver. 20260114
+Ver. 20260122
