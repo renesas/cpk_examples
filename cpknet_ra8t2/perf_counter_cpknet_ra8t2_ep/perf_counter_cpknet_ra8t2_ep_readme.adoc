@@ -10,7 +10,7 @@
 
 此样例工程集成了perf_counter性能测试工具，并通过运行CoreMark®程序来测试不同编译器和编译配置下，RA8T2的Cortex M85内核的性能，该性能数据可以作为编译器和编译参数选择的一个参考。
 
-CoreMark测试并不支持CM85内核的Helium指令和RA8T2集成的Ethos U55 NPU，仅提供CPU标量运算性能的参考。
+CoreMark测试并不支持CM85内核的Helium指令，仅提供CPU标量运算性能的参考。
 
 本样例程序CoreMark的测试代码运行在I-TCM中，数据使用D-TCM，最大限度排除了片内存储器和总线对测试结果的影响。
 
