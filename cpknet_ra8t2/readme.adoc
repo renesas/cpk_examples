@@ -1,0 +1,21 @@
+:scripts: cjk
+
+== CPKNET-RA8T2核心板
+
+本目录下仅存放可以在 CPKNET-RA8T2 核心板上直接运行的的样例代码和该核心板的link:../cpknet_r8t2/docs/01_overview.html[使用手册]。
+
+image::cpknet_ra8t2.png[width=480]
+
+如果您需要查看RA8T2在缺省扩展板上运行的样例代码及文档，请参考 link:../cpk_ra8t2/[CPK-RA8T2]。
+
+如果您需要使用本核心板配合其他扩展板，请参考本代码仓库下对应的目录（cpknet_ra8t2_扩展板名称）。
+
+每个样例程序目录下都准备了对应压缩包供下载，如果您没有同步代码库的需求，可以直接下载ZIP包使用。
+
+各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
+
+. link:../cpknet_ra8t2/perf_counter_cpknet_ra8t2_ep/[在CPKNET-RA8T2上使用 perf_counter 进行性能测试]
+. link:../cpknet_ra8t2/memconfig_benchmark_cpknet_ra8t2_ep/[RA8T2程序/数据存储位置对性能的影响评测样例]
+
+
+Ver. 20260122

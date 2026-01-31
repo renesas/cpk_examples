@@ -16,36 +16,36 @@ If you are willing to contribute you codes, please mailto:craig.wu.wx@renesas.co
 [%autowidth, cols="a,a,a"]
 |====
 .2+^.^| RA8D1
-^.^| link:cpkcor_ra8d1b/docs/01_overview.md[CPKCOR-RA8D1B 核心板使用手册] 
-.2+| image::cpkcor_ra8d1b/cpkcor_ra8d1b.png[width=300]
-^.^| link:cpkcor_ra8d1b/[CPKCOR-RA8D1B 核心板样例代码]
+^.^| link:./cpkcor_ra8d1b/docs/01_overview.md[CPKCOR-RA8D1B 核心板使用手册] 
+.2+| image::./cpkcor_ra8d1b/cpkcor_ra8d1b.png[width=300]
+^.^| link:./cpkcor_ra8d1b/[CPKCOR-RA8D1B 核心板样例代码]
 
 .2+^.^| RA8D1
-^.^| link:cpkhmi_ra8d1b/docs/01_overview.md[CPKHMI-RA8D1B 核心板使用手册] 
-.2+| image::cpkhmi_ra8d1b/cpkhmi_ra8d1b.png[width=420]
-^.^| link:cpkcor_ra8d1b/[CPKCOR-RA8D1B 核心板样例代码]
+^.^| link:./cpkhmi_ra8d1b/docs/01_overview.md[CPKHMI-RA8D1B 核心板使用手册] 
+.2+| image::./cpkhmi_ra8d1b/cpkhmi_ra8d1b.png[width=420]
+^.^| link:./cpkcor_ra8d1b/[CPKCOR-RA8D1B 核心板样例代码]
 
 .2+^.^| RA8x1
-^.^| link:cpkexp_ekra8x1/docs/01_overview.adoc[CPKEXP-EKRA8x1 扩展板使用手册] 
-.2+| image::cpkexp_ekra8x1/cpkexp_ekra8x1.png[width=480]
-^.^| link:cpkexp_ekra8x1/[CPKEXP-EKRA8x1 扩展板样例代码]
+^.^| link:./cpkexp_ekra8x1/docs/01_overview.adoc[CPKEXP-EKRA8x1 扩展板使用手册] 
+.2+| image::./cpkexp_ekra8x1/cpkexp_ekra8x1.png[width=480]
+^.^| link:./cpkexp_ekra8x1/[CPKEXP-EKRA8x1 扩展板样例代码]
 
 .2+^.^| RA8T2
-^.^| link:cpk_ra8t2/docs/21_overview.html[CPK-RA8T2 开发套件使用手册] 
-.2+| image:cpk_ra8t2/cpk_ra8t2.png[width=220]
-^.^| link:cpk_ra8t2/[CPK-RA8T2 开发套件样例代码]
+^.^| link:./cpk_ra8t2/docs/21_overview.html[CPK-RA8T2 开发套件使用手册] 
+.2+| image:./cpk_ra8t2/cpk_ra8t2.png[width=220]
+^.^| link:./cpk_ra8t2/[CPK-RA8T2 开发套件样例代码]
 
 .2+^.^| RA8T2
-^.^| link:cpknet_ra8t2/docs/01_overview.html[CPKNET-RA8T2 核心板使用手册] 
-.2+| image:cpknet_ra8t2/cpknet_ra8t2.png[width=320]
-^.^| link:cpknet_ra8t2/[CPKNET-RA8T2 核心板样例代码]
+^.^| link:./cpknet_ra8t2/docs/01_overview.html[CPKNET-RA8T2 核心板使用手册] 
+.2+| image:./cpknet_ra8t2/cpknet_ra8t2.png[width=320]
+^.^| link:./cpknet_ra8t2/[CPKNET-RA8T2 核心板样例代码]
 
 .2+^.^| RA8P1
-^.^| link:cpkhmi_ra8p1/docs/01_overview.html[CPKNET-RA8T2 核心板使用手册] 
-.2+| image:cpkhmi_ra8p1/cpkhmi_ra8p1.png[width=320]
-^.^| link:cpkhmi_ra8p1/[CPKNET-RA8T2 核心板样例代码]
+^.^| link:./cpkhmi_ra8p1/docs/01_overview.html[CPKHMI-RA8P1 核心板使用手册] 
+.2+| image:./cpkhmi_ra8p1/cpkhmi_ra8p1.png[width=320]
+^.^| link:./cpkhmi_ra8p1/[CPKHMI-RA8P1 核心板样例代码]
 
 |====
 
 
-Ver. 20260114
+Ver. 20260130
