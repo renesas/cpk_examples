@@ -5,7 +5,7 @@
 该示例工程基于瑞萨 FSP 的 IPC 核间通信的驱动模块，移植了核间通信中间组件 RPMsg-lite，实现了 CM85 和 CM33 的通信，双核都运行了 FreeRTOS 系统。
 
 # 支持的开发板/演示板：
-CPKEXP-RA8T2
+CPK-RA8T2
 
 # 硬件要求
 

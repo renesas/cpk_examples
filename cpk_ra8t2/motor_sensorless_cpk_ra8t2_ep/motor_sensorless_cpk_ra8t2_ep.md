@@ -15,7 +15,7 @@
 
 # 2. 支持的开发板/演示板
 
-- CPKEXP -RA8T2
+- CPK-RA8T2
 
 # 3. 硬件要求
 
@@ -29,7 +29,7 @@
 
 # 4. 硬件连接
   
-- 将 CPKEXP -RA8T2 的 CN1、CN2 和低压驱动板 MCI-LV-1 相应接口（参照图例）对插
+- 将 CPK-RA8T2 的 CN1、CN2 和低压驱动板 MCI-LV-1 相应接口（参照图例）对插
 - 将 24V 可驱动 PMSM 电机联接到低压驱动板 CN2 （请按旁边丝印 U, V, W 线序提示联接）
 - 用联接线 4P XH2.54 联接 CPK-RA8T2 和 ics 通讯板 MC-COM（AVDD 接 CN1.1, P707 接 CN1.2， P706 接 CN1.3， DGND 接 CN1.4）
 - 通过 USB Type-C 线连接调试主机和 CPK-RA8T2 板上的 USB 调试端口

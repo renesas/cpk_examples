@@ -7,11 +7,11 @@
 如果您没有同步代码库及版本控制的需求，也可以直接下载本目录下的ZIP压缩包，其中包含了文档和代码。
 
 # 支持的开发板/演示板
-CPKEXP-RA8T2
+CPK-RA8T2
 
 # 硬件要求
 
-- 1 块 Renesas RA8 开发板：CPK -RA8T2
+- 1 块 Renesas RA8 开发板：CPK-RA8T2
 - 1 根 USB Type A->Type C 或 Type-C->Type-C 线（支持 Type-C 2.0 即可）
 - 1 根网线
 - 1 台安装了 Twincat 的工控机
