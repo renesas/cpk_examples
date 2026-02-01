@@ -1,15 +1,9 @@
 :scripts: cjk
-//include::locale/attributes.adoc[]
-
-:scripts: cjk
 
 :imagesdir: ../..
-
 :manual_common_dir: .
-:manual_doc_ext: adoc
-//:manual_doc_ext: html
-
-// configuration names for HTML manual generation
+//:manual_doc_ext: adoc
+:manual_doc_ext: html
 
 //:cpk_core_name: cpknet-ra8t2
 :cpk_core_name: cpkhmi-ra8p1
@@ -18,23 +12,8 @@
 
 //:cpk_set_name: cpk_ra8t2
 //:cpk_set_name: cpk_ra8p1
-
-
 //:cpk_set_name: cpkcor_ra8t2_ecsmcb
 //:cpk_set_name: cpkhmi_ra8p1_ekra8x2
-//:cpk_set_name: cpkhmi_ra8p1_ecsmcb
-//:cpk_set_name: cpkcor_ra8p1_ecsmcb
-//:cpk_set_name: cpkcor_ra8t2_ekra8x2
-//:cpk_set_name: cpknet_ra8t2_ekra8x2
-
-//:cpk_set_name: cpkmini_ra8p1
-
-// end of config names
-
-
-// detail settings for each configuration
-
-// core board only for manual
 
 
 :coreboardmcu: RA8P1
@@ -45,14 +24,12 @@
 
 
 
-// cpk set for core+exp manual
 
 
 
 
-// end of detail settings
 
-// USB related setting for manual
+// USB defination for manual
 
 :core_bd_usb: USB-2.0高速
 
@@ -61,8 +38,11 @@
 
 :dsurl1: https://www.renesas.com/document/dst/
 :dsurl2: -group-datasheet
-:uhyrl1: https://www.renesas.com/document/mah/
-:uhyrl2: -group-users-manual-hardware
+:uhurl1: https://www.renesas.com/document/mah/
+:uhurl2: -group-users-manual-hardware
+
+// end of directives
+
 
 == 开始使用{coreboardname}核心板
 

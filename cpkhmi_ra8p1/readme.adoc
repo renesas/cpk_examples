@@ -2,7 +2,7 @@
 
 == CPKHMI-RA8P1核心板
 
-本目录下仅存放可以在 CPKHMI-RA8P1 核心板上直接运行的的样例代码和该核心板的link:../cpkhmi_r8p1/docs/01_overview.html[使用手册]。
+本目录下仅存放可以在 CPKHMI-RA8P1 核心板上直接运行的的样例代码和该核心板的link:../cpkhmi_r8p1/docs/01_overview.adoc[使用手册]。
 
 image::cpkhmi_ra8p1.png[width=480]
 
