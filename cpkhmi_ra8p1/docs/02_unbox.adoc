@@ -1,0 +1,186 @@
+:scripts: cjk
+//include::locale/attributes.adoc[]
+
+:scripts: cjk
+
+:imagesdir: ../..
+
+:manual_common_dir: .
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+// configuration names for HTML manual generation
+
+//:cpk_core_name: cpknet-ra8t2
+:cpk_core_name: cpkhmi-ra8p1
+//:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+//:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpk_ra8p1
+
+
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+//:cpk_set_name: cpkhmi_ra8p1_ecsmcb
+//:cpk_set_name: cpkcor_ra8p1_ecsmcb
+//:cpk_set_name: cpkcor_ra8t2_ekra8x2
+//:cpk_set_name: cpknet_ra8t2_ekra8x2
+
+//:cpk_set_name: cpkmini_ra8p1
+
+// end of config names
+
+
+// detail settings for each configuration
+
+// core board only for manual
+
+
+:coreboardmcu: RA8P1
+:core_bd_mcu: ra8p1
+:coreboardname: CPKHMI-RA8P1
+:core_bd_name: cpkhmi_ra8p1
+:core_bd_version: v1.1
+
+
+
+// cpk set for core+exp manual
+
+
+
+
+// end of detail settings
+
+// USB related setting for manual
+
+:core_bd_usb: USB-2.0高速
+
+
+// pdf url on renesas website
+
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhyrl1: https://www.renesas.com/document/mah/
+:uhyrl2: -group-users-manual-hardware
+
+== 开始使用{coreboardname}核心板
+
+v20260130
+
+核心板使用USB 2.0 Type-C接口供电和调试，购买时不附带线缆，请自备USB Type-C线。
+
+image::{core_bd_name}/docs/images/02_unbox/{core_bd_name}.png[]
+
+
+=== 下载和安装开发环境
+
+开始连接开发板前，请先根据您的开发主机的操作系统下载并安装开发环境。瑞萨通过Flexible Software Package - FSP软件包来支持RA MCU的开发。
+
+如果您使用瑞萨的集成开发环境e^2^studio, 最简单的方式就是直接下载包含了e2studio的FSP安装包，当然您也可以单独下载e2studio和FSP软件包后分别安装。瑞萨的e2studio集成开发环境可以支持：
+
+* Windows 10 及 Windows 11
+* Linux
+* MacOS (仅支持Apple芯片)
+
+如果您使用Keil/MDK或IAR Embedded Workbench for ARM，瑞萨也提供可以适用于这些第三方开发环境的配置工具RA Smart Configurator （RASC），可以通过RASC进行芯片管脚设置和软件协议栈配置等工作，并自动生成对应开发环境的项目工程。RASC可以支持：
+
+* Windows 10 及 Windows 11
+* Linux
+* MacOS (仅支持Apple芯片)
+
+最新版的e^2^studio + FSP 安装包及 RASC 可以从瑞萨官网下载，link:https://www.renesas.cn/zh/software-tool/flexible-software-package-fsp[点此跳转到下载网页]。
+
+本手册内容基于 e^2^studio 2025-12集成开发环境 + FSP 6.3.0，样例程序也基于link:https://github.com/renesas/fsp/releases/tag/v6.3.0[FSP 6.3.0版本]或更高版本，在link:https://github.com/renesas/fsp/releases[Github的Release页面]也可以下载到各个历史版本的FSP。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image.png[]
+
+下载完成后，Windows环境下双击`setup_fsp_v6_3_0_e2s_v2025-12.exe`即可开始安装过程。如果您不需要指定安装位置，那一直下一步就可以了。安装过程中会添加MCU调试器的驱动程序，需要您选择信任这些驱动。
+
+=== 硬件连接和确认
+
+使用USB Type-C线将调试USB口（JDBG）连接到安装好开发环境的电脑，确认白色的电源LED灯点亮。如果电脑上的J-Link驱动安装正确，那橙色的调试LED会常亮。如果橙色LED在闪烁，则表示核心板上的J-Link无法和电脑通信，请查看电脑端的设置。
+
+
+//board image of successful connection
+
+image::{core_bd_name}/docs/images/02_unbox/{core_bd_name}_jlinkconnect.png[连接成功, role="thumb"]
+
+
+打开Windows设备管理器，确认有一个`USB Serial Device`，即J-Link自带的USB转串口。此外还有一个`BULK interface`，这个就是J-Link调试器。调试器和串口可以同时使用。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-1.png[]
+
+=== 安装核心板的BSP，自动生成Blinky工程
+
+为了方便大家使用核心板上的各种功能，我们提供一个基础的BSP包，按照板载硬件（存储器、按键、LED等）的连接设置好了对应的I/O口，您可以直接开始使用核心板上的各种功能。
+
+
+//board bsp download link
+
+
+link:./Renesas.RA_board_ra8p1_cpkhmi.6.2.0.pack[点此下载{coreboardname} 的BSP文件]，请在FSP 6.2.0或更高版本中使用此BSP。
+
+
+
+
+
+您可以访问以下资源，详细了解如何安装BSP包。
+
+link:https://zh-support.renesas.com/knowledgeBase/21373750[e2studio BSP安装教程网页]      link:../../docs/r01an7244cc0110-ra.pdf[e2studio BSP安装教程（PDF版）]
+
+打开e^2^studio, 创建一个RA MCU的新工程。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-2.png[role="thumb"]
+
+板载的RA8 MCU为双核MCU，此时我们仅创建单核工程，选择RA FSP Projects。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-3.png[role="thumb"]
+
+输入项目名称，然后选择FSP版本为6.3.0或更高版本，在下拉菜单中选择对应核心板。
+这个单核工程选择使用CPU0，请确认右侧CPU内核为Cortex-M85。
+
+ARM Cortex-M85内核集成了Helium矢量加速单元，目前ARM AC6编译器和 LLVM 编译器可以支持代码自动向量化功能，在新建项目时，请选择 LLVM 编译器。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-4.png[role="thumb"]
+
+
+//blinly project BSP selection image
+
+image::{core_bd_name}/docs/images/02_unbox/{core_bd_name}_blinkybsp.png[role="thumb"]
+
+
+如果您安装了Arm Compiler 6，那也可以在e^2^studio中使用AC6编译器。（关于如何将AC6集成到e^2^studio，请查看FSP手册的 'Starting Development' 部分，'Creating RA project with Arm Compiler 6 in e^2^studio' 章节）
+
+选择Flat项目，不使用Trustzone。Blinky是个独立的工程，所以也无需选择前序工程或Smart Bundle。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-6.png[role="thumb"]
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-7.png[role="thumb"]
+
+生成可执行文件，使用BSP自带的模版，生成Blinky LED闪灯工程。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-8.png[role="thumb"]
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-9.png[role="thumb"]
+
+工程自动生成后，即可点击编译按钮完成工程的编译。
+第一次调试前，需要选择"Debug Configuration"进行调试环境配置。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-10.png[role="thumb"]
+
+调试环境配置是自动完成的，只需在左边选择硬件调试平台，点击Debug按钮即可连接调试器开始调试。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-11.png[role="thumb"]
+
+程序下载完成后，点击运行按钮，程序会自动停在main()函数入口位置，再次点击运行按钮，即可看到核心板上的绿色LED开始闪烁。
+
+image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-12.png[role="thumb"]
+
+您可以修改这个自动生成的工程，以熟悉e^2^studio环境和RA FSP。
+您也可以生成一个空的工程，按照教程和文档一步一步配置硬件并编写软件。
+
+
+瑞萨为{coreboardname}核心板提供多种link:../../{core_bd_name}/[样例代码]，您也可以直接选择所需的样例代码开始进行评估和开发。
+
+
+
+上一篇：link:01_overview.{manual_doc_ext}[01. {coreboardname} 简介]                下一篇：link:03_hardware.{manual_doc_ext}[03. {coreboardname}的硬件概述]

@@ -1,0 +1,316 @@
+:scripts: cjk
+//include::locale/attributes.adoc[]
+
+:scripts: cjk
+
+:imagesdir: ../..
+
+:manual_common_dir: .
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+// configuration names for HTML manual generation
+
+//:cpk_core_name: cpknet-ra8t2
+:cpk_core_name: cpkhmi-ra8p1
+//:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+//:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpk_ra8p1
+
+
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+//:cpk_set_name: cpkhmi_ra8p1_ecsmcb
+//:cpk_set_name: cpkcor_ra8p1_ecsmcb
+//:cpk_set_name: cpkcor_ra8t2_ekra8x2
+//:cpk_set_name: cpknet_ra8t2_ekra8x2
+
+//:cpk_set_name: cpkmini_ra8p1
+
+// end of config names
+
+
+// detail settings for each configuration
+
+// core board only for manual
+
+
+:coreboardmcu: RA8P1
+:core_bd_mcu: ra8p1
+:coreboardname: CPKHMI-RA8P1
+:core_bd_name: cpkhmi_ra8p1
+:core_bd_version: v1.1
+
+
+
+// cpk set for core+exp manual
+
+
+
+
+// end of detail settings
+
+// USB related setting for manual
+
+:core_bd_usb: USB-2.0高速
+
+
+// pdf url on renesas website
+
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhyrl1: https://www.renesas.com/document/mah/
+:uhyrl2: -group-users-manual-hardware
+
+== 核心板硬件概述
+
+v20260130
+
+{coreboardmcu} MCU本身已经集成了1M字节的MRAM和2M字节的SRAM/TCM，在多数应用场景下无需外扩存储。
+
+{coreboardname}核心板作为{coreboardmcu} MCU的开发板，需要支持各种评估和使用的需求，在板上搭载了SDRAM和QSPI NOR Flash，以及其他必需的外围器件。
+
+=== {coreboardmcu} MCU最小系统
+
+最小系统包括系统 **MCU的供电** 和 **系统控制功能**。
+
+==== {coreboardname} 上MCU的供电
+
+
+{coreboardmcu} MCU支持单一3.3V供电，以简化系统设计。如果选用了支持MIPI接口的{coreboardmcu} MCU，则还需要添加1.8V的VCC_MIPI电源。{coreboardname}核心板上的{coreboardmcu}支持MIPI接口，采用了3.3V + 1.8V的双电源设计。
+
+
+
+.{coreboardmcu} MCU本身有以下主要的电源域，可点击展开，了解详细信息。
+[%collapsible]
+====
+* VCC和VCC_DCDC：为MCU的主要供电电源，以及片内DC-DC电路的供电电源
+* VCC2：为部分I/O口提供独立的电源，例如Octa-SPI接口，可以通过VCC2使用1.8V电平
+* AVCC0：为模拟电路和模拟I/O口提供电源
+* VCC_USB：全速USB 2.0接口的电源
+* VCC_USBHS和AVCC_USBHS：高速USB 2.0接口的电源
+* VCL：MCU核心供电，不影响I/O电平
+  ** {coreboardmcu} MCU片内自带DC-DC电路，可以使用片内DC-DC为VCL供电
+  ** 也可以使用外部DC-DC芯片为VCL供电，电压为0.87V~0.99V
+* VBATT：电池供电引脚，为片内可在低功耗模式下运行的外设供电，例如RTC
+  ** 副时钟引脚在VBATT电源域，使用副时钟时需要确认电源电压是否可用
+* VCC_MIPI：MIPI电路的电源 （仅限支持MIPI接口的型号）
+* AVCC_MPIP：MIPI电路的模拟电源（仅限支持MIPI接口的型号）
+====
+
+{coreboardmcu}的供电电压需求和芯片的运行模式有很多互相影响的地方，在后续的link:09_powerdesign.{manual_doc_ext}[{coreboardmcu}电源设计]章节中有详细的解释。
+
+==== {coreboardname}上MCU的系统控制
+
+//引用通用文档
+
+===== 系统时钟
+
+MCU具有三个内部时钟源和两个外部时钟接口，启动时会使用片内中速时钟（MOCO）作为系统时钟。
+即使不接任何外部时钟，MCU也能运行。
+
+image::{manual_common_dir}/docs/images/03_hardware_syscontrol/image.png[role="thumb",width=640,height=480]
+
+如果目标应用的时钟精度要求不高，可以不使用外部主时钟。
+MCU内部的片内高速时钟（HOCO）可以通过32.768KHz的副时钟进行自动校准（FLL），达到±0.25%的精度，满足一部分应用的需求。
+
+在核心板上，外接了24MHz的主时钟和32.768KHz的副时钟，以满足系统设计的各种要求。
+
+.点击展开，查看核心板时钟设计的具体要求。
+[%collapsible]
+====
+''''
+* 核心板采用RA8P1/RA8D2/RA8M2/RA8T2兼容设计，即同一个PCB可以贴装以上任何一个MCU。
+除了RA8T2，其他三个MCU都支持高速USB 2.0高速。
+USB 2.0 高速接口的PHY时钟只能使用外部主时钟源，且限制在12/20/24/48MHz这四个频率点。
+* MCU还支持使用USB全速接口进行USB Boot，此时对系统时钟也有一定要求，具体可以查看'调试和烧录功能'章节。
+
+''''
+====
+
+
+
+===== 复位功能
+
+MCU片内包含了上电复位电路（POR），无需外部延时（阻容电路或RESET芯片），详见MCU硬件手册`Power-On RESET`章节。
+
+核心板使用了POR功能，上电时如果RESET管脚高电平，POR电路开始工作，为片内各个部分提供RESET信号。
+核心板上也提供了一个RESET按键。
+
+如果您想要使用阻容延时的上电复位，核心板上预留了所需的电容贴装位和快速放电二极管贴装位，可以自行贴装对应器件后进行评估。
+
+//针对不同的PCB截取RESET部分的电路
+
+[cols="a,a", frame=none, grid=none]
+|===
+| image::{core_bd_name}/docs/images/03_hardware/reset_sch.png[width=330]
+| image::{core_bd_name}/docs/images/03_hardware/reset_pcb.png[width=320]
+|===
+
+
+===== 系统控制管脚
+
+按键和LED：核心板上安装了一个用户按键（P303）和一个用户LED（P110），已经在BSP中设置好，可以直接在FSP里使用。
+
+P200/NMI：根据手册`Handling of Unused Pins`要求，上拉至VCC。
+
+.点击展开，查看电路设计的详细信息。
+[%collapsible, indent=2]
+====
+''''
+* P303预留了上拉电阻，但并未实装，作为按键输入时，可以设置片内上拉。如果需要把P303作为其他功能使用时，没有外部上拉电阻对外部电设计影响最小。
+* P110设计为直接输出驱动LED，如果使用FSBL的端口设置功能，则可以使用P110来点亮LED，表示FSBL的异常状态。（FSBL异常时，可以配置成将某个端口输出高电平）
+* NMI中断在缺省状态是不使能的，详见手册`NMIER : Non-Maskable Interrupt Enable Register`，此处的上拉是一个预防性措施。P200本身只能作为GPIO输入端口，弱上拉不影响使用。
+
+''''
+====
+
+MD/P201在MCU正常运行时可以使用P201的功能（GPIO/IRQ4），MD功能仅在复位时用来判断芯片将进入那种工作状态。
+复位时MD=0，芯片会进入SCI-Boot/USB-Boot模式， MD=1则进入正常工作模式或SWD-Boot模式。
+
+在芯片复位时，MD/P201管脚会被硬件逻辑自动设置成输入并有片内上拉，即不接任何外部电路时，MD=1。
+
+核心板上的JLink的USB串口缺省连接到MCU的SCI Boot串口（P208/P209），在核心板上设计了MD控制电路，可以让手动让MCU进入SCI Boot/USB Boot模式。
+
+
+//针对不同MCU的CPK核心板设计，单独描述MD管脚功能和Boot模式
+
+核心板上使用按键SW202控制MD管脚。
+一直按住SW202（SW202）的同时，按下并释放RESET（SW201），MCU即可进入SCI Boot模式。
+
+image::{core_bd_name}/docs/images/03_hardware/boot_key.png[role="thumb",width=480]
+
+
+
+
+
+
+=== {coreboardname}的存储扩展
+
+//针对不同MCU的CPK核心板设计，单独描述存储扩展
+
+
+
+核心板上扩展了3个存储器
+
+* 32位总线宽度的SDRAM，连接外部总线控制器的SDRAM接口
+    ** SDRAM区域的寻址范围0x6800_0000 ~ 0x6FFF_FFFF，最大128M字节
+    ** 核心板上使用的是华邦的W9812G2KB，容量为16M字节，地址范围0x6800_0000 ~ 0x68FF_FFFF
+* QSPI Flash，使用MCU的Octal SPI接口（OSPI_B）的Unit0，接在CS0片选上
+  ** OSPI_B共有2个独立的单元，每个单元支持2个CS片选空间
+  ** OSPI_B支持xSPI协议，符合JEDEC标准JESD251(Profile 1.0 and 2.0)、JESD251-1和JESD252.
+  ** 四线接口模式收录在JESD251-1的附录1，即JESD251-1.01 `Addendum No. 1 to JESD251, Optional x4 Quad I/O With Data Strobe'
+  ** 核心板上使用华邦的W25Q256JV，容量为32M字节，内存映射访问时，地址范围是0x8000_0000 ~ 0x81FF_FFFF
+* TF卡槽，支持3.3V I/O的TF卡，即下图中的标准速率卡和高速卡
+    ** 支持TF卡插入检测功能
+
+image::{manual_common_dir}/docs/images/08_storage_cpknet/image-5.png[]
+
+
+
+
+有关{coreboardname}外部存储扩展的详细信息，会在后续的link:08_storage.{manual_doc_ext}[{coreboardname}的板载存储器件]章节中有详细的解释。
+
+=== {coreboardname}的调试电路
+
+
+核心板上已经搭载了Segger JLink-OB电路，使用的主控是瑞萨的RA4M2 MCU。
+JLink-OB使用USB Type-C 2.0 UFP和主机通信，支持为核心板进行5V供电（Sink）。
+
+核心板上的JLink OB提供了SWD功能和一个USB CDC串口，这两个功能可以同时使用，无需再外接一个串口芯片。
+核心板上使用SCI_UART9_A（P208/P209）和JLink-OB的串口进行通信。
+
+
+link:06_debug.{manual_doc_ext}[{coreboardname}的调试和烧录功能]章节中有调试电路的详细说明。
+
+
+=== {core_bd_usb} 双向接口
+
+{coreboardmcu}支持{core_bd_usb} Type-C 接口，支持DRP（Dual Role Port）。
+支持为核心板供电（Sink）和对设备供电（Source）。
+
+Type-C 接口的方向判断和供电能力解析由FUSB303B芯片提供支持，FUSB303B通过I2C接口和{coreboardmcu}进行通信，支持Dead-Battery模式（Sink）。
+
+{coreboardmcu} 的USB-FS接口的信号连接到了J1，可以在扩展板上实现USB-FS功能。
+注意如果要同时实现USB HS DFP（核心板）和USB FS DFP（扩展板），则需要修改核心板上的跳接电阻。
+
+更多USB接口相关的内容会在后续的link:07_usb.{manual_doc_ext}[{coreboardname}的{core_bd_usb}接口]章节中有详细的解释。
+
+=== 通孔扩展接口
+
+image::{core_bd_name}/docs/images/03_hardware/th_exp.png[role="thumb",width=720]
+
+
+
+核心板上的J201为2.54mm间距的通孔设计，方便用户使用单排针和杜邦线进行扩展，当然也可以使用排针进行板级扩展。
+
+J201是RA MCU串口扩展，管脚定义兼容PMOD Type 6 （I2C）,但在核心板的BSP中并未设定相关功能。
+
+[%autowidth, c*", options="header"]
+|====
+| J201 | GPIO  | SCI-I2C |   IRQ
+|  1   | PC15  |         |  **IRQ30**
+|  2   | **P402**  |         | IRQ4_DS
+|  3   | P401  | **SCL1_A**  | IRQ5_DS
+|  4   | P400  | **SDA1_A** |  IRQ0
+|  5   | VSS   |         |
+|  6   | VCC   |         |
+|====
+
+J202使用PMOD Type 2 （SPI）接口定义。但在核心板的BSP中并未设定相关功能。
+J202可以同时满足部分PMOD Type 3 （UART）接口定义。
+
+[%autowidth, c*", options="header"]
+|====
+| J202 | GPIO |   SCI-SPI   |    UART     |  IRQ
+|  1   | P515 |  **SS4_C**  | CTS_RTS44_C | IRQ12
+|  2   | P714 | **MOSI4_C** |   TXD4_C    | IRQ13
+|  3   | P715 | **MISO4_C** |   RXD4_C    | IRQ12
+|  4   | P514 | **SCK4_C**  |             | IRQ13
+|  5   | VSS  |             |             |
+|  6   | VCC  |             |             |
+|====
+
+
+
+
+通孔扩展接口的详细使用介绍，请查看后续的link:04_th_expansion.{manual_doc_ext}[{coreboardname}的通孔扩展]章节。
+
+
+=== 高密度板对板扩展接口 J1,J2,J3
+
+
+板对板扩展接口使用3个80pin 高密高速接口，其中J1和J2和CPK-RA8x1电源基本兼容。J3接口集中了以太网接口信号，方便扩展以太网功能。
+
+* J1的72脚和J2的43脚定义有变化，注意。（VCC和VCC2调换了位置）。
+
+
+扩展接口的每个管脚的载流能力为300mA，除了传输MCU的信号外，还提供了足够的电源供电能力和丰富的电源类型。
+
+
+* 5V电源，1.8A，可双向供电
+* 3.3V电源，2.7A，包括VSYS-3.3V，VCC，VCC2引脚
+* 1.8V LDO电源输出，0.3A
+* AVCC0/AVSS0模拟电源，AVREFH0/L0模拟参考电压，VBATT备份电池供电
+
+
+
+在后续的link:05_btb_expansion.{manual_doc_ext}[{coreboardname}的板级扩展]章节中，会详细介绍接口的扩展能力和设计思路。
+
+=== MIPI接口
+
+核心板上使用的{coreboardmcu} 支持MIPI-DSI或MIPI-CSI（{coreboardmcu}也提供不支持MIPI接口的产品）。
+核心板上已经实装了一个18脚的FPC接口。
+作为显示输出时，支持触摸屏和背光控制。
+作为摄像头输入时，支持I2C设置和RESET/PWDN控制。
+
+image::{core_bd_name}/docs/images/03_hardware/mipi.png[role="thumb",width=240]
+
+MIPI接口上只提供了5V电源，这也是考虑到外接设备的多样性，无法同时满足所有屏幕的需求。5V输出可以满足大部分LCD模组背光的要求，且所需电流较小。
+
+有关MIPI接口的详细信息，在后续link:0a_mipi.{manual_doc_ext}[{coreboardname}的MIPI扩展]章节中会有详细介绍。
+
+
+上一篇：link:02_unbox.{manual_doc_ext}[02. {coreboardname}开箱]               下一篇：link:04_th_expansion.{manual_doc_ext}[04. {coreboardname}的通孔扩展接口]

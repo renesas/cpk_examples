@@ -1,0 +1,119 @@
+:scripts: cjk
+//include::locale/attributes.adoc[]
+
+:scripts: cjk
+
+:imagesdir: ../..
+
+:manual_common_dir: .
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+// configuration names for HTML manual generation
+
+//:cpk_core_name: cpknet-ra8t2
+:cpk_core_name: cpkhmi-ra8p1
+//:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+//:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpk_ra8p1
+
+
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+//:cpk_set_name: cpkhmi_ra8p1_ecsmcb
+//:cpk_set_name: cpkcor_ra8p1_ecsmcb
+//:cpk_set_name: cpkcor_ra8t2_ekra8x2
+//:cpk_set_name: cpknet_ra8t2_ekra8x2
+
+//:cpk_set_name: cpkmini_ra8p1
+
+// end of config names
+
+
+// detail settings for each configuration
+
+// core board only for manual
+
+
+:coreboardmcu: RA8P1
+:core_bd_mcu: ra8p1
+:coreboardname: CPKHMI-RA8P1
+:core_bd_name: cpkhmi_ra8p1
+:core_bd_version: v1.1
+
+
+
+// cpk set for core+exp manual
+
+
+
+
+// end of detail settings
+
+// USB related setting for manual
+
+:core_bd_usb: USB-2.0高速
+
+
+// pdf url on renesas website
+
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhyrl1: https://www.renesas.com/document/mah/
+:uhyrl2: -group-users-manual-hardware
+
+== {coreboardname} 核心板使用手册和设计指南
+
+v20260130
+
+{coreboardname}核心板是瑞萨电子为中国市场设计的模块化开发板，
+使用瑞萨{coreboardmcu}双核MCU，板载JLink调试器和USB虚拟串口，只需连接USB线即可开始调试运行。
+核心板上已经设计搭载了{coreboardmcu} MCU较为有特色的外设接口和器件，可以直接使用核心板进行学习，评估和应用开发。
+配合扩展底板一起使用，更可实现快速产品原型开发和验证。
+
+本手册包含使用手册和设计指南，缺省显示使用手册，帮助您尽快地开始使用开发板上的各种功能。
+如果您希望深入了解开发板上各个功能和电路设计原理，可以点开对应部分使用手册下的箭头，查看设计指南。
+
+原理图下载：link:{core_bd_name}_{core_bd_version}_sch_release.pdf[{coreboardname} {core_bd_version}版原理图]
+
+* [x] <<{coreboardname} 简介,01. {coreboardname}简介>>
+* [x] link:02_unbox.{manual_doc_ext}[02. {coreboardname}开箱]
+* [x] link:03_hardware.{manual_doc_ext}[03. {coreboardname}的硬件概述]
+* [ ] link:04_th_expansion.{manual_doc_ext}[04. {coreboardname}的通孔扩展接口]
+* [ ] link:05_btb_expansion.{manual_doc_ext}[05. {coreboardname}的板载存储器件]
+* [ ] link:06_debug.{manual_doc_ext}[06. {coreboardname}的调试和烧录功能]
+* [ ] link:07_usb.{manual_doc_ext}[07. {coreboardname}的{core_bd_usb}接口]
+* [ ] link:08_storage.{manual_doc_ext}[08. {coreboardname}的板载存储器件]
+* [ ] link:09_powerdesign.{manual_doc_ext}[09. {coreboardname}电源设计]
+* [ ] link:0a_mipi.{manual_doc_ext}[10. {coreboardname}的MIPI接口]
+
+
+== {coreboardname} 简介
+
+{coreboardname}核心板上使用289BGA封装的{coreboardmcu}双核MCU（U1），除了实现{coreboardmcu}的最小系统外，还搭载了实用的外设功能，包括：
+
+. 32位SDRAM（U2），16M字节容量
+. {core_bd_usb}接口，支持双功能端口（DRP：Dual Role Port），支持Dead Battery功能
+. 板载Segger J-Link调试器，同时支持一路虚拟串口，使用JDBG USB Type-C 2.0 接口，仅支持UFP（作为USB设备）
+. 电源LED（白色），用户LED （P110，绿色），复位按键和用户按键 - USER（P303），MD（P201）
+. 2.54mm间距的通孔扩展接口，管脚定义兼容PMOD接口
+  .. J201 串行口扩展
+  .. J202 串行口扩展
+  .. J301 5V电源（跳线/输入输出）
+
+image::{core_bd_name}/docs/images/01_overview/{core_bd_name}_top.png[]
+
+在核心板的的底面，预留了功能丰富的扩展接口，包括：
+
+[start=7]
+. QSPI NOR Flash（U3），32M字节容量
+. TF卡槽，支持3.3V的TF卡信号电平（DS和HS速度模式）
+. J1，J2，J3 三个80管脚的高密度板对板连接器
+  * HRS link:https://item.szlcsc.com/279578.html[DF40C-80DP-0.4V(51)]
+  * 扩展板上使用的对应接插件有多种合高选择，1.5/2.0/3.0/3.5/4.0mm
+
+image::{core_bd_name}/docs/images/01_overview/{core_bd_name}_bottom.png[]
+
+下一篇：link:02_unbox.{manual_doc_ext}[02. {coreboardname}开箱]
