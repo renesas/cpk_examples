@@ -5,8 +5,8 @@
 :manual_doc_ext: adoc
 //:manual_doc_ext: html
 
-//:cpk_core_name: cpknet-ra8t2
-:cpk_core_name: cpkhmi-ra8p1
+:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
 //:cpk_core_name: cpkcor-ra8p1
 //:cpk_core_name: cpkcor-ra8t2
 
@@ -15,15 +15,15 @@
 //:cpk_set_name: cpkcor_ra8t2_ecsmcb
 //:cpk_set_name: cpkhmi_ra8p1_ekra8x2
 
-:coreboardmcu: RA8P1
-:core_bd_mcu: ra8p1
-:coreboardname: CPKHMI-RA8P1
-:core_bd_name: cpkhmi_ra8p1
+:coreboardmcu: RA8T2
+:core_bd_mcu: ra8t2
+:coreboardname: CPKNET-RA8T2
+:core_bd_name: cpknet_ra8t2
 :core_bd_version: v1.1
 
 // USB defination for manual
 
-:core_bd_usb: USB-2.0高速
+:core_bd_usb: USB-2.0全速
 
 // pdf url on renesas website
 
@@ -88,8 +88,8 @@ image::{manual_common_dir}/docs/images/02_unbox_fsp_board_setup/image-1.png[]
 
 //board bsp download link
 
+link:./Renesas.RA_board_ra8t2_cpknet.6.2.0.pack[点此下载{coreboardname} 的BSP文件]，请在FSP 6.2.0或更高版本中使用此BSP。
 
-link:./Renesas.RA_board_ra8p1_cpkhmi.6.2.0.pack[点此下载{coreboardname} 的BSP文件]，请在FSP 6.2.0或更高版本中使用此BSP。
 
 
 

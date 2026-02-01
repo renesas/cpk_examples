@@ -1,0 +1,104 @@
+:scripts: cjk
+
+:imagesdir: ../..
+:manual_common_dir: .
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+//:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
+//:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpk_ra8p1
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+
+:cpksetname: CPK-RA8T2
+:coreboardmcu: RA8T2
+:core_bd_mcu: ra8t2
+:coreboardname: CPKNET-RA8T2
+:core_bd_name: cpknet_ra8t2
+:core_bd_version: v1.1
+:expboardname: CPKEXP-ECSMCB
+:exp_bd_name: cpkexp_ecsmcb
+:exp_bd_version: v1.0
+
+// USB defination for manual
+
+:core_bd_usb: USB-2.0全速
+
+// pdf url on renesas website
+
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhurl1: https://www.renesas.com/document/mah/
+:uhurl2: -group-users-manual-hardware
+
+// end of directives
+
+== {cpksetname}开发套件简介
+
+v20260130
+
+* [x] <<{cpksetname}开发套件简介,01. {cpksetname}开发套件简介>>
+* [x] link:22_hardware.{manual_doc_ext}[22. {expboardname}硬件概述]
+* [ ] link:23_network.{manual_doc_ext}[23. {expboardname}的网络接口]
+* [ ] link:24_inverterexpansion.{manual_doc_ext}[24. {expboardname}的变频驱动板接口]
+* [ ] link:25_communication.{manual_doc_ext}[25. {expboardname}的通信接口]
+* [ ] link:26_display.{manual_doc_ext}[26. {expboardname}的显示功能]
+* [ ] link:27_powermisc.{manual_doc_ext}[27. {expboardname}电源和其他设置]
+* [ ] link:28_newboarddesign.{manual_doc_ext}[28. 设计您自己的电机控制和网络通信扩展板]
+
+
+{cpksetname}是瑞萨电子为中国市场设计的模块化开发套件，
+由{coreboardname}核心板和{expboardname}扩展板组合而成。
+
+开发套件直接支持{coreboardmcu} MCU较为有特色的功能，并将GPIO扩展到通用接口上，方便开发和学习。
+
+{coreboardname}核心板原理图下载：link:../../{core_bd_name}/docs/{core_bd_name}_{core_bd_version}_sch_release.pdf[{coreboardname} {core_bd_version}版原理图]
+
+{expboardname}扩展板原理图下载：link:{exp_bd_name}_{exp_bd_version}_sch_release.pdf[{expboardname} {exp_bd_version}版原理图]
+
+image::{cpk_set_name}/docs/images/21_overview/{cpk_set_name}.png[]
+
+{coreboardname}核心板上使用289BGA封装的{coreboardmcu}双核MCU（U1），除了实现{coreboardmcu}的最小系统外，还搭载了以下外设功能，包括：
+
+. 32位SDRAM（U2），16M字节容量
+. QSPI NOR Flash（U3），32M字节容量
+
+
+
+
+. 板载Segger J-Link调试器，同时支持一路虚拟串口，使用JDBG USB Type-C 2.0 接口，仅支持UFP（作为USB设备）
+. {core_bd_usb}接口，支持双功能端口（DRP：Dual Role Port），支持Dead Battery功能
+. TF卡槽，支持3.3V的TF卡信号电平（DS和HS速度模式）
+. 电源LED（白色），用户LED （P110，绿色），复位按键和用户按键 - USER（P303），MD（P201）
+. 2.54mm间距的通孔扩展接口，管脚定义兼容PMOD接口
+  .. J201 串行口扩展
+  .. J202 串行口扩展
+
+  .. J301 5V电源（跳线/输入输出）
+
+
+核心板通过J1，J2，J3 三个80管脚的高密度板对板连接器和扩展底板进行连接。
+
+{expboardname}扩展板主要支持
+EtherCAT从站功能和两个电机扩展板接口（CN1+CN2和CN3+CN4），
+可以直接连接网络和瑞萨的link:https://www.renesas.com/en/design-resources/boards-kits/mci-lv-1[MCI-LV-1]电机控制扩展板套件，其他接口还包括：
+
+[start=8]
+. 连接通信板link:https://www.renesas.com/en/design-resources/boards-kits/mc-com[MC-COM]的串口，在调试主机上使用Motor Workbench软件
+. Delta-Sigma接口
+. USB 2.0 Type-C全速接口, 仅支持UFP，可为开发套件提供5V电源
+    .. 缺省使用核心板上的USB Type-C接口进行信号传输
+. CAN-FD接口，RS-485接口，均带收发器
+. 两个PMOD接口，缺省支持Type-3A和Type-6
+. SPI LCD接口，实时显示运行状态（套件不包含LCD模组）
+
+image::{cpk_set_name}/docs/images/21_overview/{cpk_set_name}_motor.png[]
+
+本手册主要讲述{expboardname}扩展板配合{coreboardname}核心板实现的各项功能，如果您想了解核心板的详细信息，请查看link:../../{core_bd_name}/docs/01_overview.{manual_doc_ext}[{coreboardname}核心板使用手册]。
+
+下一篇：link:22_hardware.{manual_doc_ext}[22. {expboardname}硬件概述]

@@ -4,7 +4,7 @@
 
 CPK-RA8T2开发套件由核心板CPKNET-RA8T2 + 扩展板CPKEXP-ECSMCB组合而成，这也是RA8T2开发板的缺省配置。
 
-本目录下仅存放适用于该硬件组合配置的样例代码和link:../cpk_r8t2/docs/21_overview.adoc[使用手册]。
+本目录下仅存放适用于该硬件组合配置的样例代码和link:../cpk_ra8t2/docs/21_overview.adoc[使用手册]。
 
 image::cpk_ra8t2.png[]
 

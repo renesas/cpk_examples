@@ -2,7 +2,7 @@
 
 == CPKNET-RA8T2核心板
 
-本目录下仅存放可以在 CPKNET-RA8T2 核心板上直接运行的的样例代码和该核心板的link:../cpknet_r8t2/docs/01_overview.adoc[使用手册]。
+本目录下仅存放可以在 CPKNET-RA8T2 核心板上直接运行的的样例代码和该核心板的link:../cpknet_ra8t2/docs/01_overview.adoc[使用手册]。
 
 image::cpknet_ra8t2.png[width=480]
 

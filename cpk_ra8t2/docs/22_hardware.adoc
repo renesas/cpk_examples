@@ -1,0 +1,124 @@
+:scripts: cjk
+
+:imagesdir: ../..
+:manual_common_dir: .
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+//:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
+//:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpk_ra8p1
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+
+:cpksetname: CPK-RA8T2
+:coreboardmcu: RA8T2
+:core_bd_mcu: ra8t2
+:coreboardname: CPKNET-RA8T2
+:core_bd_name: cpknet_ra8t2
+:core_bd_version: v1.1
+:expboardname: CPKEXP-ECSMCB
+:exp_bd_name: cpkexp_ecsmcb
+:exp_bd_version: v1.0
+
+// USB defination for manual
+
+:core_bd_usb: USB-2.0全速
+
+// pdf url on renesas website
+
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhurl1: https://www.renesas.com/document/mah/
+:uhurl2: -group-users-manual-hardware
+
+// end of directives
+
+== {expboardname}硬件概述
+
+v20260130
+
+{expboardname}是专门为了
+EtherCAT从站功能
+和电机控制设计的扩展底板。
+在功能设计上，尽量兼容瑞萨的link:https://www.renesas.com/en/design-resources/boards-kits/mcb-ra8t2[MCB-RA8T2开发板]，主要功能包括：
+
+=== EtherCAT从站接口
+
+
+扩展板上集成了YT8512百兆PHY和网络变压器，MCU通过MII接口和PHY连接。
+两个RJ45网络接口使用沉板贴装，RJ45接口上自带LED。
+
+image::{manual_common_dir}/docs/images/23_network/image.png[role="thumb"]
+
+
+
+如需了解详细的网络接口相关的信息，请参考link:23_network.{manual_doc_ext}[23. {expboardname}的网络接口]。
+
+=== 变频驱动板扩展接口
+
+
+扩展板上提供了和MCB-RA8T2评估板功能兼容的变频驱动板接口，其中CN1+CN2为一组，CN3+CN4为另一组。
+瑞萨提供Motor Workbench电机调试软件，通过通信板与目标系统相连，在扩展板上也提供了连接通信板的接口。
+
+image::{manual_common_dir}/docs/images/24_inverterexpansion/image.png[role="thumb", width=600]
+
+
+如需了解详细的变频驱动板接口的信息，请参考link:24_inverterexpansion.{manual_doc_ext}[24. {expboardname}的变频驱动板接口]。
+
+=== 通信接口
+
+
+扩展板上实装了CAN-FD和RS-485收发器，可以直接连接CAN-FD网络和RS-485。
+
+image::{manual_common_dir}/docs/images/25_communication/image.png[role="thumb", width=600]
+
+扩展板上也提供了两个PMOD接口，缺省管脚定义为扩展串口（Type-3A）和I^2^C接口（Type-6）
+
+image::{manual_common_dir}/docs/images/25_communication/image-1.png[role="thumb", width=600]
+
+扩展板上的USB Type-C端口通过跳线连接到USB-FS接口，且仅支持UFP即USB设备模式。
+缺省断开USB信号连接，仅使用这个USB口的进行供电。
+使用核心板上的USB Type-C接口实现USB通信功能。
+
+image::{manual_common_dir}/docs/images/25_communication/image-2.png[role="thumb", width=600]
+
+
+如需了解通信功能的详细信息，请参考link:25_communication.{manual_doc_ext}[25. {expboardname}的通信接口]。
+
+=== 显示功能
+
+
+扩展板上预留了一个SPI LCD接口，直接支持H0233S001全接口2.33寸LCD模组，LCD背光电路已经在扩展板上实装。
+可以用于实时显示系统状态。
+
+image::{manual_common_dir}/docs/images/26_display/image.png[role="thumb", width=600]
+
+
+如需了解LCD接口的详细信息，请参考link:26_display.{manual_doc_ext}[26. {expboardname}的显示功能]。
+
+=== 电源设计和其他设置
+
+
+扩展板的电源设计与MCB-RA8T2类似，可以通过USB Type-C口供电（5V，3A max），支持网络和其他通信类应用。此时也可以使用核心板上的USB端口，通过板对板接插件对扩展板供电。
+
+image::{manual_common_dir}/docs/images/27_powermisc/image.png[role="thumb"]
+
+在使用变频驱动扩展板连接电机时，驱动板需要较大功率的供电电源，此时驱动板可以通过CN2和/或CN4为扩展板提供5V供电。
+由于扩展板和变频驱动板之间并没有隔离，使用变频驱动板时，请不要使用核心板上的接口和USB接口连接电脑，建议使用Motor Workbench的通信板连接上位机进行电机调试和控制（通信板上有串口信号隔离电路）
+
+image::{manual_common_dir}/docs/images/27_powermisc/image-1.png[role="thumb"]
+
+
+扩展板配合安装{coreboardmcu} MCU的核心板使用时，如要使用CN1+CN2连接变频驱动板，请将开关SW401拨到{coreboardmcu}的位置。
+
+image::{manual_common_dir}/docs/images/27_powermisc/image-2.png[role="thumb"]
+
+请参考link:27_powermisc.{manual_doc_ext}[27. {expboardname}电源和其他设置]获取更详细的信息。
+
+
+上一篇：link:21_overview.{manual_doc_ext}[21. {cpksetname}开发套件简介]                下一篇：link:23_network.{manual_doc_ext}[23. {expboardname}的网络接口]

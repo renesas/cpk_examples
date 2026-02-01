@@ -5,8 +5,8 @@
 :manual_doc_ext: adoc
 //:manual_doc_ext: html
 
-//:cpk_core_name: cpknet-ra8t2
-:cpk_core_name: cpkhmi-ra8p1
+:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
 //:cpk_core_name: cpkcor-ra8p1
 //:cpk_core_name: cpkcor-ra8t2
 
@@ -15,15 +15,15 @@
 //:cpk_set_name: cpkcor_ra8t2_ecsmcb
 //:cpk_set_name: cpkhmi_ra8p1_ekra8x2
 
-:coreboardmcu: RA8P1
-:core_bd_mcu: ra8p1
-:coreboardname: CPKHMI-RA8P1
-:core_bd_name: cpkhmi_ra8p1
+:coreboardmcu: RA8T2
+:core_bd_mcu: ra8t2
+:coreboardname: CPKNET-RA8T2
+:core_bd_name: cpknet_ra8t2
 :core_bd_version: v1.1
 
 // USB defination for manual
 
-:core_bd_usb: USB-2.0高速
+:core_bd_usb: USB-2.0全速
 
 // pdf url on renesas website
 
@@ -57,7 +57,6 @@ v20260130
 * [ ] link:07_usb.{manual_doc_ext}[07. {coreboardname}的{core_bd_usb}接口]
 * [ ] link:08_storage.{manual_doc_ext}[08. {coreboardname}的板载存储器件]
 * [ ] link:09_powerdesign.{manual_doc_ext}[09. {coreboardname}电源设计]
-* [ ] link:0a_mipi.{manual_doc_ext}[10. {coreboardname}的MIPI接口]
 
 
 == {coreboardname} 简介

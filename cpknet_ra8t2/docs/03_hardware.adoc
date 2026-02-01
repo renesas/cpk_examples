@@ -5,8 +5,8 @@
 :manual_doc_ext: adoc
 //:manual_doc_ext: html
 
-//:cpk_core_name: cpknet-ra8t2
-:cpk_core_name: cpkhmi-ra8p1
+:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
 //:cpk_core_name: cpkcor-ra8p1
 //:cpk_core_name: cpkcor-ra8t2
 
@@ -15,15 +15,15 @@
 //:cpk_set_name: cpkcor_ra8t2_ecsmcb
 //:cpk_set_name: cpkhmi_ra8p1_ekra8x2
 
-:coreboardmcu: RA8P1
-:core_bd_mcu: ra8p1
-:coreboardname: CPKHMI-RA8P1
-:core_bd_name: cpkhmi_ra8p1
+:coreboardmcu: RA8T2
+:core_bd_mcu: ra8t2
+:coreboardname: CPKNET-RA8T2
+:core_bd_name: cpknet_ra8t2
 :core_bd_version: v1.1
 
 // USB defination for manual
 
-:core_bd_usb: USB-2.0高速
+:core_bd_usb: USB-2.0全速
 
 // pdf url on renesas website
 
@@ -48,8 +48,8 @@ v20260130
 
 ==== {coreboardname} 上MCU的供电
 
+{coreboardmcu} MCU支持单一3.3V供电，以简化系统设计。{coreboardname}核心板就采用了单电源3.3V设计。
 
-{coreboardmcu} MCU支持单一3.3V供电，以简化系统设计。如果选用了支持MIPI接口的{coreboardmcu} MCU，则还需要添加1.8V的VCC_MIPI电源。{coreboardname}核心板上的{coreboardmcu}支持MIPI接口，采用了3.3V + 1.8V的双电源设计。
 
 
 
@@ -60,14 +60,11 @@ v20260130
 * VCC2：为部分I/O口提供独立的电源，例如Octa-SPI接口，可以通过VCC2使用1.8V电平
 * AVCC0：为模拟电路和模拟I/O口提供电源
 * VCC_USB：全速USB 2.0接口的电源
-* VCC_USBHS和AVCC_USBHS：高速USB 2.0接口的电源
 * VCL：MCU核心供电，不影响I/O电平
   ** {coreboardmcu} MCU片内自带DC-DC电路，可以使用片内DC-DC为VCL供电
   ** 也可以使用外部DC-DC芯片为VCL供电，电压为0.87V~0.99V
 * VBATT：电池供电引脚，为片内可在低功耗模式下运行的外设供电，例如RTC
   ** 副时钟引脚在VBATT电源域，使用副时钟时需要确认电源电压是否可用
-* VCC_MIPI：MIPI电路的电源 （仅限支持MIPI接口的型号）
-* AVCC_MPIP：MIPI电路的模拟电源（仅限支持MIPI接口的型号）
 ====
 
 {coreboardmcu}的供电电压需求和芯片的运行模式有很多互相影响的地方，在后续的link:09_powerdesign.{manual_doc_ext}[{coreboardmcu}电源设计]章节中有详细的解释。
@@ -147,11 +144,13 @@ MD/P201在MCU正常运行时可以使用P201的功能（GPIO/IRQ4），MD功能�
 
 //针对不同MCU的CPK核心板设计，单独描述MD管脚功能和Boot模式
 
+
 核心板上使用按键SW202控制MD管脚。
-一直按住SW202（SW202）的同时，按下并释放RESET（SW201），MCU即可进入SCI Boot模式。
+一直按住MD（SW202）的同时，按下并释放RESET（SW201），MCU即可进入SCI Boot模式。
+
+{coreboardname}也支持USB Boot，将JUSB口连接到上位机后，一直按住MD的同时，按下并释放RESET，即可进入USB Boot模式。
 
 image::{core_bd_name}/docs/images/03_hardware/boot_key.png[role="thumb",width=480]
-
 
 
 
@@ -160,7 +159,6 @@ image::{core_bd_name}/docs/images/03_hardware/boot_key.png[role="thumb",width=48
 === {coreboardname}的存储扩展
 
 //针对不同MCU的CPK核心板设计，单独描述存储扩展
-
 
 
 核心板上扩展了3个存储器
@@ -177,6 +175,7 @@ image::{core_bd_name}/docs/images/03_hardware/boot_key.png[role="thumb",width=48
     ** 支持TF卡插入检测功能
 
 image::{manual_common_dir}/docs/images/08_storage_cpknet/image-5.png[]
+
 
 
 
@@ -203,15 +202,12 @@ link:06_debug.{manual_doc_ext}[{coreboardname}的调试和烧录功能]章节中
 
 Type-C 接口的方向判断和供电能力解析由FUSB303B芯片提供支持，FUSB303B通过I2C接口和{coreboardmcu}进行通信，支持Dead-Battery模式（Sink）。
 
-{coreboardmcu} 的USB-FS接口的信号连接到了J1，可以在扩展板上实现USB-FS功能。
-注意如果要同时实现USB HS DFP（核心板）和USB FS DFP（扩展板），则需要修改核心板上的跳接电阻。
 
 更多USB接口相关的内容会在后续的link:07_usb.{manual_doc_ext}[{coreboardname}的{core_bd_usb}接口]章节中有详细的解释。
 
 === 通孔扩展接口
 
 image::{core_bd_name}/docs/images/03_hardware/th_exp.png[role="thumb",width=720]
-
 
 
 核心板上的J201为2.54mm间距的通孔设计，方便用户使用单排针和杜邦线进行扩展，当然也可以使用排针进行板级扩展。
@@ -246,6 +242,7 @@ J202可以同时满足部分PMOD Type 3 （UART）接口定义。
 
 
 
+
 通孔扩展接口的详细使用介绍，请查看后续的link:04_th_expansion.{manual_doc_ext}[{coreboardname}的通孔扩展]章节。
 
 
@@ -259,28 +256,14 @@ J202可以同时满足部分PMOD Type 3 （UART）接口定义。
 
 扩展接口的每个管脚的载流能力为300mA，除了传输MCU的信号外，还提供了足够的电源供电能力和丰富的电源类型。
 
-
 * 5V电源，1.8A，可双向供电
 * 3.3V电源，2.7A，包括VSYS-3.3V，VCC，VCC2引脚
-* 1.8V LDO电源输出，0.3A
 * AVCC0/AVSS0模拟电源，AVREFH0/L0模拟参考电压，VBATT备份电池供电
 
 
 
+
 在后续的link:05_btb_expansion.{manual_doc_ext}[{coreboardname}的板级扩展]章节中，会详细介绍接口的扩展能力和设计思路。
-
-=== MIPI接口
-
-核心板上使用的{coreboardmcu} 支持MIPI-DSI或MIPI-CSI（{coreboardmcu}也提供不支持MIPI接口的产品）。
-核心板上已经实装了一个18脚的FPC接口。
-作为显示输出时，支持触摸屏和背光控制。
-作为摄像头输入时，支持I2C设置和RESET/PWDN控制。
-
-image::{core_bd_name}/docs/images/03_hardware/mipi.png[role="thumb",width=240]
-
-MIPI接口上只提供了5V电源，这也是考虑到外接设备的多样性，无法同时满足所有屏幕的需求。5V输出可以满足大部分LCD模组背光的要求，且所需电流较小。
-
-有关MIPI接口的详细信息，在后续link:0a_mipi.{manual_doc_ext}[{coreboardname}的MIPI扩展]章节中会有详细介绍。
 
 
 上一篇：link:02_unbox.{manual_doc_ext}[02. {coreboardname}开箱]               下一篇：link:04_th_expansion.{manual_doc_ext}[04. {coreboardname}的通孔扩展接口]
