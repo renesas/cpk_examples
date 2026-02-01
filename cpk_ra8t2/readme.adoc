@@ -16,10 +16,10 @@ image::cpk_ra8t2.png[]
 
 各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
-. link:../cpk_r8t2/ecat_402_cpk_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的CiA402应用]
-. link:../cpk_r8t2/ecat_io_cpk_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的I/O应用]
-. link:../cpk_r8t2/motor_encoder_cpk_ra8t2_ep/[RA8T2 增量型编码器电机控制样例]
-. link:../cpk_r8t2/motor_sensorless_cpk_ra8t2_ep/[RA8T2 无位置传感器电机控制样例]
+. link:../cpk_ra8t2/ecat_402_cpk_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的CiA402应用]
+. link:../cpk_ra8t2/ecat_io_cpk_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的I/O应用]
+. link:../cpk_ra8t2/motor_encoder_cpk_ra8t2_ep/[RA8T2 增量型编码器电机控制样例]
+. link:../cpk_ra8t2/motor_sensorless_cpk_ra8t2_ep/[RA8T2 无位置传感器电机控制样例]
 . link:../cpk_ra8t2/rpmsg_lite_rtos_cpk_ra8t2_ep/[RA8T2 通过核间通信中间组件RPMsg-lite实现了双核通信]
 
 Ver. 20260130
