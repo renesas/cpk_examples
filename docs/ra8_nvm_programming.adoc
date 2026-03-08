@@ -76,7 +76,7 @@ image::image-1.png[取消勾选OTP, role="thumb"]
 
 image::image-2.png[基本烧录功能选择, role="thumb"]
 
-添加烧录镜像文件
+添加烧录镜像文件，如hex文件或srec文件
 
 image::image-3.png[镜像文件选择, role="thumb"]
 

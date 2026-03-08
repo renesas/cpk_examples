@@ -1,0 +1,11 @@
+:imagesdir: images
+
+上电后，屏幕会先显示四个色块
+
+image::IMG_20260205_162859.jpg[role="thumb"]
+
+随后会以约 5 秒的间隔切换显示以下两张图片
+
+image::IMG_20260205_162923.jpg[role="thumb"]
+
+image::IMG_20260205_162906.jpg[role="thumb"]

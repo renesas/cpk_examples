@@ -23,7 +23,7 @@ CPK-RA8T2
 # 软件开发环境
 
 - FSP 版本：FSP 6.2.0
-- 集成开发环境和编译器：e2studio v2025-07 + LLVM Embedded Toolchain for Arm 18.1.3
+- 集成开发环境和编译器：e2studio v2025-10 + LLVM Embedded Toolchain for Arm 18.1.3
 
 # 第三方软件
 无

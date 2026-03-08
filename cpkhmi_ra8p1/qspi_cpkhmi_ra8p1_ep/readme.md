@@ -2,7 +2,7 @@
 
 ### 工程概述
 
-- 该示例工程演示了基于瑞萨 FSP 的瑞萨 RA MCU 上 OSPI_B 驱动程序的基本功能。
+- 基于FSP驱动程序，该示例工程演示了RA MCU通过OSPI（OSPI_B）接口连接QSPI NOR Flash。
 
 ### 支持的开发板 / 演示板：
 
