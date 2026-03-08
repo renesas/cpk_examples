@@ -21,5 +21,9 @@ image::cpk_ra8t2.png[]
 . link:../cpk_ra8t2/motor_encoder_cpk_ra8t2_ep/[RA8T2 增量型编码器电机控制样例]
 . link:../cpk_ra8t2/motor_sensorless_cpk_ra8t2_ep/[RA8T2 无位置传感器电机控制样例]
 . link:../cpk_ra8t2/rpmsg_lite_rtos_cpk_ra8t2_ep/[RA8T2 通过核间通信中间组件RPMsg-lite实现了双核通信]
+. link:../cpk_ra8t2/spi_screen_cpk_ra8t2_ep/[RA8T2 MCU 使用SPI接口的TFT彩屏（CPU0 CM85）]
+. link:../cpk_ra8t2/spi_screen_console_cpk_ra8t2_ep/[RA8T2使用ARM-2D将标准输出流重定向到SPI TFT LCD]
 
-Ver. 20260130
+Ver. 20260306
+
+
