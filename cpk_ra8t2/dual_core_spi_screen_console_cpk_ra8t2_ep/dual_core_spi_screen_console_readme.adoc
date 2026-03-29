@@ -1,0 +1,379 @@
+:imagesdir: images
+
+= RA8T2利用双核重定向输出到CPU1的LCD Console
+
+RA8T2 包含两个 CPU 核心：CPU0(Cortex-M85 1GHz) 和 CPU1(Cortex-M33 250MHz)。在应用中可以将部分代码交由 CPU1 运行以让 CPU0 专注于关键计算任务。本示例在 spi_screen_console_cpknet_ra8t2_ep 的基础上进行修改，将屏幕控制和 C 标准输入输出重定向的任务由 CPU1 执行。
+
+NOTE: 为不影响已有示例工程，本示例复制了一份 spi_screen_console_cpknet_ra8t2_ep 至 e2studio_llvm/cm85 下，并将工程重命名为 spi_screen_console_cm85
+
+== 新建 CPU1 工程
+
+按正常建立单核工程的步骤进行，本示例将 CPU1 工程名命名为 spi_screen_console_cm33。建立工程时注意以下几个选项
+
+* Core 选择 CPU1
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_11-35-43.png[role="thumb"]
+--
+
+* 当 Core 选择为 CPU1 后，后续步骤会要求选择 Preceding Project 以确定同哪个 CPU0 工程绑定，在本示例中，选择 spi_screen_console_cm85
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_11-41-42.png[role="thumb"]
+--
+
+随后在 FSP Configuration 中点击 Generate Project Content 并构建工程
+
+== 新建 Solution
+
+在 e^2^ studio 菜单栏选择 `文件` -> `新建` -> `C/C++ Project`
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_11-38-00.png[role="thumb"]
+--
+
+在弹出的窗口中下滑，选择 Renesas FSP Solution Project (Advanced)
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_14-53-49.png[role="thumb"]
+--
+
+项目名写 spi_screen_console_solution
+
+[.text-center]
+--
+image::Snipaste_2026-03-20_14-27-03.png[role="thumb"]
+--
+
+下一个对话框要求选择一个工程来组建 Solution，这里要选择 CPU1 工程
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_11-44-30.png[role="thumb"]
+--
+
+建立完成后左侧项目资源管理器可以看到三个工程
+
+[.text-center]
+--
+image::Snipaste_2026-03-20_14-28-19.png[role="thumb"]
+--
+
+打开 solution.xml，修改 CPU1 的 RAM、FLASH、CTCM、STCM 大小。CPU1 工程目前没有添加任何代码，solution.xml 默认分配的空间太小，无法容纳后续添加的代码。将以下红框内的项改为图片上的值
+
+[.text-center]
+--
+image::Snipaste_2026-03-23_13-34-45.png[role="thumb"]
+image::Snipaste_2026-03-23_13-32-02.png[role="thumb"]
+--
+
+== CPU0 工程修改
+
+此时，双核工程已经建立好，之后就根据需要把在 CPU1 上运行的代码源文件从 CPU0 工程移动并修改配置。
+
+=== 移动文件
+
+下图显示 CPU0 工程的目录结构
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_16-36-45.png[role="thumb"]
+--
+
+需要移动的目录和文件如下
+
+* arm2d_cfg: 针对 arm2d 的各种配置和接口文件，整体移到 CPU1 工程下
+* source: 复制一份到 CPU1 工程下，然后在 CPU0 工程中删除 lcd 文件夹
+* third: 使用到的第三方库，将其中的 arm2d 和 SEGGER_RTT 移动到 CPU1 工程下
+
+=== 修改包含路径和宏定义
+
+在 CPU0 工程中删除不必要的 Include 路径和宏定义。下图中框起来的部分，Include file directories 部分和 Include files 部分删除，Macro Defines 部分中 `__ST7796U_INTERFACE=ST7796U_INTERFACE_4SPI` 和 `ARM_SECTION(x)=` 删除，`CONSOLE_CFG_USE_LCD=1` 改为 `CONSOLE_CFG_USE_RPMSG=1`
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_17-17-53.png[role="thumb"]
+--
+
+=== 调整 Stacks
+
+打开 CPU0 工程的 configuration.xml，选择 Stacks 选项卡，可以看到有以下 Stacks
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_17-23-58.png[role="thumb"]
+--
+
+将其中的 `g_uart9 UART`、`g_sci_spi8 SPI` 两个 Stack 导出后删除，将 `Arm CMSIS DSP Library Source` 直接删除。导出方法为对 Stack 右键，然后选择 Export，如下图
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_17-26-51.png[role="thumb"]
+--
+
+添加 `g_ipc0 IPC` Stack，其属性配置如下
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_17-31-29.png[role="thumb"]
+--
+
+添加 `g_ipc1 IPC` Stack，其属性配置如下
+
+[.text-center]
+--
+image::Snipaste_2026-03-19_17-38-07.png[role="thumb"]
+--
+
+== CPU1 工程修改
+
+=== 修改语言标准
+
+arm2d 使用 GNU C11 标准
+
+[.text-center]
+--
+image::Snipaste_2026-03-20_09-52-33.png[role="thumb"]
+--
+
+=== 修改包含路径和宏定义
+
+在 CPU1 工程的 C/C++ 设置中添加如下 Include file directories、Macro Defines、Include files
+
+[.text-center]
+--
+image::Snipaste_2026-03-23_11-45-57.png[role="thumb"]
+--
+
+=== 修改栈大小
+
+默认的栈较小，不足以运行 arm2d，在 configuration.xml 界面的 BSP 属性界面将 Main stack size 的大小改为 0x2000
+
+--
+image::Snipaste_2026-03-24_12-02-01.png[role="thumb"]
+--
+
+=== 添加 Stacks
+
+打开 configuration.xml，导入从 CPU0 工程导出的 `g_uart9 UART`、`g_sci_spi8 SPI` 两个 Stack。再添加两个新 Stack `Arm CMSIS DSP Library Source` 和 `g_timer1 Timer`。在原 CPU0 工程中，arm2d 使用 perf_counter 来计时，这里把 perf_counter 保留给 CPU0，用定时器给 arm2d 提供计时。Timer 的属性配置如下
+
+[.text-center]
+--
+image::Snipaste_2026-03-20_10-27-04.png[role="thumb"]
+--
+
+添加 `g_ipc0 IPC` Stack，其属性配置如下
+
+[.text-center]
+--
+image::Snipaste_2026-03-20_10-42-09.png[role="thumb"]
+--
+
+添加 `g_ipc1 IPC` Stack，其属性配置如下
+
+[.text-center]
+--
+image::Snipaste_2026-03-20_10-42-23.png[role="thumb"]
+--
+
+=== 修改 Linker Sections
+
+CPU1 同样具有 TCM，可以把代码和变量放到 TCM 中。打开 CPU1 工程的 configuration.xml，切换到 Linker Sections 选项卡，在 Input Section 输入红框中的内容，在 Defult Mappings 中取消勾选 `*(.bss.g_main_stack)`。这些选项把 arm2d 的大多数函数和变量放进了 TCM 中。
+
+--
+image::Snipaste_2026-03-23_15-54-28.png[role="thumb"]
+--
+
+打开 CPU1 工程的 C/C++ 配置，在 `Compiler` -> `Source` -> `User defined compiler options` 中添加图片红框中的选项
+
+[.text-center]
+--
+image::Snipaste_2026-03-23_16-32-27.png[role="thumb"]
+--
+
+=== 添加代码
+
+在 CPU1 工程的 hal_entry.c 中加入代码，初始化屏幕等外设。包含的头文件
+
+[source,c,subs="verbatim,attributes"]
+----
+#include "arm_2d.h"
+#include "arm_2d_disp_adapter_0.h"
+#include "console.h"
+#include "hal_data.h"
+
+#include "lcd/lcd.h"
+#include "utils/log.h"
+----
+
+全局变量，定义屏幕实例，时间计数变量
+
+[source,c,subs="verbatim,attributes"]
+----
+static LCD_Device s_lcd;
+static volatile uint32_t s_tick_ms;
+----
+
+hal_entry() 函数内容
+
+[source,c,subs="verbatim,attributes"]
+----
+void hal_entry(void)
+{
+	/* TODO: add your own code here */
+#if CONSOLE_CFG_USE_UART == 0
+	R_SCI_B_UART_Open(g_uart9.p_ctrl, g_uart9.p_cfg);
+#endif
+
+#if CONSOLE_CFG_USE_RTT
+	CONSOLE_Init();
+#endif
+	LOG_Reset();
+
+	s_lcd.orientation = SCREEN_ORIENTATION_VERTICAL;
+	LCD_Init(&s_lcd);
+
+	arm_2d_init();
+	disp_adapter0_init();
+#if CONSOLE_CFG_USE_LCD
+	CONSOLE_Init();
+	arm_2d_scene_player_set_switching_mode(&DISP0_ADAPTER, ARM_2D_SCENE_SWITCH_MODE_FADE_WHITE);
+	arm_2d_scene_player_switch_to_next_scene(&DISP0_ADAPTER);
+#endif
+
+	R_GPT_Open(g_timer1.p_ctrl, g_timer1.p_cfg);
+	R_GPT_Start(g_timer1.p_ctrl);
+
+	R_IPC_Open(g_ipc0.p_ctrl, g_ipc0.p_cfg);
+	R_IPC_Open(g_ipc1.p_ctrl, g_ipc1.p_cfg);
+    /* 通知 CPU0，CPU1 就绪 */
+	R_IPC_EventGenerate(g_ipc0.p_ctrl, IPC_GENERATE_EVENT_IRQ1);
+
+	/* Wake up 2nd core if this is first core and we are inside a multicore project. */
+#if (0 == _RA_CORE) && (1 == BSP_MULTICORE_PROJECT) && !BSP_TZ_NONSECURE_BUILD
+
+#if BSP_TZ_SECURE_BUILD
+    /* Take semaphore so 2nd core can clear it */
+    R_BSP_IpcSemaphoreTake(&g_core_start_semaphore);
+#endif
+
+    R_BSP_SecondaryCoreStart();
+
+#if BSP_TZ_SECURE_BUILD
+    /* Wait for 2nd core to start and clear semaphore */
+    while(FSP_ERR_IN_USE == R_BSP_IpcSemaphoreTake(&g_core_start_semaphore))
+    {
+        ;
+    }
+#endif
+#endif
+
+#if (1 == _RA_CORE) && (1 == BSP_MULTICORE_PROJECT) && BSP_TZ_SECURE_BUILD
+    /* Signal to 1st core that 2nd core has started */
+    R_BSP_IpcSemaphoreGive(&g_core_start_semaphore);
+#endif
+
+    while (1) {
+    	CONSOLE_Task();
+    	disp_adapter0_task();
+    }
+
+#if BSP_TZ_SECURE_BUILD
+    /* Enter non-secure code */
+    R_BSP_NonSecureEnter();
+#endif
+}
+----
+
+增加 arm2d 所需的函数
+
+[source,c,subs="verbatim,attributes"]
+----
+int32_t Disp0_DrawBitmap(int16_t x, int16_t y, int16_t width, int16_t height, const uint8_t *bitmap)
+{
+	LCD_PortDrawBitmap(&s_lcd, (uint16_t)x, (uint16_t)y, (uint16_t)width, (uint16_t)height, bitmap);
+
+	return 0;
+}
+
+int64_t arm_2d_helper_get_system_timestamp(void)
+{
+	return (int64_t) s_tick_ms;
+}
+
+uint32_t arm_2d_helper_get_reference_clock_frequency(void)
+{
+	return 1000u;
+}
+----
+
+IPC1 和定时器的中断回调
+
+[source,c,subs="verbatim,attributes"]
+----
+void IPC1_Callback(ipc_callback_args_t *p_args)
+{
+	switch (p_args->event) {
+	case IPC_EVENT_IRQ0:
+		CONSOLE_IPCIrqHandle();
+		break;
+	case IPC_EVENT_IRQ1:
+		break;
+	case IPC_EVENT_IRQ2:
+		break;
+	case IPC_EVENT_IRQ3:
+		break;
+	case IPC_EVENT_IRQ4:
+		break;
+	case IPC_EVENT_IRQ5:
+		break;
+	case IPC_EVENT_IRQ6:
+		break;
+	case IPC_EVENT_IRQ7:
+		break;
+	case IPC_EVENT_MESSAGE_RECEIVED:
+		CONSOLE_IPCMsgHandle(p_args->message);
+		break;
+	case IPC_EVENT_FIFO_ERROR_EMPTY:
+		LOG_W(__FUNCTION__, "IPC FIFO Empty");
+		break;
+	case IPC_EVENT_FIFO_ERROR_FULL:
+		LOG_W(__FUNCTION__, "IPC FIFO Full");
+		break;
+	default:
+		break;
+	}
+}
+
+void TIMER1_Callback(timer_callback_args_t *p_args)
+{
+	if (p_args->event == TIMER_EVENT_CYCLE_END) {
+		s_tick_ms++;
+	}
+}
+----
+
+在 arm2d_cfg/arm_2d_disp_adapter_0.h 中修改，将 `+__DISP0_CFG_PFB_BLOCK_HEIGHT__+` 从原来的 120 改为 30，降低 arm2d 的 PFB 大小，这样可以把 PFB 放进 TCM
+
+[source,c,subs="verbatim,attributes"]
+----
+// <o>Height of the PFB block
+// <i> The height of your PFB block size used in disp0
+#ifndef __DISP0_CFG_PFB_BLOCK_HEIGHT__
+#   define __DISP0_CFG_PFB_BLOCK_HEIGHT__                          30
+#endif
+----
+
+在 arm2d_cfg/RTE_Components.h 中修改，注释 `+#define __PERF_COUNTER__ 1+` 和 `+#define __RTE_PERFC_PORTING_PMU__ 1+`
+
+[source,c,subs="verbatim,attributes"]
+----
+/* GorgonMeducer::Utilities:perf_counter:Core&Source@2.5.2 */
+// #define __PERF_COUNTER__ 1
+/* GorgonMeducer::Utilities:perf_counter:Porting&PMU@1.2.1 */
+// #define __RTE_PERFC_PORTING_PMU__ 1
+----
