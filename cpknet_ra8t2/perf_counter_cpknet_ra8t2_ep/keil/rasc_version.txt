@@ -1,3 +1,0 @@
-# RASC version and installation file
-6.3.0
-D:\Program\Dev\rasc_630\eclipse\rasc.exe
