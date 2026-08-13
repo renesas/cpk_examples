@@ -6,11 +6,9 @@
 
 image::cpkhmi_ra8p1.png[width=480]
 
-如果您需要查看RA8P1 MCU在缺省扩展板上运行的样例代码及文档，请参考 link:../cpk_ra8p1/[CPK-RA8P1]。
+如果您需要查看本核心板搭配缺省扩展板的样例代码及文档，请参考 link:../cpkmini_ra8p1/[CPKMINI-RA8P1]。
 
-如果您需要使用本核心板配合其他扩展板，请参考本代码仓库下对应的目录（cpkhmi_ra8p1_扩展板名称）。
-
-每个样例程序目录下都准备了对应压缩包供下载，如果您没有同步代码库的需求，可以直接下载ZIP包使用。
+如果您需要使用本核心板配合其他扩展板，请参考本代码仓库下对应的目录（cpkhmi_ra8p1_扩展板名称）。本核心板的部分样例代码可以在修改后用于其他开发板，详见样例程序的Readme文件。
 
 各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
@@ -19,4 +17,13 @@ image::cpkhmi_ra8p1.png[width=480]
 . link:../cpkhmi_ra8p1/blinky_benchmark_tutorial_cpkhmi_ra8p1_ep/[RA8P1 如何在用户工程中添加性能评估测试代码]
 . link:../cpkhmi_ra8p1/qspi_cpkhmi_ra8p1_ep/[RA8P1 QSPI NOR-Flash 样例程序]
 
-Ver. 20260131
+
+以下样例程序只与MCU本身相关，修改设置后即可在此开核心板上运行：
+
+* 暂无
+
+以下例程使用的硬件配置和系统设置与本核心板类似，可将将这些例程移植到本核心板上运行：
+
+* 暂无
+
+Ver. 202608xx

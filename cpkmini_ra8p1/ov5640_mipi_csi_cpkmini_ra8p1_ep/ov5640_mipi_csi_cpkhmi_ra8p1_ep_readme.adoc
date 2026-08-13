@@ -1,0 +1,87 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译。进入调试模式，同时打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。让程序自由运行，在几秒后程序会停在 `src/hal_entry.c` 中的如下图所示位置
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_16-10-10.png[role="thumb"]
+--
+
+在串口终端中，会显示如下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_16-08-22.png[role="thumb"]
+--
+
+重点关注最后一条消息 `Check vin_image_buffer_3`，这指示最后一次捕获到的图像存放在 VIN 外设的第 3 个缓冲区中，缓冲区变量名字是 `vin_image_buffer_3`。在内存窗口中添加这个变量，然后选择新建呈示
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_16-18-50.png[role="thumb"]
+--
+
+选择 Raw Image
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_16-20-10.png[role="thumb"]
+--
+
+选择图像格式
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_15-59-03.png[role="thumb"]
+--
+
+然后可看见摄像头捕获到的图像
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_15-59-30.png[role="thumb"]
+--
+
+== FSP Stacks
+
+要驱动 OV5640 摄像头，需要 IIC 接口以及 MIPI CSI 接口，其中 MIPI CSI 在 FSP 中由 VIN 外设管理。configuration.xml 中添加的相关 stack 如下：
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_16-24-42.png[role="thumb"]
+--
+
+== 驱动文件
+
+OV5640 相关的驱动文件为 `src/ov5640.c` 和 `src/ov5640.h`，除此之外，还依赖 `src/iic.c` 和 `src/iic.h` 中提供的 IIC 读写函数。OV5640 提供两种接口，CSI 和 DVP，在 FSP 中分别对应 VIN 和 CEU 两种外设，此工程已设置好 OV5640 使用的接口
+
+* 在 `src/ov5640.h` 中指定接口
+
+[source,c,subs="verbatim,attributes"]
+----
+#define OV5640_INTERFACE_CSI	1
+#define OV5640_INTERFACE_DVP	2
+
+#ifndef OV5640_USING_INTERFACE
+#define OV5640_USING_INTERFACE	OV5640_INTERFACE_CSI
+#endif
+----
+
+* 随后，调用 OV5640 的初始化并指定输出分辨率，然后启动捕获。注意：设置的分辨率应与 VIN 中的设置一致
+
+[source,c,subs="verbatim,attributes"]
+----
+OV5640_Init(1024, 600);
+OV5640_StartCapture(NULL);
+----
+
+* 之后，可以使用 `OV5640_IsImageReady(uint8_t **p_image)` 检查是否获取到了完整的一帧图像。如果已有一帧完整的图像，形参会返回图像数据的地址
+
+[source,c,subs="verbatim,attributes"]
+----
+while (OV5640_IsImageReady(&image) == 0) {
+    R_BSP_SoftwareDelay(10, BSP_DELAY_UNITS_MILLISECONDS);
+}
+----

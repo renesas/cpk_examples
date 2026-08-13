@@ -1,0 +1,109 @@
+:scripts: cjk
+
+:imagesdir: ./images/rl78g15_firmware_programming
+
+:sectnums:
+:sectnumlevels: 2
+
+= CPKCOR-RA8P1/T2 核心板上RL78/G15管理MCU的固件烧录
+:toc:
+:toc-title: 目录
+
+== 简介
+
+CPKCOR-RA8P1/T2核心板使用DA9279 PMIC作为系统供电，DA9279已内置电压和启动/断电时序配置（固件号046），可以支持CPKCOR-RA8P1/T2的正常运行。
+为了可以灵活控制开发板的电源，核心板上使用了RL78/G15 MCU通过I2C和GPIO来控制DA9279，并可通过RL78的GPIO来实现RA8P1/T2的SCI/USB Boot模式控制。
+
+RL78/G15的控制程序暂不公开发布，如有需要，请联系瑞萨的技术支持窗口。
+
+瑞萨提供一个基本的RL78/G15固件，直接烧录后即可实现以下功能。
+
+* 系统上电
+* 使RA8P1/T2 MCU 进入SCI/USB Boot模式
+
+link:./rl78g15_firmware_image_20260417.mot[点此下载RL78/G15固件镜像文件]
+
+== 硬件准备
+
+* 一个CPKCOR-RA8P1/T2 核心板，核心板背面有6个烧录RL78/G15 MCU用的触点
+** PCB版本为1R0或更高版本
+** PCB日期为20260613或更新的日期
+
+image::cpkcor_ra8x2_pcbdate.jpg[role="thumb", width=360] 
+
+* 一个USB转UART模块，支持DTR输出，支持5V
+** 本教程使用的是搭载CH343芯片的USB转UART模块
+** 仅支持3.3V输出的模块理论上也能运行，需要自行测试（RL78/G15支持2.4V~5.5V烧录）
+** 一个单排，6pin，1.25mm间距的烧录用弹簧针
+
+连接样例如下图，上位机的UART（DTR作为RESET信号）连接到核心板的烧录接口，并为RL78/G15供电。
+
+image::cpkcor_ra8x2_6pin_defination.jpg[role="thumb", width=600] 
+  
+=== CPKCOR-RA8P1/T2 核心板配置确认
+
+RL78/G15本身支持UART调试烧录和单线（TOOL0）调试烧录，单线模式需要配合瑞萨的开发工具（EZ-Cube3/E2-Lite）使用。
+
+CPKCOR-RA8P1/T2核心板上，RL78/G15仅可使用UART进行调试和烧录。RL78/G15的TOOL_RXD管脚通过2.2K电阻连接到TOOL0，详见原理图。
+
+
+供电注意事项：
+
+RA8P1/T2的功耗较高，DA9279的输出能力也能达到15W以上（USB-C 在没有PD协议芯片的情况下可以提供最大5V/3A），使用USB转串口模块时，请注意电源供应情况。
+
+一般USB-C口的模块，输出5V的情况下，会直连USB电源，可以为RL78/G15（以及核心板整板）可靠供电，所以建议使用USB-C口的USB转UART模块。
+
+如果模块的供电能力有限，建议通过核心板的USB-C口提供整板供电，USB转UART模块仅提供信号（不连接RL78 VCC电源脚）。
+
+== 软件烧录流程
+
+使用瑞萨的RFP软件，新建一个RL78/G15工程
+
+image::image.jpg[新建RFP工程, role="thumb"] 
+
+在Connection Setting页面，选择串口（样例为CH343），并且在Reset Setting下面，选择复位信号（一般缺省即可，DTR作为RESET）
+
+image::image-1.jpg[选择连接方式, role="thumb"] 
+
+确认运行选项，Flash Block设置，Unique Code设置页面内容，均为缺省设置
+
+image::image-2.jpg[role="thumb"] 
+
+image::image-3.jpg[role="thumb"] 
+
+image::image-4.jpg[role="thumb"] 
+
+选择镜像文件，并点击“Start”进行烧录
+
+image::image-5.jpg[role="thumb"] 
+
+烧录完成后，显示绿色OK，Log窗口显示烧录成功
+
+image::image-6.jpg[role="thumb"] 
+
+=== 基础功能确认
+
+烧录成功后，拿开弹簧针，使用核心板的USB-C进行供电，核心板开始运行。目前的固件支持以下两种功能：
+
+* 直接运行：仅插入USB-C电源，白色Power LED长亮，PMIC开始为系统供电（可通过电压表确定供电状态）
+
+image::image-10.jpg[role="thumb", width=480] 
+
+* 进入Boot模式：按住左下角POWER按键不放，插入USB-C电源
+** POWER LED开始快闪，此时不要松开POWER按键
+** 约2秒钟后，POWER LED转为常亮，此时可以松开POWER按键
+** POWER LED显示一长三短（摩斯码 B）
+*** RA8P1/T2的MD（P201）为低电平（由RL78/G15的I/O口控制）
+*** PMIC开始为系统供电
+*** RA8P1/T2进入SCI/USB Boot模式
+
+=== 验证Boot模式
+
+上位机通过USB连接CPKCOR-RA8P1/RA8T2的JDBG接口，板载的J-Link自带一个虚拟串口，可以通过这个虚拟串口，连接上位机的RFP软件进行SCI Boot通信。
+
+CPKCOR-RA8T2核心板上的JUSB是USB-FS接口，可以直接使用JUSB接口连接上位机。RA8T2进入USB-Boot模式后，会在上位机系统内找到一个虚拟串口 RA USB Boot(CDC)，RFP可以使用这个虚拟串口连接到RA8T2 MCU的Boot模式。
+** 注意CPKCOR-RA8P1核心板上的JUSB是接的USB-HS，不支持USB Boot。只能使用SCI Boot。
+
+RL78/G15使RA8P1/T2 MCU进入Boot模式后，会通过GPIO将RA8P1/T2 MCU的P201/MD管脚一直保持在低电平。RFP连接过程中，某些步骤需要RESET RA8P1/T2 MCU时，只需要按一下核心板上的RESET按键，RESET完成后RA8P1/T2还是会保持在Boot模式。
+
+如果RA8P1/T2 MCU 需要退出Boot模式，则需要对核心板重新上电。

@@ -1,0 +1,87 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，注意将扩展板上的拨码开关打到 **SPI LCD** 侧。烧录后可看到如下结果
+
+[.text-center]
+--
+image::IMG_20260616_143145.jpg[role="thumb"]
+--
+
+== FSP Stacks
+
+屏幕的 SPI 接口对应于 RA8P1 的 SCI4 Simple SPI。因此在 Stacks 选项卡中，选择添加 r_sci_b_spi stack，其属性配置如下图：
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_14-55-14.png[role="thumb"]
+--
+
+== 驱动文件
+
+相关驱动在 `src/lcd` 文件夹中，除此之外还有两张图片资源用于测试。
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_15-02-15.png[role="thumb"]
+--
+
+在该文件夹中，除了 ST7796U 外，还有其它屏幕 IC 的驱动，它们适用于其它底板和屏幕模块。当前工程连接的是 ST7796U，因此需要对驱动型号和接口进行指定，在当前工程中，都已指定好。可以在以下位置查看：
+
+* 在 `src/lcd/lcd.h` 中指定驱动芯片
+
+[source,c,subs="verbatim,attributes"]
+----
+#define LCD_DRIVER_UNSELECT		0
+#define LCD_DRIVER_EK79001D		1
+#define LCD_DRIVER_ILI9881C		2
+#define LCD_DRIVER_ST7796U		3
+#define LCD_DRIVER_TFP410		4
+
+#ifndef LCD_DIRVER
+#define LCD_DIRVER				LCD_DRIVER_ST7796U
+#endif
+----
+
+* 在 `src/lcd/lcd_st7796u.c` 中指定 ST7796U 的接口
+
+[source,c,subs="verbatim,attributes"]
+----
+#define ST7796U_INTERFACE_8080_18BIT        0x00
+#define ST7796U_INTERFACE_8080_09BIT        0x01
+#define ST7796U_INTERFACE_8080_16BIT        0x02
+#define ST7796U_INTERFACE_8080_08BIT        0x03
+#define ST7796U_INTERFACE_3SPI              0x05
+#define ST7796U_INTERFACE_MIPI              0x06
+#define ST7796U_INTERFACE_4SPI              0x07
+#define ST7796U_INTERFACE_RGB               0x10
+
+#ifndef __ST7796U_INTERFACE
+#define __ST7796U_INTERFACE     ST7796U_INTERFACE_4SPI
+#endif
+----
+
+== 初始化屏幕和简单测试
+
+* 声明一个 `LCD_Device` 设备
+
+[source,c,subs="verbatim,attributes"]
+----
+static LCD_Device s_lcd;
+----
+
+* 设置方向，然后初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+s_lcd.orientation = SCREEN_ORIENTATION_VERTICAL;
+LCD_PortInit(&s_lcd);
+----
+
+在 `src/test` 文件夹中有对屏幕的简单测试，用于测试屏幕本身及相关 API 是否正常，该工程在初始化屏幕后，随即进行了测试，以显示彩条
+
+[source,c,subs="verbatim,attributes"]
+----
+TestLCD(&s_lcd);
+----
