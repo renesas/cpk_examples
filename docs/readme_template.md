@@ -34,7 +34,7 @@
 - 1块 Renesas RA8P1 开发板：CPKCOR-RA8P1
 - 1块 Renesas RA8P1 开发板：CPKHMI-RA8P1
 - 1块 Renesas RA8T2 开发板：CPKCOR-RA8T2 
-- 1根 USB Type A->Type C 或 Type-C->Type C 线 （支持Type-C 2.0即可）
+- 1根 USB Type A->Type C 或 Type-C->Type C 线 （支持 Type-C 2.0 即可）
 
 ### 硬件连接：
 
