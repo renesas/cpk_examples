@@ -1,0 +1,1625 @@
+diff -u Src/cia402appl.c Src_patch/cia402appl.c
+--- Src/cia402appl.c	2026-08-07 15:34:08 +0800
++++ Src_patch/cia402appl.c	2026-08-07 14:52:02 +0800
+@@ -61,7 +61,9 @@
+ #include "cia402appl.h"
+ #undef _CiA402_
+ 
+-
++#include "hal_data.h"
++#include "samplecia402.h"
++#include "sampleios.h"
+ /*--------------------------------------------------------------------------------------
+ ------
+ ------    local types and defines
+@@ -106,7 +108,7 @@
+         LocalAxes[AxisCnt].bHighLevelPowerApplied = FALSE;
+         LocalAxes[AxisCnt].bAxisFunctionEnabled = FALSE;
+         LocalAxes[AxisCnt].bConfigurationAllowed = TRUE;
+-
++        LocalAxes[AxisCnt].u16AxisNum = AxisCnt+1;
+         LocalAxes[AxisCnt].i16State = STATE_NOT_READY_TO_SWITCH_ON;
+         LocalAxes[AxisCnt].u16PendingOptionCode = 0x00;
+ 
+@@ -213,6 +215,9 @@
+             case 0x605C:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objDisableOperationOptionCode;
+                 break;
++            case 0x605D:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objHaltOptionCode;
++                break;
+             case 0x605E:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objFaultReactionCode;
+                 break;
+@@ -222,30 +227,102 @@
+             case 0x6061:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objModesOfOperationDisplay;
+                 break;
++            case 0x6062:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objPositionDemandValue;
++                break;
++            case 0x6063:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objPositionActualInternalValue;
++                break;
+             case 0x6064:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objPositionActualValue;
+                 break;
++            case 0x6065:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objFollowingErrorWindow;
++                break;
++            case 0x6066:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objFollowingErrorTimeOut;
++                break;
++            case 0x6067:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objPositionWindow;
++                break;
+             case 0x606C:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objVelocityActualValue;
+                 break;
++            case 0x6072:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objMaxTorque;
++                break;
+             case 0x6077:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTorqueActualValue;
+                 break;
+             case 0x607A:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTargetPosition;
+                 break;
++            case 0x607B:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objPositionRangeLimit;
++                break;
++            case 0x607C:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objHomeOffset;
++                break;
+             case 0x607D:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objSoftwarePositionLimit;
+                 break;
+             case 0x6085:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objQuickStopDeclaration;
+                 break;
++            case 0x6091:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objGearRatio;
++                break;
++            case 0x6099:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objHomingSpeeds;
++                break;
++            case 0x60B0:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objPositionOffset;
++                break;
++            case 0x60B1:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objVelocityOffset;
++                break;
++            case 0x60B2:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTorqueOffset;
++                break;
++            case 0x60B8:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTouchProbeFunction;
++                break;
++            case 0x60B9:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTouchProbeStatus;
++                break;
++            case 0x60BA:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTouchProbePos1PosValue;
++                break;
++            case 0x60BB:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.ObjTouchProbePos1NegValue;
++                break;
+             case 0x60C2:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objInterpolationTimePeriod;
+                 break;
++            case 0x60D0:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTouchProbeSource;
++                break;
++            case 0x60E0:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objPositiveTorqueLimitValue;
++                break;
++            case 0x60E1:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objNegativeTorqueLimitValue;
++                break;
++            case 0x60F4:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objFollowingErrorActualValue;
++                break;
++            case 0x60FD:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objDigitalInputs;
++                break;
++            case 0x60FE:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objDigitalOutputs;
++                break;
+             case 0x60FF:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objTargetVelocity;
+                 break;
++            case 0x6402:
++                pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objMotorType;
++                break;
+             case 0x6502:
+                 pDiCEntry->pVarPtr = &LocalAxes[AxisCnt].Objects.objSupportedDriveModes;
+                 break;
+@@ -342,6 +419,14 @@
+         /*skip transition 1 and 2*/
+         if (pCiA402Axis->i16State < STATE_READY_TO_SWITCH_ON && nAlStatus == STATE_OP)
+         {
++            if(pCiA402Axis->i16State == STATE_NOT_READY_TO_SWITCH_ON){
++                CiA402_StateTransition1(pCiA402Axis);
++                CiA402_StateTransition2(pCiA402Axis);
++            }
++            if(pCiA402Axis->i16State == STATE_SWITCH_ON_DISABLED){
++                CiA402_StateTransition2(pCiA402Axis);
++            }
++
+             pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON;
+         }
+ 
+@@ -351,8 +436,10 @@
+             StatusWord |= (STATUSWORD_STATE_NOTREADYTOSWITCHON);
+             if(nAlStatus == STATE_OP)
+             {
+-                // Automatic transition -> Communication shall be activated
+-                pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 1
++                if(!CiA402_StateTransition1(pCiA402Axis)){
++                    // Automatic transition -> Communication shall be activated
++                    pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 1
++                }
+             }
+             else
+             {
+@@ -367,7 +454,9 @@
+             StatusWord |= (STATUSWORD_STATE_SWITCHEDONDISABLED);
+             if ((ControlWord6040 & CONTROLWORD_COMMAND_SHUTDOWN_MASK) == CONTROLWORD_COMMAND_SHUTDOWN)
+             {
+-                pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON; // Transition 2
++                if(!CiA402_StateTransition2(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON; // Transition 2
++                }
+             }
+             break;
+         case STATE_READY_TO_SWITCH_ON:
+@@ -375,12 +464,16 @@
+             if (((ControlWord6040 & CONTROLWORD_COMMAND_QUICKSTOP_MASK) == CONTROLWORD_COMMAND_QUICKSTOP)
+                 || ((ControlWord6040 & CONTROLWORD_COMMAND_DISABLEVOLTAGE_MASK) == CONTROLWORD_COMMAND_DISABLEVOLTAGE))
+             {
+-                pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 7
++                if(!CiA402_StateTransition7(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 7
++                }
+             } 
+             else if (((ControlWord6040 & CONTROLWORD_COMMAND_SWITCHON_MASK) == CONTROLWORD_COMMAND_SWITCHON) ||
+                     ((ControlWord6040 & CONTROLWORD_COMMAND_SWITCHON_ENABLEOPERATION_MASK) == CONTROLWORD_COMMAND_SWITCHON_ENABLEOPERATION))
+                 {
+-                    pCiA402Axis->i16State = STATE_SWITCHED_ON;           // Transition 3
++                    if(!CiA402_StateTransition3(pCiA402Axis)){
++                        pCiA402Axis->i16State = STATE_SWITCHED_ON;           // Transition 3
++                    }
+                 }
+                 break;
+         case STATE_SWITCHED_ON:
+@@ -388,19 +481,25 @@
+ 
+             if ((ControlWord6040 & CONTROLWORD_COMMAND_SHUTDOWN_MASK) == CONTROLWORD_COMMAND_SHUTDOWN)
+             {
+-                pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON; // Transition 6
++                if(!CiA402_StateTransition6(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON; // Transition 6
++                }
+ 
+             } 
+             else if (((ControlWord6040 & CONTROLWORD_COMMAND_QUICKSTOP_MASK) == CONTROLWORD_COMMAND_QUICKSTOP
+                     || (ControlWord6040 & CONTROLWORD_COMMAND_DISABLEVOLTAGE_MASK) == CONTROLWORD_COMMAND_DISABLEVOLTAGE))
+                 {
+-                    pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 10
++                    if(!CiA402_StateTransition10(pCiA402Axis)){
++                        pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 10
++                    }
+ 
+                 } 
+             else if ((ControlWord6040 & CONTROLWORD_COMMAND_ENABLEOPERATION_MASK) == CONTROLWORD_COMMAND_ENABLEOPERATION)
+                     {
+-                        pCiA402Axis->i16State = STATE_OPERATION_ENABLED;  // Transition 4
+-                        //The Axis function shall be enabled and all internal set-points cleared.
++                        if(!CiA402_StateTransition4(pCiA402Axis)){
++                            pCiA402Axis->i16State = STATE_OPERATION_ENABLED;  // Transition 4
++                            //The Axis function shall be enabled and all internal set-points cleared.
++                        }
+                     }
+                     break;
+         case STATE_OPERATION_ENABLED:
+@@ -414,11 +513,15 @@
+                     pCiA402Axis->u16PendingOptionCode = 0x605C; //STATE_TRANSITION (STATE_OPERATION_ENABLED,STATE_SWITCHED_ON);
+                     return;
+                 }
+-                pCiA402Axis->i16State = STATE_SWITCHED_ON;           // Transition 5
++                if(!CiA402_StateTransition5(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_SWITCHED_ON;           // Transition 5
++                }
+             } else
+                 if ((ControlWord6040 & CONTROLWORD_COMMAND_QUICKSTOP_MASK) == CONTROLWORD_COMMAND_QUICKSTOP)
+                 {
+-                    pCiA402Axis->i16State = STATE_QUICK_STOP_ACTIVE;  // Transition 11
++                    if(!CiA402_StateTransition11(pCiA402Axis)){
++                        pCiA402Axis->i16State = STATE_QUICK_STOP_ACTIVE;  // Transition 11
++                    }
+                 } else
+                     if ((ControlWord6040 & CONTROLWORD_COMMAND_SHUTDOWN_MASK) == CONTROLWORD_COMMAND_SHUTDOWN)
+                     {
+@@ -428,13 +531,15 @@
+                             pCiA402Axis->u16PendingOptionCode = 0x605B; //STATE_TRANSITION (STATE_OPERATION_ENABLED,STATE_READY_TO_SWITCH_ON);
+                             return;
+                         }
+-
+-                        pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON; // Transition 8
+-
++                        if(!CiA402_StateTransition8(pCiA402Axis)){
++                            pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON; // Transition 8
++                        }
+                     } else
+                         if ((ControlWord6040 & CONTROLWORD_COMMAND_DISABLEVOLTAGE_MASK) == CONTROLWORD_COMMAND_DISABLEVOLTAGE)
+                         {
+-                            pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 9
++                            if(!CiA402_StateTransition9(pCiA402Axis)){
++                                pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 9
++                            }
+                         }
+                         break;
+         case STATE_QUICK_STOP_ACTIVE:
+@@ -450,10 +555,19 @@
+ 
+             if ((ControlWord6040 & CONTROLWORD_COMMAND_DISABLEVOLTAGE_MASK) == CONTROLWORD_COMMAND_DISABLEVOLTAGE)
+             {
+-                pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 12
++                if(!CiA402_StateTransition12(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED; // Transition 12
++                }
+             }
+ 
+             /*NOTE: it is not recommend to support transition 16 */
++            if ((ControlWord6040 & CONTROLWORD_COMMAND_ENABLEOPERATION_MASK) == CONTROLWORD_COMMAND_ENABLEOPERATION)
++            {
++                if(!CiA402_StateTransition16(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_OPERATION_ENABLED;  // Transition 16
++                    //The Axis function shall be enabled and all internal set-points cleared.
++                }
++            }
+             break;
+         case STATE_FAULT_REACTION_ACTIVE:
+             StatusWord |= (STATUSWORD_STATE_FAULTREACTIONACTIVE);
+@@ -464,15 +578,19 @@
+                 return;
+             }
+ 
+-            // Automatic transition
+-            pCiA402Axis->i16State = STATE_FAULT;// Transition 14
++            if(!CiA402_StateTransition14(pCiA402Axis)){
++                // Automatic transition
++                pCiA402Axis->i16State = STATE_FAULT;// Transition 14
++            }
+             break;
+         case STATE_FAULT:
+             StatusWord |= (STATUSWORD_STATE_FAULT);
+ 
+             if ((ControlWord6040 & CONTROLWORD_COMMAND_FAULTRESET_MASK) == CONTROLWORD_COMMAND_FAULTRESET)
+             {
+-                pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED;// Transition 15
++                if(!CiA402_StateTransition15(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED;// Transition 15
++                }
+             }
+             break;
+ 
+@@ -540,93 +658,6 @@
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////
+ /**
+- \param ErrorCode
+-
+- \brief    CiA402_LocalError
+- \brief this function is called if an error was detected
+-*////////////////////////////////////////////////////////////////////////////////////////
+-void CiA402_LocalError(UINT16 ErrorCode)
+-{
+-    UINT16 counter = 0;
+-    for(counter = 0; counter < MAX_AXES; counter++)
+-    {
+-        if(LocalAxes[counter].bAxisIsActive)
+-        {
+-            LocalAxes[counter].i16State = STATE_FAULT_REACTION_ACTIVE;
+-            LocalAxes[counter].Objects.objErrorCode = ErrorCode;
+-        }
+-    }
+-}
+-
+-/////////////////////////////////////////////////////////////////////////////////////////
+-/**
+- \brief    CiA402_DummyMotionControl
+- \brief this functions provides an simple feedback functionality
+-*////////////////////////////////////////////////////////////////////////////////////////
+-void CiA402_DummyMotionControl(TCiA402Axis *pCiA402Axis)
+-{
+-    float IncFactor    = (float)0.0010922 * (float) pCiA402Axis->u32CycleTime;
+-
+-    INT32 i32TargetVelocity = 0;
+-    /*Motion Controller shall only be triggered if application is trigger by DC Sync Signals,
+-    and a valid mode of operation is set*/
+-
+-    /*calculate actual position */
+-    pCiA402Axis->fCurPosition += ((double)pCiA402Axis->Objects.objVelocityActualValue) * IncFactor;
+-    pCiA402Axis->Objects.objPositionActualValue = (INT32)(pCiA402Axis->fCurPosition);
+-
+-
+-    if(pCiA402Axis->bAxisFunctionEnabled &&
+-    pCiA402Axis->bLowLevelPowerApplied &&
+-    pCiA402Axis->bHighLevelPowerApplied &&
+-    !pCiA402Axis->bBrakeApplied)
+-    {
+-        if((pCiA402Axis->Objects.objSoftwarePositionLimit.i32MaxLimit> pCiA402Axis->Objects.objPositionActualValue
+-            || pCiA402Axis->Objects.objPositionActualValue > pCiA402Axis->Objects.objTargetPosition) &&
+-            (pCiA402Axis->Objects.objSoftwarePositionLimit.i32MinLimit < pCiA402Axis->Objects.objPositionActualValue
+-            || pCiA402Axis->Objects.objPositionActualValue < pCiA402Axis->Objects.objTargetPosition))
+-        {
+-            pCiA402Axis->Objects.objStatusWord &= ~STATUSWORD_INTERNAL_LIMIT;
+-
+-            switch(pCiA402Axis->Objects.objModesOfOperationDisplay)
+-            {
+-            case CYCLIC_SYNC_POSITION_MODE:
+-                    if (IncFactor != 0)
+-                    {
+-                        i32TargetVelocity = (pCiA402Axis->Objects.objTargetPosition - pCiA402Axis->Objects.objPositionActualValue) / ((long)IncFactor);
+-                    }
+-                    else
+-                    {
+-                        i32TargetVelocity = 0;
+-                    }
+-                break;
+-            case CYCLIC_SYNC_VELOCITY_MODE:
+-                    if (pCiA402Axis->i16State == STATE_OPERATION_ENABLED)
+-                    {
+-                        i32TargetVelocity = pCiA402Axis->Objects.objTargetVelocity;
+-                    }
+-                    else
+-                    {
+-                        i32TargetVelocity = 0;
+-                    }
+-                break;
+-            default:
+-                break;
+-            }
+-        }
+-        else
+-        {
+-            pCiA402Axis->Objects.objStatusWord |= STATUSWORD_INTERNAL_LIMIT;
+-        }
+-    }
+-    pCiA402Axis->Objects.objVelocityActualValue= i32TargetVelocity;
+-
+-    /*Accept new mode of operation*/
+-    pCiA402Axis->Objects.objModesOfOperationDisplay = pCiA402Axis->Objects.objModesOfOperation;
+-
+-}
+-/////////////////////////////////////////////////////////////////////////////////////////
+-/**
+  \return TRUE if moving on predefined ramp is finished
+ 
+  \brief    CiA402-TransitionAction
+@@ -682,7 +713,7 @@
+  \brief check if a state transition is pending and pass desired ramp-code to CiA402TransitionAction()
+  \brief if this functions returns true the state transition is finished.
+ *////////////////////////////////////////////////////////////////////////////////////////
+-void CiA402_Application(TCiA402Axis *pCiA402Axis)
++void CiA402_Application(TCiA402Axis *pCiA402Axis, UINT16 i)
+ {
+     /*clear "Drive follows the command value" flag if the target values from the master overwritten by the local application*/
+     if(pCiA402Axis->u16PendingOptionCode != 0 &&
+@@ -732,11 +763,14 @@
+                 pCiA402Axis->u16PendingOptionCode = 0x0;
+                 if(pCiA402Axis->Objects.objQuickStopOptionCode > 0 && pCiA402Axis->Objects.objQuickStopOptionCode < 5)
+                 {
+-                    pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED;    //continue state transition 12
++                    if(!CiA402_StateTransition12(pCiA402Axis)){
++                        pCiA402Axis->i16State = STATE_SWITCH_ON_DISABLED;    //continue state transition 12
++                    }
+                 }
+                 else if (pCiA402Axis->Objects.objQuickStopOptionCode > 4 && pCiA402Axis->Objects.objQuickStopOptionCode < 9)
+                 {
+                     pCiA402Axis->Objects.objStatusWord |= STATUSWORD_TARGET_REACHED;
++                    pCiA402Axis->Objects.objStatusWord &= (UINT16)(~(STATUSWORD_STATE_SWITCHEDONDISABLED));
+                 }
+             }
+         }
+@@ -748,7 +782,9 @@
+             {
+                 /*shutdown ramp is finished complete state transition*/
+                 pCiA402Axis->u16PendingOptionCode = 0x0;
+-                pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON;    //continue state transition 8
++                if(!CiA402_StateTransition8(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_READY_TO_SWITCH_ON;    //continue state transition 8
++                }
+             }
+         }
+         break;
+@@ -759,7 +795,9 @@
+             {
+                 /*disable operation ramp is finished complete state transition*/
+                 pCiA402Axis->u16PendingOptionCode = 0x0;
+-                pCiA402Axis->i16State = STATE_SWITCHED_ON;    //continue state transition 5
++                if(!CiA402_StateTransition5(pCiA402Axis)){
++                    pCiA402Axis->i16State = STATE_SWITCHED_ON;    //continue state transition 5
++                }
+             }
+         }
+         break;
+@@ -771,7 +809,10 @@
+             {
+                 /*fault reaction ramp is finished complete state transition*/
+                 pCiA402Axis->u16PendingOptionCode = 0x0;
+-                pCiA402Axis->i16State = STATE_FAULT;    //continue state transition 14
++                if(!CiA402_StateTransition14(pCiA402Axis)){
++                    // Automatic transition
++                    pCiA402Axis->i16State = STATE_FAULT;// Transition 14
++                }
+             }
+         }
+         break;
+@@ -784,7 +825,7 @@
+         && (pCiA402Axis->u32CycleTime != 0)
+         && ((pCiA402Axis->Objects.objSupportedDriveModes >> (pCiA402Axis->Objects.objModesOfOperation - 1)) & 0x1)) //Mode of Operation (0x6060) - 1 specifies the Bit within Supported Drive Modes (0x6502)
+     {
+-        CiA402_DummyMotionControl(pCiA402Axis);
++        APPL_MOTOR_MotionControl_Main(pCiA402Axis, i);
+     }
+ 
+ 
+@@ -1313,10 +1354,17 @@
+             {
+                 TCiA402PDO1A00 *pInputs = (TCiA402PDO1A00 *)pTmpData;
+ 
++                pInputs->ObjErrorCode = SWAPWORD(LocalAxes[AxisIndex].Objects.objErrorCode);
+                 pInputs->ObjStatusWord = SWAPWORD(LocalAxes[AxisIndex].Objects.objStatusWord);
++                pInputs->ObjModesOfOperationDisplay = SWAPWORD(LocalAxes[AxisIndex].Objects.objModesOfOperationDisplay);
+                 pInputs->ObjPositionActualValue = SWAPDWORD(LocalAxes[AxisIndex].Objects.objPositionActualValue);
+                 pInputs->ObjVelocityActualValue = SWAPDWORD(LocalAxes[AxisIndex].Objects.objVelocityActualValue);
+-                pInputs->ObjModesOfOperationDisplay = SWAPWORD((LocalAxes[AxisIndex].Objects.objModesOfOperationDisplay & 0x00FF));
++                pInputs->ObjTorqueActualValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objTorqueActualValue);
++                pInputs->ObjTouchProbeStatus = SWAPWORD(LocalAxes[AxisIndex].Objects.objTouchProbeStatus);
++                pInputs->ObjTouchProbePos1PosValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objTouchProbePos1PosValue);
++                pInputs->ObjTouchProbePos1NegValue = SWAPWORD(LocalAxes[AxisIndex].Objects.ObjTouchProbePos1NegValue);
++                pInputs->ObjFollowingErrorActualValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objFollowingErrorActualValue);
++                pInputs->ObjDigitalInputs = SWAPWORD(LocalAxes[AxisIndex].Objects.objDigitalInputs);
+ 
+                 /*shift pointer PDO mapping object following*/
+                 if(j < (sTxPDOassign.u16SubIndex0 - 1))
+@@ -1327,8 +1375,16 @@
+             {
+                 TCiA402PDO1A01 *pInputs = (TCiA402PDO1A01 *)pTmpData;
+ 
++                pInputs->ObjErrorCode = SWAPWORD(LocalAxes[AxisIndex].Objects.objErrorCode);
+                 pInputs->ObjStatusWord = SWAPWORD(LocalAxes[AxisIndex].Objects.objStatusWord);
+                 pInputs->ObjPositionActualValue = SWAPDWORD(LocalAxes[AxisIndex].Objects.objPositionActualValue);
++                pInputs->ObjVelocityActualValue = SWAPDWORD(LocalAxes[AxisIndex].Objects.objVelocityActualValue);
++                pInputs->ObjTorqueActualValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objTorqueActualValue);
++                pInputs->ObjTouchProbeStatus = SWAPWORD(LocalAxes[AxisIndex].Objects.objTouchProbeStatus);
++                pInputs->ObjTouchProbePos1PosValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objTouchProbePos1PosValue);
++                pInputs->ObjTouchProbePos1NegValue = SWAPWORD(LocalAxes[AxisIndex].Objects.ObjTouchProbePos1NegValue);
++                pInputs->ObjFollowingErrorActualValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objFollowingErrorActualValue);
++                pInputs->ObjDigitalInputs = SWAPWORD(LocalAxes[AxisIndex].Objects.objDigitalInputs);
+ 
+                 /*shift pointer PDO mapping object following*/
+                 if (j < (sTxPDOassign.u16SubIndex0 - 1))
+@@ -1341,8 +1397,15 @@
+             {
+                 TCiA402PDO1A02 *pInputs = (TCiA402PDO1A02 *)pTmpData;
+ 
++                pInputs->ObjErrorCode = SWAPWORD(LocalAxes[AxisIndex].Objects.objErrorCode);
+                 pInputs->ObjStatusWord = SWAPWORD(LocalAxes[AxisIndex].Objects.objStatusWord);
+                 pInputs->ObjPositionActualValue = SWAPDWORD(LocalAxes[AxisIndex].Objects.objPositionActualValue);
++                pInputs->ObjVelocityActualValue = SWAPDWORD(LocalAxes[AxisIndex].Objects.objVelocityActualValue);
++                pInputs->ObjTorqueActualValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objTorqueActualValue);
++                pInputs->ObjTouchProbeStatus = SWAPWORD(LocalAxes[AxisIndex].Objects.objTouchProbeStatus);
++                pInputs->ObjTouchProbePos1PosValue = SWAPWORD(LocalAxes[AxisIndex].Objects.objTouchProbePos1PosValue);
++                pInputs->ObjTouchProbePos1NegValue = SWAPWORD(LocalAxes[AxisIndex].Objects.ObjTouchProbePos1NegValue);
++                pInputs->ObjDigitalInputs = SWAPWORD(LocalAxes[AxisIndex].Objects.objDigitalInputs);
+             
+                 /*shift pointer PDO mapping object following*/
+                 if (j < (sTxPDOassign.u16SubIndex0 - 1))
+@@ -1380,9 +1443,22 @@
+             TCiA402PDO1600 *pOutputs = (TCiA402PDO1600 *)pTmpData;
+ 
+             LocalAxes[AxisIndex].Objects.objControlWord = SWAPWORD(pOutputs->ObjControlWord);
++            LocalAxes[AxisIndex].Objects.objModesOfOperation = SWAPWORD(pOutputs->ObjModesOfOperation);
++            LocalAxes[AxisIndex].Objects.objMaxTorque = SWAPWORD(pOutputs->ObjMaxTorque);
+             LocalAxes[AxisIndex].Objects.objTargetPosition = SWAPDWORD(pOutputs->ObjTargetPosition);
+-            LocalAxes[AxisIndex].Objects.objTargetVelocity    = SWAPDWORD(pOutputs->ObjTargetVelocity);
+-            LocalAxes[AxisIndex].Objects.objModesOfOperation = SWAPWORD((pOutputs->ObjModesOfOperation & 0x00FF));
++            LocalAxes[AxisIndex].Objects.objPositionOffset = SWAPDWORD(pOutputs->ObjPositionOffset);
++            LocalAxes[AxisIndex].Objects.objVelocityOffset = SWAPDWORD(pOutputs->ObjVelocityOffset);
++            LocalAxes[AxisIndex].Objects.objTorqueOffset = SWAPDWORD(pOutputs->ObjTorqueOffset);
++            LocalAxes[AxisIndex].Objects.objTouchProbeFunction = SWAPDWORD(pOutputs->ObjTouchProbeFunction);
++            LocalAxes[AxisIndex].Objects.objPositiveTorqueLimitValue = SWAPDWORD(pOutputs->ObjPositiveTorqueLimitValue);
++            LocalAxes[AxisIndex].Objects.objNegativeTorqueLimitValue = SWAPDWORD(pOutputs->ObjNegativeTorqueLimitValue);
++            LocalAxes[AxisIndex].Objects.objTargetVelocity = SWAPDWORD(pOutputs->ObjTargetVelocity);
++
++            /*DigitalOutputs use only Axis index 0.*/
++            if ( AxisIndex == 0 )
++            {
++                LocalAxes[0].Objects.objDigitalOutputs.u32PhysicalOutputs = SWAPWORD(pOutputs->ObjDigitalOutputs);
++            }
+ 
+             /*shift pointer PDO mapping object following*/
+             if (j < (sRxPDOassign.u16SubIndex0 - 1))
+@@ -1396,7 +1472,19 @@
+             TCiA402PDO1601 *pOutputs = (TCiA402PDO1601 *)pTmpData;
+ 
+             LocalAxes[AxisIndex].Objects.objControlWord = SWAPWORD(pOutputs->ObjControlWord);
++            LocalAxes[AxisIndex].Objects.objMaxTorque = SWAPWORD(pOutputs->ObjMaxTorque);
+             LocalAxes[AxisIndex].Objects.objTargetPosition = SWAPDWORD(pOutputs->ObjTargetPosition);
++            LocalAxes[AxisIndex].Objects.objPositionOffset = SWAPDWORD(pOutputs->ObjPositionOffset);
++            LocalAxes[AxisIndex].Objects.objVelocityOffset = SWAPWORD(pOutputs->ObjVelocityOffset);
++            LocalAxes[AxisIndex].Objects.objTorqueOffset = SWAPWORD(pOutputs->ObjTorqueOffset);
++            LocalAxes[AxisIndex].Objects.objTouchProbeFunction = SWAPWORD(pOutputs->ObjTouchProbeFunction);
++            LocalAxes[AxisIndex].Objects.objPositiveTorqueLimitValue = SWAPWORD(pOutputs->ObjPositiveTorqueLimitValue);
++            LocalAxes[AxisIndex].Objects.objNegativeTorqueLimitValue = SWAPWORD(pOutputs->ObjNegativeTorqueLimitValue);
++            /*DigitalOutputs use only Axis index 0.*/
++            if ( AxisIndex == 0 )
++            {
++                LocalAxes[0].Objects.objDigitalOutputs.u32PhysicalOutputs = SWAPWORD(pOutputs->ObjDigitalOutputs);
++            }
+ 
+             /*shift pointer PDO mapping object following*/
+             if (j < (sRxPDOassign.u16SubIndex0 - 1))
+@@ -1410,7 +1498,18 @@
+             TCiA402PDO1602 *pOutputs = (TCiA402PDO1602 *)pTmpData;
+ 
+             LocalAxes[AxisIndex].Objects.objControlWord = SWAPWORD(pOutputs->ObjControlWord);
++            LocalAxes[AxisIndex].Objects.objMaxTorque = SWAPWORD(pOutputs->ObjMaxTorque);
++            LocalAxes[AxisIndex].Objects.objVelocityOffset = SWAPDWORD(pOutputs->ObjVelocityOffset);
++            LocalAxes[AxisIndex].Objects.objTorqueOffset = SWAPDWORD(pOutputs->ObjTorqueOffset);
++            LocalAxes[AxisIndex].Objects.objTouchProbeFunction = SWAPWORD(pOutputs->ObjTouchProbeFunction);
++            LocalAxes[AxisIndex].Objects.objPositiveTorqueLimitValue = SWAPWORD(pOutputs->ObjPositiveTorqueLimitValue);
++            LocalAxes[AxisIndex].Objects.objNegativeTorqueLimitValue = SWAPWORD(pOutputs->ObjNegativeTorqueLimitValue);
+             LocalAxes[AxisIndex].Objects.objTargetVelocity    = SWAPDWORD(pOutputs->ObjTargetVelocity);
++            /*DigitalOutputs use only Axis index 0.*/
++            if ( AxisIndex == 0 )
++            {
++                LocalAxes[0].Objects.objDigitalOutputs.u32PhysicalOutputs = SWAPWORD(pOutputs->ObjDigitalOutputs);
++            }
+ 
+             /*shift pointer PDO mapping object following*/
+             if (j < (sRxPDOassign.u16SubIndex0 - 1))
+@@ -1429,28 +1528,18 @@
+ *////////////////////////////////////////////////////////////////////////////////////////
+ void APPL_Application(void)
+ {
+-    UINT16 i;
++    APPL_SetLed((UINT16)(LocalAxes[0].Objects.objDigitalOutputs.u32PhysicalOutputs & 0x000F));
++    LocalAxes[0].Objects.objDigitalInputs = (UINT32)APPL_GetDipSw() & 0x000F;
+ 
++    UINT16 i;
+     for(i = 0; i < MAX_AXES;i++)
+     {
+             if (LocalAxes[i].bAxisIsActive)
+             {
+-                CiA402_Application(&LocalAxes[i]);
++                CiA402_Application(&LocalAxes[i], i);
+             }
+     }
+ }
+ 
+-/////////////////////////////////////////////////////////////////////////////////////////
+-/**
+- \return    The Explicit Device ID of the EtherCAT slave
+-
+- \brief     Calculate the Explicit Device ID
+-*////////////////////////////////////////////////////////////////////////////////////////
+-UINT16 APPL_GetDeviceID(void)
+-{
+-    return 0x0005;
+-}
+-
+-
+ /** @} */
+ 
+diff -u Src/cia402appl.h Src_patch/cia402appl.h
+--- Src/cia402appl.h	2026-08-07 15:34:08 +0800
++++ Src_patch/cia402appl.h	2026-08-07 10:06:42 +0800
+@@ -349,7 +349,7 @@
+ /** \brief 0x1600 (csp/csv RxPDO) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+-   UINT32   aEntries[5]; /**< \brief Entry buffer*/
++   UINT32   aEntries[13]; /**< \brief Entry buffer*/
+ } OBJ_STRUCT_PACKED_END
+ TOBJ1600;
+ 
+@@ -357,7 +357,7 @@
+ /** \brief 0x1601 (csp RxPDO) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+-   UINT32   aEntries[3]; /**< \brief Entry buffer*/
++   UINT32   aEntries[10]; /**< \brief Entry buffer*/
+ } OBJ_STRUCT_PACKED_END
+ TOBJ1601;
+ 
+@@ -365,7 +365,7 @@
+ /** \brief 0x1602 (csv RxPDO) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+-   UINT32   aEntries[3]; /**< \brief Entry buffer*/
++   UINT32   aEntries[9]; /**< \brief Entry buffer*/
+ } OBJ_STRUCT_PACKED_END
+ TOBJ1602;
+ 
+@@ -373,7 +373,7 @@
+ /** \brief 0x1A00 (csp/csv TxPDO) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+-   UINT32   aEntries[5]; /**< \brief Entry buffer*/
++   UINT32   aEntries[12]; /**< \brief Entry buffer*/
+ } OBJ_STRUCT_PACKED_END
+ TOBJ1A00;
+ 
+@@ -381,7 +381,7 @@
+ /** \brief 0x1A01 (csp TxPDO) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+-   UINT32   aEntries[3]; /**< \brief Entry buffer*/
++   UINT32   aEntries[10]; /**< \brief Entry buffer*/
+ } OBJ_STRUCT_PACKED_END
+ TOBJ1A01;
+ 
+@@ -389,7 +389,7 @@
+ /** \brief 0x1A02 (csv TxPDO) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+-   UINT32   aEntries[3]; /**< \brief Entry buffer*/
++   UINT32   aEntries[9]; /**< \brief Entry buffer*/
+ } OBJ_STRUCT_PACKED_END
+ TOBJ1A02;
+ /** @}*/
+@@ -422,6 +422,15 @@
+  * \addtogroup CiA402Objects CiA402 Axis Objects
+  * @{
+  */
++/** \brief 0x607B (Position range limit) data structure*/
++typedef struct OBJ_STRUCT_PACKED_START {
++   UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
++   INT32    i32MinLimit; /**< \brief Min position range limit*/
++   INT32    i32MaxLimit; /**< \brief Max position range limit*/
++} OBJ_STRUCT_PACKED_END
++TOBJ607B;
++
++
+ /** \brief 0x607D (Software Position Limit) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+@@ -431,6 +440,24 @@
+ TOBJ607D;
+ 
+ 
++/** \brief 0x6091 (Gear ratio) data structure*/
++typedef struct OBJ_STRUCT_PACKED_START {
++   UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
++   UINT32   u32MotorRevolutions; /**< \brief Motor Revolutions*/
++   UINT32   u32ShaftRevolutions; /**< \Shaft Revolutions*/
++} OBJ_STRUCT_PACKED_END
++TOBJ6091;
++
++
++/** \brief 0x6099 (Homing speeds) data structure*/
++typedef struct OBJ_STRUCT_PACKED_START {
++   UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
++   UINT32   u32SpeedDuringSearchForSwitch; /**< \brief Speed during search for switch*/
++   UINT32   u32SpeedDuringSearchForZero; /**< \brief Speed during search for zero*/
++} OBJ_STRUCT_PACKED_END
++TOBJ6099;
++
++
+ /** \brief Object 0x60C2 (Interpolation Time Period) data structure*/
+ typedef struct OBJ_STRUCT_PACKED_START {
+    UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
+@@ -438,6 +465,23 @@
+    INT8     i8InterpolationIndex; /**< \brief Interpolation index*/
+ } OBJ_STRUCT_PACKED_END
+ TOBJ60C2;
++
++
++/** \brief Object 0x60D0 (Touch probe source) data structure*/
++typedef struct OBJ_STRUCT_PACKED_START {
++   UINT16   u16SubIndex0; /**< \brief SubIndex 0*/
++   UINT16   u16TouchProbe1Source; /**< \brief Touch Probe 1 Source*/
++} OBJ_STRUCT_PACKED_END
++TOBJ60D0;
++
++
++/** \brief Object 0x60FE (Digital outputs) data structure*/
++typedef struct OBJ_STRUCT_PACKED_START {
++   UINT16    u16SubIndex0; /**< \brief SubIndex 0*/
++   UINT32    u32PhysicalOutputs; /**< \brief Physical outputs*/
++   UINT32    u32BitMask; /**< \brief Bit mask*/
++} OBJ_STRUCT_PACKED_END
++TOBJ60FE;
+ /** @}*/
+ 
+ 
+@@ -505,10 +549,18 @@
+ /** \brief Data structure to handle the process data transmitted via 0x1A00 (csp/csv TxPDO)*/
+ typedef struct STRUCT_PACKED_START
+ {
++    UINT16 ObjErrorCode; /**< \brief Error Code (0x603F)*/
+     UINT16 ObjStatusWord; /**< \brief Status word (0x6041)*/
++    INT8 ObjModesOfOperationDisplay; /**< \brief Current mode of operation (0x6061)*/
++    INT8 padding[3]; /**< \brief padding*/
+     INT32 ObjPositionActualValue; /**< \brief Actual position (0x6064)*/
+     INT32 ObjVelocityActualValue; /**< \brief Actual velocity (0x606C)*/
+-    INT16 ObjModesOfOperationDisplay; /**< \brief Current mode of operation (0x6061)*/
++    INT16 ObjTorqueActualValue; /**< \brief Torque actual value (0x6077)*/
++    UINT16 ObjTouchProbeStatus; /**< \brief Touch probe status (0x60B9)*/
++    INT32 ObjTouchProbePos1PosValue;/**< \brief Touch probe position 1 positive value (0x60BA)*/
++    INT32 ObjTouchProbePos1NegValue;/**< \brief Touch probe position 1 negative value (0x60BB)*/
++    INT32 ObjFollowingErrorActualValue;/**< \brief Following error actual value (0x60F4)*/
++    UINT32 ObjDigitalInputs;/**< \brief Digital inputs (0x60FD)*/
+ }STRUCT_PACKED_END
+ TCiA402PDO1A00;
+ 
+@@ -516,9 +568,16 @@
+ /** \brief Data structure to handle the process data transmitted via 0x1A01 (csp TxPDO)*/
+ typedef struct STRUCT_PACKED_START
+ {
++    UINT16 ObjErrorCode;        /**< \brief Error code (0x603F)*/
+     UINT16 ObjStatusWord; /**< \brief Status word (0x6041)*/
+     INT32 ObjPositionActualValue; /**< \brief Actual position (0x6064)*/
+-    UINT16 Padding16Bit; /**< \brief 16bit padding*/
++    INT32 ObjVelocityActualValue; /**< \brief Actual velocity (0x606C)*/
++    INT16 ObjTorqueActualValue;/**< \brief Actual torque (0x6077)*/
++    UINT16 ObjTouchProbeStatus;/**< \brief Touch probe status (0x60B9)*/
++    INT32 ObjTouchProbePos1PosValue;/**< \brief Touch probe position 1 positive value (0x60BA)*/
++    INT32 ObjTouchProbePos1NegValue;/**< \brief Touch probe position 1 negative value (0x60BB)*/
++    INT32 ObjFollowingErrorActualValue;/**< \brief Following error actual value (0x60F4)*/
++    UINT32 ObjDigitalInputs;/**< \brief Digital inputs (0x60FD)*/
+ }STRUCT_PACKED_END
+ TCiA402PDO1A01;
+ 
+@@ -526,9 +585,15 @@
+ /** \brief Data structure to handle the process data transmitted via 0x1A02 (csv TxPDO)*/
+ typedef struct STRUCT_PACKED_START
+ {
++    UINT16 ObjErrorCode;        /**< \brief Error code (0x603F)*/
+     UINT16 ObjStatusWord; /**< \brief Status word (0x6041)*/
+     INT32 ObjPositionActualValue; /**< \brief Actual position (0x6064)*/
+-    UINT16 Padding16Bit; /**< \brief 16bit padding*/
++    INT32 ObjVelocityActualValue; /**< \brief Actual velocity (0x606C)*/
++    INT16 ObjTorqueActualValue;/**< \brief Actual torque  (0x6077)*/
++    UINT16 ObjTouchProbeStatus;/**< \brief Touch probe status (0x60B9)*/
++    INT32 ObjTouchProbePos1PosValue;/**< \brief Touch probe position 1 positive value (0x60BA)*/
++    INT32 ObjTouchProbePos1NegValue;/**< \brief Touch probe position 1 negative value (0x60BB)*/
++    UINT32 ObjDigitalInputs;/**< \brief Digital inputs (0x60FD)*/
+ }STRUCT_PACKED_END
+ TCiA402PDO1A02;
+ 
+@@ -537,9 +602,18 @@
+ typedef struct STRUCT_PACKED_START
+ {
+     UINT16 ObjControlWord; /**< \brief Control word (0x6040)*/
++    INT8 ObjModesOfOperation; /**< \brief Modes of Operation (0x6060)*/
++    INT8 padding[3]; /**< \brief padding*/
++    UINT16 ObjMaxTorque;    /**< \brief Max Torque (0x6072)*/
+     INT32 ObjTargetPosition; /**< \brief Target position (0x607A)*/
++    INT32 ObjPositionOffset; /**< \brief Position Offset (0x60B0)*/
++    INT32 ObjVelocityOffset; /**< \brief Velocity Offset (0x60B1)*/
++    INT16 ObjTorqueOffset; /**< \brief Torque Offset (0x60B2)*/
++    UINT16 ObjTouchProbeFunction; /**< \brief Touch Probe Function (0x60B8)*/
++    UINT16 ObjPositiveTorqueLimitValue; /**< \brief Positive Torque Limit Value (0x60E0)*/
++    UINT16 ObjNegativeTorqueLimitValue; /**< \brief Negative Torque Limit Value (0x60E1)*/
++    UINT32 ObjDigitalOutputs; /**< \brief Physical outputs (0x60FE:01)*/
+     INT32 ObjTargetVelocity; /**< \brief Target velocity (0x60FF)*/
+-    INT16 ObjModesOfOperation; /**< \brief Mode of operation (0x6060)*/
+ }STRUCT_PACKED_END
+ TCiA402PDO1600;
+ 
+@@ -548,8 +622,15 @@
+ typedef struct STRUCT_PACKED_START
+ {
+     UINT16 ObjControlWord; /**< \brief Control word (0x6040)*/
++    UINT16 ObjMaxTorque;    /**< \brief Max Torque (0x6072)*/
+     INT32 ObjTargetPosition; /**< \brief Target position (0x607A)*/
+-    UINT16 Padding16Bit; /**< \brief 16bit padding*/
++    INT32 ObjPositionOffset; /**< \brief Position Offset (0x60B0)*/
++    INT32 ObjVelocityOffset; /**< \brief Velocity Offset (0x60B1)*/
++    INT16 ObjTorqueOffset; /**< \brief Torque Offset (0x60B2)*/
++    UINT16 ObjTouchProbeFunction; /**< \brief Touch Probe Function (0x60B8)*/
++    UINT16 ObjPositiveTorqueLimitValue; /**< \brief Positive Torque Limit Value (0x60E0)*/
++    UINT16 ObjNegativeTorqueLimitValue; /**< \brief Negative Torque Limit Value (0x60E1)*/
++    UINT32 ObjDigitalOutputs; /**< \brief Physical outputs (0x60FE:01)*/
+ }STRUCT_PACKED_END
+ TCiA402PDO1601;
+ 
+@@ -558,8 +639,14 @@
+ typedef struct STRUCT_PACKED_START
+ {
+     UINT16 ObjControlWord; /**< \brief Control word (0x6040)*/
++    UINT16 ObjMaxTorque;/**< \brief Max torque (0x6072)*/
++    INT32 ObjVelocityOffset;/**< \brief Velocity offset (0x60B1)*/
++    INT16 ObjTorqueOffset;/**< \brief Torque offset (0x60B2)*/
++    UINT16 ObjTouchProbeFunction;/**< \brief Touch probe function (0x60B8)*/
++    UINT16 ObjPositiveTorqueLimitValue; /**< \brief Positive torque limit value (0x60E0)*/
++    UINT16 ObjNegativeTorqueLimitValue; /**< \brief Negative torque limit value (0x60E1)*/
++    UINT32 ObjDigitalOutputs; /**< \brief Physical outputs (0x60FE:01)*/
+     INT32 ObjTargetVelocity; /**< \brief Target velocity (0x60FF)*/
+-    UINT16 Padding16Bit; /**< \brief 16bit padding*/
+ }STRUCT_PACKED_END
+ TCiA402PDO1602;
+ /** @}*/
+@@ -586,17 +673,42 @@
+     INT16 objQuickStopOptionCode; /**< \brief Quick Stop Option Code (0x605A)*/
+     INT16 objShutdownOptionCode; /**< \brief Shutdown Option Code (0x605B)*/
+     INT16 objDisableOperationOptionCode; /**< \brief Disable Operation Option Code (0x605C)*/
++    INT16 objHaltOptionCode; /**< \brief Halt Option Code (0x605D)*/
+     INT16 objFaultReactionCode; /**< \brief Fault Reaction Code (0x605E)*/
+-    INT16 objModesOfOperation; /**< \brief Modes of Operation (0x6060)*/
+-    INT16 objModesOfOperationDisplay; /**< \brief Mode of Operation Display (0x6061)*/
++    INT8 objModesOfOperation; /**< \brief Modes of Operation (0x6060)*/
++    INT8 objModesOfOperationDisplay; /**< \brief Mode of Operation Display (0x6061)*/
++    INT32 objPositionDemandValue; /**< \brief Position Demand Value (0x6062)*/
++    INT32 objPositionActualInternalValue; /**< \brief Position Actual Internal Value (0x6063)*/
+     INT32 objPositionActualValue; /**< \brief Position Actual Value (0x6064)*/
++    UINT32 objFollowingErrorWindow;/**< \brief Following Error Window(0x6065)*/
++    UINT16 objFollowingErrorTimeOut; /**< \brief Following error time out (0x6066)*/
++    UINT32 objPositionWindow;/**< \brief Position Window(0x6067)*/
+     INT32 objVelocityActualValue; /**< \brief Actual Velocity Value (0x606C)*/
++    UINT16 objMaxTorque;/**< \brief Max Torque (0x6072)*/
+     INT16 objTorqueActualValue; /**< \brief Torque Actual Value (0x6077)*/
+     INT32 objTargetPosition; /**< \brief Target Position (0x607A)*/
++    TOBJ607B objPositionRangeLimit; /**< \brief Position range limit (0x607B)*/
++    INT32 objHomeOffset; /**< \brief Home Offset (0x607C)*/
+     TOBJ607D objSoftwarePositionLimit; /**< \brief Software Position limit (0x607D)*/
+     UINT32 objQuickStopDeclaration; /**< \brief Quick Stop Declaration (0x6085)*/
++    TOBJ6091 objGearRatio;/**< \brief Gear Ratio (0x6091)*/
++    TOBJ6099 objHomingSpeeds; /**< \brief Homing Speeds (0x6099)*/
++    INT32 objPositionOffset;/**< \brief Position Offset (0x60B0)*/
++    INT32 objVelocityOffset;/**< \brief Velocity Offset (0x60B1)*/
++    INT16 objTorqueOffset;/**< \brief Torque Offset (0x60B2)*/
++    UINT16 objTouchProbeFunction;/**< \brief Touch Probe Function (0x60B8)*/
++    UINT16 objTouchProbeStatus; /**< \brief Touch Probe Status (0x60B9)*/
++    INT32 objTouchProbePos1PosValue; /**< \brief Touch Probe Pos 1 Pos Value (0x60BA)*/
++    INT32 ObjTouchProbePos1NegValue;/**< \brief Touch probe position 1 negative value (0x60BB)*/
+     TOBJ60C2 objInterpolationTimePeriod; /**< \brief Interpolation Time Period (0x60C2)*/
++    TOBJ60D0 objTouchProbeSource; /**< \brief Touch probe source (0x60D0)*/
++    UINT16 objPositiveTorqueLimitValue; /**< \brief Positive Torque Limit Value (0x60E0)*/
++    UINT16 objNegativeTorqueLimitValue; /**< \brief Negative Torque Limit Value (0x60E1)*/
++    INT32 objFollowingErrorActualValue;/**< \brief Following Error Actual Value (0x60F4)*/
++    UINT32 objDigitalInputs;/**< \brief Digital inputs (0x60FD)*/
++    TOBJ60FE objDigitalOutputs;/**< \brief DigitalOutputs (0x60FE)*/
+     INT32 objTargetVelocity; /**< \brief Target Velocity (0x60FF)*/
++    INT16 objMotorType;/**< \brief Motor Type (0x6402)*/
+     UINT32 objSupportedDriveModes; /**< \brief Supported Drive Modes (0x6502)*/
+ }OBJ_STRUCT_PACKED_END
+ CiA402Objects;
+@@ -615,7 +727,7 @@
+     BOOL        bHighLevelPowerApplied; /**< \brief High Level Power applied*/
+     BOOL        bAxisFunctionEnabled; /**< \brief Axis functions enabled*/
+     BOOL        bConfigurationAllowed; /**< \brief Configuration allowed*/
+-
++    UINT16      u16AxisNum;/**< \brief Axis Number*/
+     UINT16      i16State; /**< \brief Axis state*/
+     UINT16      u16PendingOptionCode; /**< \brief Pending operation code*/
+     double      fCurPosition; /**< \brief Current position within control loop*/
+@@ -686,7 +798,15 @@
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 002*/
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 003*/
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 004*/
+-   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 005*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 005*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 006*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 007*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 008*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 009*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 010*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 011*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 012*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 013*/
+ 
+ 
+ /**
+@@ -704,7 +824,14 @@
+    {DEFTYPE_UNSIGNED8, 0x8, ACCESS_READ }, /* Subindex 000 */
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 001*/
+    { DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ }, /* SubIndex 002*/
+-   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 003*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 003*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 004*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 005*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 006*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 007*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 008*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 009*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 010*/
+ 
+ 
+ /**
+@@ -722,7 +849,14 @@
+    {DEFTYPE_UNSIGNED8, 0x8, ACCESS_READ }, /* Subindex 000 */
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 001*/
+    { DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ }, /* SubIndex 002*/
+-   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 003*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 003*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 004*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 005*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 006*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 007*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 008*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 009*/
++
+ 
+ 
+ /**
+@@ -743,7 +877,14 @@
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 002*/
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 003*/
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 004*/
+-   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 005 */
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 005*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 006*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 007*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 008*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 009*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 010*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 011*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 012 */
+ 
+    
+ /**
+@@ -761,7 +902,14 @@
+    {DEFTYPE_UNSIGNED8, 0x8, ACCESS_READ }, /* Subindex 000 */
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 001*/
+    { DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ }, /* SubIndex 002*/
+-   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 003 */
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 003*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 004*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 005*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 006*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 007*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 008*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 009*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 010 */
+ 
+ 
+ /**
+@@ -780,7 +928,13 @@
+    {DEFTYPE_UNSIGNED8, 0x8, ACCESS_READ }, /* Subindex 000 */
+    {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 001*/
+    { DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ }, /* SubIndex 002*/
+-   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 003*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 003*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 004*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 005*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 006*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 007*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}, /* SubIndex 008*/
++   {DEFTYPE_UNSIGNED32, 0x20, ACCESS_READ}}; /* SubIndex 009*/
+ 
+    
+ /**
+@@ -836,6 +990,12 @@
+ /** \brief Object 0x605C (Disable Operation Option Code) object name*/
+ OBJCONST UCHAR OBJMEM aName0x605C[] = "Disable Operation Option Code";
+ 
++/** \brief Object 0x605D (Halt Option Code) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x605D = {DEFTYPE_INTEGER16, 0x10, ACCESS_READWRITE};
++
++/** \brief Object 0x605D (Halt Option Code) object name*/
++OBJCONST UCHAR OBJMEM aName0x605D[] = "Halt Option Code";
++
+ /** \brief Object 0x605E (Fault Reaction Code) entry description*/
+ OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x605E = {DEFTYPE_INTEGER16, 0x10, ACCESS_READWRITE};
+ 
+@@ -854,18 +1014,54 @@
+ /** \brief Object 0x6061 (Modes of Operation Display) object name*/
+ OBJCONST UCHAR OBJMEM aName0x6061[] = "Modes of Operation Display";
+ 
++/** \brief Object 0x6062 (Position Demand Value) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6062 = {DEFTYPE_INTEGER32, 0x20, ACCESS_READ};
++
++/** \brief Object 0x6062 (Position Demand Value) object name*/
++OBJCONST UCHAR OBJMEM aName0x6062[] = "Position Demand Value";
++
++/** \brief Object 0x6063 (Modes of Operation Display) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6063 = {DEFTYPE_INTEGER32, 0x20, ACCESS_READ};
++
++/** \brief Object 0x6063 (Position Actual Internal Value) object name*/
++OBJCONST UCHAR OBJMEM aName0x6063[] = "Position Actual Internal Value";
++
+ /** \brief Object 0x6064 (Position Actual Value) entry description*/
+ OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6064 = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READ | OBJACCESS_TXPDOMAPPING)};
+ 
+ /** \brief Object 0x6064 (Position Actual Value) object name*/
+ OBJCONST UCHAR OBJMEM aName0x6064[] = "Position Actual Value";
+ 
++/** \brief Object 0x6065 (Following error window) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6065 = {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE)};
++
++/** \brief Object 0x6065 (Following error window) object name*/
++OBJCONST UCHAR OBJMEM aName0x6065[] = "Following Error Window";
++
++/** \brief Object 0x6066 (Following error time out) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6066 = {DEFTYPE_UNSIGNED32, 0x10, (ACCESS_READWRITE)};
++
++/** \brief Object 0x6066 (Following error time out) object name*/
++OBJCONST UCHAR OBJMEM aName0x6066[] = "Following error time out";
++
++/** \brief Object 0x6067 (Position Window) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6067 = {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE)};
++
++/** \brief Object 0x6067 (Position Window) object name*/
++OBJCONST UCHAR OBJMEM aName0x6067[] = "Position window";
++
+ /** \brief Object 0x606C (Velocity Actual Value) entry description*/
+ OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x606C = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READ | OBJACCESS_TXPDOMAPPING)};
+ 
+ /** \brief Object 0x606C (Velocity Actual Value) object name*/
+ OBJCONST UCHAR OBJMEM aName0x606C[] = "Velocity Actual Value";
+ 
++/**< \brief Object 0x6072 (Max Torque) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6072 = {DEFTYPE_UNSIGNED16, 0x10, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)};
++
++/**< \brief Object 0x6072 (Max Torque) object name*/
++OBJCONST UCHAR OBJMEM aName0x6072[] = "Max Torque";
++
+ /** \brief Object 0x6077 (Torque Actual Value) entry description*/
+ OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6077 = {DEFTYPE_INTEGER16, 0x10, (ACCESS_READ | OBJACCESS_TXPDOMAPPING) };
+ 
+@@ -878,6 +1074,29 @@
+ /** \brief Object 0x607A (Target Position) object name*/
+ OBJCONST UCHAR OBJMEM aName0x607A[] = "Target Position";
+ 
++/**
++ * \brief Object 0x607B (Position range limit) entry description
++ *
++ * Subindex 0<br>
++ * Subindex 1 : Min position range limit<br>
++ * Subindex 2 : Max position range limit
++ */
++OBJCONST TSDOINFOENTRYDESC    OBJMEM asEntryDesc0x607B[] = {
++    {DEFTYPE_UNSIGNED8, 0x08, ACCESS_READ},
++    {DEFTYPE_INTEGER32, 0x20, ACCESS_READWRITE | OBJACCESS_RXPDOMAPPING},
++    {DEFTYPE_INTEGER32, 0x20, ACCESS_READWRITE | OBJACCESS_RXPDOMAPPING}};
++
++/** \brief Object 0x607B (Position range limit) object and entry names*/
++OBJCONST UCHAR OBJMEM aName0x607B[] = "Position range limit\000Min position range limit\000Max position range limit\000\377";
++
++
++/** \brief Object 0x607C (Home Offset) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x607C = {DEFTYPE_INTEGER32, 0x20, ACCESS_READWRITE};
++
++/** \brief Object 0x607C (Home Offset) object name*/
++OBJCONST UCHAR OBJMEM aName0x607C[] = "Home Offset";
++
++
+ /** 
+  * \brief Object 0x607D (Software Position Limit) entry description
+  * 
+@@ -902,6 +1121,73 @@
+ OBJCONST UCHAR OBJMEM aName0x6085[] = "Quick stop deceleration";
+ 
+ 
++/**
++ * \brief Object 0x6091 (Gear ratio) entry description
++ *
++ * Subindex 0<br>
++ * Subindex 1 : Motor revolutions<br>
++ * Subindex 2 : Shaft revolutions
++ */
++OBJCONST TSDOINFOENTRYDESC    OBJMEM asEntryDesc0x6091[] = {
++    {DEFTYPE_UNSIGNED8, 0x08, ACCESS_READ},
++    {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE)},
++    {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE)}};
++
++
++/** \brief Object 0x6091 (Gear ratio) object and entry names*/
++OBJCONST UCHAR OBJMEM aName0x6091[] = "Gear ratio\000Motor revolutions\000Shaft revolutions\000\377";
++
++/**
++ * \brief Object 0x6099 (Homing speeds) entry description
++ *
++ * Subindex 0<br>
++ * Subindex 1 : Speed during search for switch<br>
++ * Subindex 2 : Speed during search for zero<br>
++ */
++OBJCONST TSDOINFOENTRYDESC    OBJMEM asEntryDesc0x6099[] = {
++    {DEFTYPE_UNSIGNED8, 0x08, ACCESS_READ},
++    {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE)},
++    {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE)}};
++
++/** \brief Object 0x6099 (Homing speeds) object and entry names*/
++OBJCONST UCHAR OBJMEM aName0x6099[] = "Homing speeds\000Speed during search for switch\000Speed during search for zero\000\377";
++
++/**< \brief Object 0x60B0 (Position Offset) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60B0 = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)};
++/**< \brief Object 0x60B0 (Position Offset) object name*/
++OBJCONST UCHAR OBJMEM aName0x60B0[] = "Position Offset";
++
++/**< \brief Object 0x60B1(Velocity Offset) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60B1 = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)};
++/**< \brief Object 0x60B1(Velocity Offset) object name*/
++OBJCONST UCHAR OBJMEM aName0x60B1[] = "Velocity Offset";
++
++/**< \brief Object 0x60B2 (Torque Offset) entry description */
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60B2 = {DEFTYPE_INTEGER16, 0x10, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)};
++/**< \brief Object 0x60B2 (Torque offset) object name */
++OBJCONST UCHAR OBJMEM aName0x60B2[] = "Torque Offset";
++
++/**< \brief Object 0x60B8 (Touch Probe Function) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60B8 = {DEFTYPE_UNSIGNED16, 0x10, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)};
++/**< \brief Object 0x60B8 (Touch Probe Function) object name*/
++OBJCONST UCHAR OBJMEM aName0x60B8[] = "Touch Probe Function";
++
++/**< \brief Object 0x60B9 (Touch Probe Function) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60B9 = {DEFTYPE_UNSIGNED16, 0x10, (ACCESS_READ|OBJACCESS_TXPDOMAPPING)};
++/**< \brief Object 0x60B9 (Touch Probe Function) object name*/
++OBJCONST UCHAR OBJMEM aName0x60B9[] = "Touch Probe Status";
++
++/**< \brief Object 0x60BA (Touch Probe Function) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60BA = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READ|OBJACCESS_TXPDOMAPPING)};
++/**< \brief Object 0x60BA (Touch Probe Function) object name*/
++OBJCONST UCHAR OBJMEM aName0x60BA[] = "Touch probe position 1 positive value";
++
++/**< \brief Object 0x60BB (Touch Probe Function) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60BB = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READ|OBJACCESS_TXPDOMAPPING)};
++/**< \brief Object 0x60BB (Touch Probe Function) object name*/
++OBJCONST UCHAR OBJMEM aName0x60BB[] = "Touch probe position 1 negative value";
++
++
+ /** 
+  * \brief Object 0x60C2 (Interpolation Time Period) entry description
+  *
+@@ -918,6 +1204,59 @@
+ OBJCONST UCHAR OBJMEM aName0x60C2[] = "Interpolation Time Period\000Interpolation time period value\000Interpolation time index\000\377";
+ 
+ 
++/**
++ * \brief Object 0x60D0 (Touch probe source) entry description
++ *
++ * Subindex 0<br>
++ * Subindex 1 : Touch probe 1 source<br>
++ */
++OBJCONST TSDOINFOENTRYDESC    OBJMEM asEntryDesc0x60D0[] = {
++    {DEFTYPE_UNSIGNED8, 0x08, ACCESS_READ},
++    {DEFTYPE_INTEGER16, 0x10, ACCESS_READWRITE}};
++
++/** \brief Object 0x60D0 (Touch probe source) object and entry names*/
++OBJCONST UCHAR OBJMEM aName0x60D0[] = "Touch probe source\000Touch probe 1 source\000\377";
++
++
++/**< \brief Object 0x60E0 (Positive Torque Limit Value) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60E0 = {DEFTYPE_UNSIGNED16, 0x10, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)};
++/**< \brief Object 0x60E0 (Positive Torque Limit Value) object name*/
++OBJCONST UCHAR OBJMEM aName0x60E0[] = "Positive Torque Limit Value";
++
++
++/**< \brief Object 0x60E1 (Negative Torque Limit Value ) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60E1 = {DEFTYPE_UNSIGNED16, 0x10, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)};
++
++/**< \brief Object 0x60E1 (Negative Torque Limit Value ) object name*/
++OBJCONST UCHAR OBJMEM aName0x60E1[] = "Negative Torque Limit Value";
++
++
++/**< \brief Object 0x60F4 (Following Error Actual Value) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60F4 = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READ|OBJACCESS_TXPDOMAPPING)};
++/**< \brief Object 0x60F4 (Following Error Actual Value) object name*/
++OBJCONST UCHAR OBJMEM aName0x60F4[] = "Following Error Actual Value";
++/**< \brief Object 0x60FD (Digital Inputs) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60FD = {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READ|OBJACCESS_TXPDOMAPPING)};
++/**< \brief Object 0x60FD (Digital Inputs) object name*/
++OBJCONST UCHAR OBJMEM aName0x60FD[] = "Digital Inputs";
++
++
++/**
++ * \brief Object 0x60FE (Digital Outputs) entry description
++ *
++ * Subindex 0<br>
++ * Subindex 1 : Physical outputs<br>
++ * Subindex 2 : Bit mask
++ */
++OBJCONST TSDOINFOENTRYDESC    OBJMEM asEntryDesc0x60FE[] = {
++    {DEFTYPE_UNSIGNED8, 0x08, ACCESS_READ},
++    {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE|OBJACCESS_RXPDOMAPPING)},
++    {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READWRITE|OBJACCESS_SETTINGS)}};
++
++/** \brief Object 0x60FE (Digital Outputs) object name*/
++OBJCONST UCHAR OBJMEM aName0x60FE[] = "Digital Outputs\000Physical outputs\000Bit mask\000\377";
++
++
+ /** \brief Object 0x60FF (Target Velocity) entry description*/
+ OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x60FF = {DEFTYPE_INTEGER32, 0x20, (ACCESS_READWRITE | OBJACCESS_RXPDOMAPPING)};
+ 
+@@ -925,6 +1264,13 @@
+ OBJCONST UCHAR OBJMEM aName0x60FF[] = "Target Velocity";
+ 
+ 
++/** \brief Object 0x6402 (Motor type) entry description*/
++OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6402 = {DEFTYPE_INTEGER16, 0x10, ACCESS_READWRITE};
++
++/** \brief Object 0x6402 (Motor type) object name*/
++OBJCONST UCHAR OBJMEM aName0x6402[] = "Motor Type";
++
++
+ /** \brief Object 0x6502 (Supported Drive Modes) entry description*/
+ OBJCONST TSDOINFOENTRYDESC    OBJMEM sEntryDesc0x6502 = {DEFTYPE_UNSIGNED32, 0x20, (ACCESS_READ | OBJACCESS_TXPDOMAPPING )};
+ 
+@@ -1031,7 +1377,7 @@
+  */
+ PROTO TOBJ1C12 sRxPDOassign
+ #ifdef _CiA402_
+-= {1,{0x1602,0x0}}
++= {1,{0x1601,0x0}}
+ #endif
+ ;
+ 
+@@ -1045,7 +1391,7 @@
+  */
+ PROTO TOBJ1C13 sTxPDOassign
+ #ifdef _CiA402_
+-= {1,{0x1A02,0x0}}
++= {1,{0x1A01,0x0}}
+ #endif
+ ;
+ /** @}*/
+@@ -1091,7 +1437,7 @@
+  */
+ PROTO TOBJF030 sConfiguredModuleIdentList
+ #ifdef _CiA402_
+-= {1,{0x319800,0}}
++= {1,{0x219800,0}}
+ #endif
+ ;
+ 
+@@ -1107,7 +1453,7 @@
+  */
+ PROTO TOBJF050 sDetectedModuleIdentList
+ #ifdef _CiA402_
+-= {1,{0x319800,0}}
++= {1,{0x219800,0}}
+ #endif
+ ;
+ /** @}*/
+@@ -1124,30 +1470,55 @@
+ PROTO CiA402Objects DefCiA402ObjectValues
+ #ifdef _CiA402_
+ = {
+-{5, {0x60400010,0x607A0020,0x60FF0020,0x60600008,0x00000008}},    /* TOBJ1600*/
+-{3, {0x60400010,0x607A0020,0x00000010 }}, /*TOBJ1601*/
+-{3, {0x60400010,0x60FF0020,0x00000010 }}, /*TOBJ1602*/
+-{5, {0x60410010,0x60640020,0x606C0020,0x60610008,0x00000008}}, /*TOBJ1A00*/
+-{3, {0x60410010,0x60640020,0x00000010 }}, /*TOBJ1A01*/
+-{3, {0x60410010,0x60640020,0x00000010 }},/*TOBJ1A02*/
+-0x0,/*(UINT16) ErrorCode 0x1001*/
++{13, {0x60400010,0x60600008,0x00000018,0x60720010,0x607A0020,0x60B00020,0x60B10020,0x60B20010,0x60B80010,0x60E00010,0x60E10010,0x60FE0120,0x60FF0020}},    /* TOBJ1600*/
++{10, {0x60400010,0x60720010,0x607A0020,0x60B00020,0x60B10020,0x60B20010,0x60B80010,0x60E00010,0x60E10010,0x60FE0120}}, /*TOBJ1601*/
++{9, {0x60400010,0x60720010,0x60B10020,0x60B20010,0x60B80010,0x60E00010,0x60E10010,0x60FE0120,0x60FF0020}}, /*TOBJ1602*/
++{12, {0x603F0010,0x60410010,0x60610008,0x00000018,0x60640020,0x606C0020,0x60770010,0x60B90010,0x60BA0020,0x60BB0020,0x60F40020,0x60FD0020}}, /*TOBJ1A00*/
++{10, {0x603F0010,0x60410010,0x60640020,0x606C0020,0x60770010,0x60B90010,0x60BA0020,0x60BB0020,0x60F40020,0x60FD0020}}, /*TOBJ1A01*/
++{9, {0x603F0010,0x60410010,0x60640020,0x606C0020,0x60770010,0x60B90010,0x60BA0020,0x60BB0020,0x60FD0020}},/*TOBJ1A02*/
++0x0,/*(UINT16) ErrorCode 0x603F*/
+ 0x0,/*(UINT16) ControlWord 0x6040*/
+ 0x0,/*(UINT16) StatusWord 0x6041*/
+ 0x2,/*(INT16) QuickStopOptionCode 0x605A*/
+ DISABLE_DRIVE,/*(INT16)ShutdownOptionCode 0x605B*/
+ SLOW_DOWN_RAMP, /*(INT16) DisableOperationCode 0x605C*/
++0x0, /*(INT16) HaltOptionCode 0x605D*/
+ QUICKSTOP_RAMP,/*(INT16) FaultReactionCode 0x605E*/
+-0x0,/*(INT16) ModeOfOperation 0x6060*/
+-0x0,/*(INT16) Mode Of Operation Display 0x6061*/
++0x8,/*(INT8) ModeOfOperation 0x6060*/
++0x0,/*(INT8) Mode Of Operation Display 0x6061*/
++0x0,/*(INT32) Position Demand Value 0x6062*/
++0x0,/*(INT32) Position Actual Internal Value 0x6063*/
+ 0x0,/*(INT32) Position Actual Value 0x6064*/
++0x0,/*(UINT32) Following Error Window 0x6065*/
++0x0,/*(INT32) Following error time out 0x6066*/
++0x0,/*(UINT32) Position Window 0x6067*/
+ 0x0,/*(INT32) Velocity Actual Value 0x606C*/
++0x0,/*(UINT16) Max Torque 0x6072*/
+ 0x0,/*(INT16) Torque Actual Value 0x6077*/
+ 0x0,/*(INT32) Target Position 0x607A*/
+-{2,0x88CA6C00,0x77359400},/*TOBJ607D Software Position Limit (minLimit: -2000000000 / maxLimit: 2000000000)*/
++{2,(INT32)0x88CA6C00,0x77359400},/*TOBJ607B Position range limit (minLimit: -2000000000 / maxLimit: 2000000000)*/
++0x0,/*(INT32) Home Offset 0x607C*/
++{2,(INT32)0x88CA6C00,0x77359400},/*TOBJ607D Software Position Limit (minLimit: -2000000000 / maxLimit: 2000000000)*/
+ 0x0,/*(UINT32) QuickStopDeclaration 0x6085*/
++{2,0x0,0x0},/*TOBJ6091 Gear Ratio (Motor revolutions: 0 / Shaft revolutions: 0)*/
++{2,0x0,0x0},/*TOBJ6099 Homing Speeds (Speed during search for switch: 0 / Speed during search for zero: 0)*/
++0x0,/*(INT32) Position Offset 0x60B0*/
++0x0,/*(INT32) Velocity Offset 0x60B1*/
++0x0,/*(INT32) Torque Offset 0x60B2*/
++0x0,/*(UINT16) Touch Probe Function 0x60B8*/
++0x0,/*(UINT16) Touch Probe Status 0x60B9*/
++0x0,/*(INT32) Touch Probe Pos 1 Pos Value 0x60BA*/
++0x0,/*(INT32) Touch Probe Pos 1 Neg Value 0x60BB*/
+ {2,1,-3},/*TOBJ60C2 Interpolation Time Period*/
++{1,0x0},/*TOBJ60D0 Touch probe source*/
++0x0,/*(UINT16) Positive Torque Limit Value 0x60E0*/
++0x0,/*(UINT16) Negative Torque Limit Value 0x60E1*/
++0x0,/*(INT32) Following Error Actual Value 0x60F4*/
++0x0,/*(UINT32) Digital Inputs 0x60FD*/
++{2,0,0},/*TOBJ60FE DigitalOutputs*/
+ 0x0,/*(INT32) Target Velocity    0x60FF*/
+-0x0/*(UINT32) Supported Drive Modes 0x6502*/
++0x0,/*(INT16) Motor Type 0x6402*/
++0x180/*(UINT32) Supported Drive Modes 0x6502*/
+ }
+ #endif
+ ;
+@@ -1183,60 +1554,109 @@
+ PROTO TOBJECT    OBJMEM DefCiA402AxisObjDic[]
+ #ifdef _CiA402_
+ = {
+-    /* Object 0x1600 */
+-    {NULL,NULL, 0x1600, {DEFTYPE_PDOMAPPING, 5 | (OBJCODE_REC << 8)}, asEntryDesc0x1600, aName0x1600, NULL, NULL, NULL, 0x0000 },
+-    /* Object 0x1601 */
+-   {NULL,NULL, 0x1601, {DEFTYPE_PDOMAPPING, 3 | (OBJCODE_REC << 8)}, asEntryDesc0x1601, aName0x1601,NULL, NULL, NULL, 0x0000 },
+-    /* Object 0x1602 */
+-   {NULL,NULL, 0x1602, {DEFTYPE_PDOMAPPING, 3 | (OBJCODE_REC << 8)}, asEntryDesc0x1602, aName0x1602, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x1A00 */
+-   {NULL,NULL, 0x1A00, {DEFTYPE_PDOMAPPING, 5 | (OBJCODE_REC << 8)}, asEntryDesc0x1A00, aName0x1A00, NULL, NULL, NULL, 0x0000 },	
+-   /* Object 0x1A01 */
+-   {NULL,NULL, 0x1A01, {DEFTYPE_PDOMAPPING, 3 | (OBJCODE_REC << 8)}, asEntryDesc0x1A01, aName0x1A01, NULL, NULL, NULL, 0x0000 },	
+-   /* Object 0x1A02 */
+-   {NULL,NULL, 0x1A02, {DEFTYPE_PDOMAPPING, 3 | (OBJCODE_REC << 8)}, asEntryDesc0x1A02, aName0x1A02, NULL, NULL, NULL, 0x0000 },	
+-   /* Object 0x603F */
+-   {NULL,NULL, 0x603F, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x603F, aName0x603F, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6040 */
+-   {NULL,NULL, 0x6040, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6040, aName0x6040, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6041 */
+-   {NULL,NULL, 0x6041, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6041, aName0x6041, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x605A */
+-   {NULL,NULL, 0x605A, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605A, aName0x605A, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x605B */
+-   {NULL,NULL, 0x605B, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605B, aName0x605B, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x605C */
+-   {NULL,NULL, 0x605C, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605C, aName0x605C, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x605E */
+-   {NULL,NULL, 0x605E, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605E, aName0x605E, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6060 */
+-    {NULL,NULL, 0x6060, {DEFTYPE_INTEGER8 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6060, aName0x6060, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6061 */
+-   {NULL,NULL, 0x6061, {DEFTYPE_INTEGER8 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6061, aName0x6061, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6064 */
+-   {NULL,NULL, 0x6064, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6064, aName0x6064, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x606C */
+-   {NULL,NULL, 0x606C, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x606C, aName0x606C, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6077 */
+-   {NULL,NULL, 0x6077, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6077, aName0x6077, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x607D */
+-   {NULL,NULL, 0x607D, {DEFTYPE_INTEGER32 , 2 | (OBJCODE_ARR << 8)}, asEntryDesc0x607D, aName0x607D, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x607A */
+-   {NULL,NULL, 0x607A, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x607A, aName0x607A, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6085 */
+-   {NULL,NULL, 0x6085, {DEFTYPE_UNSIGNED32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6085, aName0x6085, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x60C2 */
+-   {NULL,NULL, 0x60C2, {DEFTYPE_RECORD , 2 | (OBJCODE_REC << 8)}, asEntryDesc0x60C2, aName0x60C2, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x60FF */
+-   {NULL,NULL, 0x60FF, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60FF, aName0x60FF, NULL, NULL, NULL, 0x0000 },
+-   /* Object 0x6502 */
+-   {NULL,NULL, 0x6502, {DEFTYPE_UNSIGNED32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6502, aName0x6502, NULL, NULL, NULL, 0x0000 },
++   /* Object 0x1600 */
++   {NULL,NULL, 0x1600, {DEFTYPE_PDOMAPPING, 13 | (OBJCODE_REC << 8)}, asEntryDesc0x1600, aName0x1600, NULL, NULL, NULL, 0x0000 },
++   /* Object 0x1601 */
++  {NULL,NULL, 0x1601, {DEFTYPE_PDOMAPPING, 10 | (OBJCODE_REC << 8)}, asEntryDesc0x1601, aName0x1601,NULL, NULL, NULL, 0x0000 },
++   /* Object 0x1602 */
++  {NULL,NULL, 0x1602, {DEFTYPE_PDOMAPPING, 9 | (OBJCODE_REC << 8)}, asEntryDesc0x1602, aName0x1602, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x1A00 */
++  {NULL,NULL, 0x1A00, {DEFTYPE_PDOMAPPING, 12 | (OBJCODE_REC << 8)}, asEntryDesc0x1A00, aName0x1A00, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x1A01 */
++  {NULL,NULL, 0x1A01, {DEFTYPE_PDOMAPPING, 10 | (OBJCODE_REC << 8)}, asEntryDesc0x1A01, aName0x1A01, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x1A02 */
++  {NULL,NULL, 0x1A02, {DEFTYPE_PDOMAPPING, 9 | (OBJCODE_REC << 8)}, asEntryDesc0x1A02, aName0x1A02, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x603F */
++  {NULL,NULL, 0x603F, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x603F, aName0x603F, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6040 */
++  {NULL,NULL, 0x6040, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6040, aName0x6040, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6041 */
++  {NULL,NULL, 0x6041, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6041, aName0x6041, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x605A */
++  {NULL,NULL, 0x605A, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605A, aName0x605A, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x605B */
++  {NULL,NULL, 0x605B, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605B, aName0x605B, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x605C */
++  {NULL,NULL, 0x605C, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605C, aName0x605C, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x605D */
++  {NULL,NULL, 0x605D, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605D, aName0x605D, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x605E */
++  {NULL,NULL, 0x605E, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x605E, aName0x605E, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6060 */
++   {NULL,NULL, 0x6060, {DEFTYPE_INTEGER8 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6060, aName0x6060, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6061 */
++  {NULL,NULL, 0x6061, {DEFTYPE_INTEGER8 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6061, aName0x6061, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6062 */
++  {NULL,NULL, 0x6062, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6062, aName0x6062, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6063 */
++  {NULL,NULL, 0x6063, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6063, aName0x6063, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6064 */
++  {NULL,NULL, 0x6064, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6064, aName0x6064, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6065 */
++  {NULL,NULL, 0x6065, {DEFTYPE_UNSIGNED32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6065, aName0x6065, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6066 */
++  {NULL,NULL, 0x6066, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6066, aName0x6066, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6067 */
++  {NULL,NULL, 0x6067, {DEFTYPE_UNSIGNED32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6067, aName0x6067, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x606C */
++  {NULL,NULL, 0x606C, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x606C, aName0x606C, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6072 */
++  {NULL,NULL, 0x6072, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6072, aName0x6072, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6077 */
++  {NULL,NULL, 0x6077, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6077, aName0x6077, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x607B */
++  {NULL,NULL, 0x607B, {DEFTYPE_RECORD , 2 | (OBJCODE_REC << 8)}, asEntryDesc0x607B, aName0x607B, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x607C */
++  {NULL,NULL, 0x607C, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x607C, aName0x607C, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x607D */
++  {NULL,NULL, 0x607D, {DEFTYPE_RECORD , 2 | (OBJCODE_REC << 8)}, asEntryDesc0x607D, aName0x607D, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x607A */
++  {NULL,NULL, 0x607A, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x607A, aName0x607A, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6085 */
++  {NULL,NULL, 0x6085, {DEFTYPE_UNSIGNED32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6085, aName0x6085, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6091 */
++  {NULL,NULL, 0x6091, {DEFTYPE_RECORD , 2 | (OBJCODE_REC << 8)}, asEntryDesc0x6091, aName0x6091, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6099 */
++  {NULL,NULL, 0x6099, {DEFTYPE_RECORD , 2 | (OBJCODE_REC << 8)}, asEntryDesc0x6099, aName0x6099, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60B0 */
++  {NULL,NULL, 0x60B0, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60B0, aName0x60B0, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60B1 */
++  {NULL,NULL, 0x60B1, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60B1, aName0x60B1, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60B2 */
++  {NULL,NULL, 0x60B2, {DEFTYPE_INTEGER16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60B2, aName0x60B2, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60B8 */
++  {NULL,NULL, 0x60B8, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60B8, aName0x60B8, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60B9 */
++  {NULL,NULL, 0x60B9, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60B9, aName0x60B9, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60BA */
++  {NULL,NULL, 0x60BA, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60BA, aName0x60BA, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60BC */
++  {NULL,NULL, 0x60BB, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60BB, aName0x60BB, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60C2 */
++  {NULL,NULL, 0x60C2, {DEFTYPE_RECORD , 2 | (OBJCODE_REC << 8)}, asEntryDesc0x60C2, aName0x60C2, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60D0 */
++  {NULL,NULL, 0x60D0, {DEFTYPE_RECORD , 1 | (OBJCODE_REC << 8)}, asEntryDesc0x60D0, aName0x60D0, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60E0*/
++  {NULL,NULL, 0x60E0, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60E0, aName0x60E0, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60E1 */
++  {NULL,NULL, 0x60E1, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60E1, aName0x60E1, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60F4 */
++  {NULL,NULL, 0x60F4, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60F4, aName0x60F4, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60FD */
++  {NULL,NULL, 0x60FD, {DEFTYPE_UNSIGNED32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60FD, aName0x60FD, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60FE */
++  {NULL,NULL, 0x60FE, {DEFTYPE_RECORD , 2 | (OBJCODE_REC << 8)}, asEntryDesc0x60FE, aName0x60FE, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x60FF */
++  {NULL,NULL, 0x60FF, {DEFTYPE_INTEGER32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x60FF, aName0x60FF, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6402 */
++  {NULL,NULL, 0x6402, {DEFTYPE_UNSIGNED16 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6402, aName0x6402, NULL, NULL, NULL, 0x0000 },
++  /* Object 0x6502 */
++  {NULL,NULL, 0x6502, {DEFTYPE_UNSIGNED32 , 0 | (OBJCODE_VAR << 8)}, &sEntryDesc0x6502, aName0x6502, NULL, NULL, NULL, 0x0000 },
+    {NULL,NULL, 0xFFFF, {0, 0}, NULL, NULL, NULL, NULL, NULL, 0x000}}
+ #endif
+ ;
+ 
+ PROTO void APPL_Application(void);
+-PROTO UINT16 APPL_GetDeviceID(void);
+ 
+ PROTO void   APPL_AckErrorInd(UINT16 stateTrans);
+ PROTO UINT16 APPL_StartMailboxHandler(void);
+diff -u Src/ecatappl.c Src_patch/ecatappl.c
+--- Src/ecatappl.c	2026-08-07 15:34:08 +0800
++++ Src_patch/ecatappl.c	2026-08-07 10:06:42 +0800
+@@ -153,7 +153,8 @@
+ /*ECATCHANGE_END(V5.13) CIA402 3*/
+ #include "cia402appl.h"
+ 
+-
++#include "hal_data.h"
++#include "samplecia402.h"
+ 
+ /*--------------------------------------------------------------------------------------
+ ------
+@@ -1061,6 +1062,8 @@
+                 ECAT_CheckTimer();
+ 
+                 HW_ClearTimer();
++
++                DummyMotor();
+             }
+         }
+ 
+diff -u Src/ecatcoe.h Src_patch/ecatcoe.h
+--- Src/ecatcoe.h	2026-08-07 15:34:08 +0800
++++ Src_patch/ecatcoe.h	2026-08-07 10:06:42 +0800
+@@ -73,6 +73,7 @@
+ /**
+  * \brief CoE Mailbox header
+  */
++#pragma pack(1)
+ typedef struct MBX_STRUCT_PACKED_START
+ {
+   TMBXHEADER        MbxHeader; /**< \brief mailbox header*/
+@@ -80,7 +81,7 @@
+   UINT16            Data[((MAX_MBX_DATA_SIZE)-(COE_HEADER_SIZE)) >> 1]; /**< \brief CoE data*/
+ }MBX_STRUCT_PACKED_END
+ TCOEMBX;
+-
++#pragma pack()
+ 
+ #endif //_ECATCOE_H_
+ 
+diff -u Src/ecatslv.c Src_patch/ecatslv.c
+--- Src/ecatslv.c	2026-08-07 15:34:08 +0800
++++ Src_patch/ecatslv.c	2026-08-07 15:17:23 +0800
+@@ -220,6 +220,7 @@
+ /*ECATCHANGE_START(V5.13) CIA402 3*/
+ /*ECATCHANGE_END(V5.13) CIA402 3*/
+ #include "cia402appl.h"
++#include "samplecia402.h"
+ 
+ /*--------------------------------------------------------------------------------------
+ ------
+@@ -1153,6 +1154,7 @@
+     bSmSyncSequenceValid = FALSE;
+     i16WaitForPllRunningTimeout = 0;
+ 
++#if 0
+ /*ECATCHANGE_START(V5.13) ECAT1*/
+     /*Get Sync mapped to AL Event indication*/
+     {
+@@ -1169,6 +1171,7 @@
+         }
+     }
+ /*ECATCHANGE_END(V5.13) ECAT1*/
++#endif
+     sSyncManInPar.u16SmEventMissedCounter = 0;
+     sSyncManInPar.u16CycleExceededCounter = 0;
+     sSyncManInPar.u8SyncError = 0;
+diff -u Src/mailbox.h Src_patch/mailbox.h
+--- Src/mailbox.h	2026-08-07 15:34:08 +0800
++++ Src_patch/mailbox.h	2026-08-07 10:06:42 +0800
+@@ -90,7 +90,7 @@
+ #define    MBXERR_INVALIDSIZE              0x08 /**< \brief Mailbox error "Invalid size"*/
+ #define    MBXERR_SERVICEINWORK            0x09 /**< \brief Mailbox error "Service in work"*/
+ 
+-
++#pragma pack(1)
+ /**
+  * \brief Mailbox header
+  */
+@@ -110,7 +110,7 @@
+ TMBXHEADER;
+ 
+ 
+-#define     MBX_HEADER_SIZE         6 /**< \brief Mailbox header size*/
++#define     MBX_HEADER_SIZE         SIZEOF(TMBXHEADER) /**< \brief Mailbox header size*/
+ 
+ 
+ #define     MAX_MBX_DATA_SIZE       (MAX_MBX_SIZE - MBX_HEADER_SIZE) /**< \brief Mailbox data size*/
+@@ -136,7 +136,7 @@
+     UINT16    maxQueueSize; /**< \brief Max queue size*/
+     TMBX MBXMEM * queue[(MAX_MBX_QUEUE_SIZE)+1]; /**< \brief Queue buffer*/
+ } TMBXQUEUE;
+-
++#pragma pack()
+ 
+ 
+ #endif //_MAILBOX_H_
+diff -u Src/sdoserv.h Src_patch/sdoserv.h
+--- Src/sdoserv.h	2026-08-07 15:34:08 +0800
++++ Src_patch/sdoserv.h	2026-08-07 10:06:42 +0800
+@@ -89,7 +89,7 @@
+ #define     SDOSERVICE_ABORTTRANSFER            ((UINT8) (((UINT8) 0x04) << (SDOHEADERSHIFT_COMMAND))) /**< \brief SDO abort*/
+ /** @}*/
+ 
+-
++#pragma pack(1)
+ /**
+  * \addtogroup SdoHeaderData SDO Header and Data
+  * @{
+@@ -559,7 +559,7 @@
+   TSDOINFOHEADER    SdoHeader; /**< \brief SDO Info header and data*/
+ }MBX_STRUCT_PACKED_END
+ TSDOINFORMATION;
+-
++#pragma pack()
+ 
+ #define     SIZEOF_SDOINFOHEAD                  4 /**< \brief SDO Info header size*/
+ #define     SIZEOF_SDOINFO                      ( (COE_HEADER_SIZE) + (SIZEOF_SDOINFOHEAD )) /**< \brief SDO Info and CoE Size*/
