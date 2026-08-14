@@ -2,7 +2,9 @@
 
 ### 工程概述
 
-- 该示例工程演示了基于瑞萨 FSP 的 RA8T2 MCU 的 EtherCAT 功能，实现简单的 CiA402 应用。
+- 该示例工程演示了基于瑞萨 FSP 的 RA8T2 MCU 的 EtherCAT 功能，包括：
+  - I/O应用
+  - CiA402 应用
 - 如果您没有同步代码库及版本控制的需求，也可以[直接下载样例程序的ZIP压缩包](../_ep_archive/ethercat_cpk_ra8t2_ep_rafsp6.5.0.zip)，其中包含了文档和代码。
 
 ### 支持的开发板 / 开发套件 / 演示板：
