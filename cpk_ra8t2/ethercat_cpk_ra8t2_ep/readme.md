@@ -41,11 +41,14 @@
 ### 第三方软件
 无
 
+**示例工程详细的配置和使用方法，请参考应用笔记。**
+
+[CPK-RA8T2 EtherCAT CiA402 演示程序应用笔记](cpk_ra8t2_ethercat_cia402_an_20260813.pdf)
+
+----
+
 ### 在其他开发板上使用本样例程序
 
 - 以下开发套件上有类似或相似的硬件功能，可将本样例程序移植到这些开发套件上运行：
   - [CPKCOR-RA8T2 + CPKEXP-ECSMCB 套件](../cpkcor_ra8t2_ecsmcb/)
 
-**示例工程详细的配置和使用方法，请参考应用笔记。**
-
-[CPK-RA8T2 EtherCAT CiA402 演示程序应用笔记](cpk_ra8t2_ethercat_cia402_an_20260813.pdf)

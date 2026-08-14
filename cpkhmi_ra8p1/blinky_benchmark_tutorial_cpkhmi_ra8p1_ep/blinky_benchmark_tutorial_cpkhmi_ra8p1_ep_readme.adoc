@@ -1,0 +1,270 @@
+:imagesdir: images
+
+:sectnums:
+:sectnumlevels: 2
+
+= blinky_benchmark_tutorial 工程使用说明
+:toc:
+:toc-title: 目录
+
+== 简介
+此样例工程详细说明如何从新建工程到实现代码运行时间测量。
+
+== 新建工程
+
+您也可以参考CPKHMI-RA8P1的使用手册，link:../docs/02_unbox.{manual_doc_ext}[02. CPKHMI-RA8P1开箱]章节的内容新建Blinky工程。
+
+可以参考 e^2^studio 的文档 `Starting Development` -> `Tutorial: Your First RA MCU Project - Blinky` 章节。e^2^studio 的文档可在如下位置找到：
+
+* e^2^studio 安装目录下的 `fsp_documentation` 文件夹内
+* 从 https://github.com/renesas/fsp/releases[FSP Release] 页面下载
+
+需要注意，在设备和工具选择界面，需要选择对应的开发板，不要选择 FSP 文档中的 EK-RA6M3，这里开发板应该选 `CPKHMI-RA8P1` 即本文档对应的开发板，工具链选 `LLVM Embedded Toolchain for Arm`，如下图所示
+
+image::Snipaste_2026-01-04_17-36-09.png[role="thumb"]
+
+== FSP 配置
+
+=== 开启 DCache
+DCache 可以有效加速数据的访问。在 FSP Configuration 配置界面选择 BSP 选项卡，然后在下方窗口点击属性，展开 `RA8P1 Family` -> `Cache settings` 中将 `Data cache` 设为 `Enable`。如下图所示
+
+[.text-center]
+--
+image::Snipaste_2026-01-07_16-55-26.png[role="thumb"]
+--
+
+=== 启用时钟
+后续需要使用 UART 输出消息，因此需要把相应的时钟打开。UART 的时钟源是 SCICLK。在 FSP Configuration 中选择 Clocks 选项卡
+
+* `PLL2 Src` 从 `Disabled` 改为 `XTAL`
+* `SCICLK Src` 从 `Disabled` 改为 `PLL2R`
+
+之后 SCICLK 时钟为 120MHz，这是 SCICLK 时钟允许的最大值。如下图所示
+
+image::Snipaste_2026-01-05_11-26-49.png[role="thumb"]
+
+=== 新建 UART Stack
+在 FSP Configuration 的 Stacks 选项卡中选择 `New Stack` -> `Connectivity` -> `UART (r_sci_b_uart)`
+
+[.text-center]
+--
+image::Snipaste_2026-01-07_17-06-34.png[role="thumb"]
+--
+
+随后点击新添加的 Stack，在下方的属性面板修改属性。根据原理图，RA8P1 与板载 JLink 连接的是 SCI9。展开 Module 下的 General，将
+
+* Name 改为 `g_uart9`
+* Channel 改为 9
+
+[.text-center]
+--
+image::Snipaste_2026-01-07_17-10-04.png[role="thumb"]
+--
+
+板载 JLink 的虚拟串口可以支持到 2000000 的波特率。展开 Module 下的 Baud，将 Baud Rate 改为 2000000
+
+[.text-center]
+--
+image::Snipaste_2026-01-08_10-03-53.png[role="thumb"]
+--
+
+展开 Module 下的 Interrupts，将 Callback 改为 `UART9_Callback`
+
+[.text-center]
+--
+image::Snipaste_2026-01-07_17-13-57.png[role="thumb"]
+--
+
+点击右上角的 `Generate Project Content` 生成工程
+
+image::Snipaste_2026-01-05_13-29-34.png[role="thumb"]
+
+== Debug 配置
+e^2^studio 允许多个编译选项配置，默认为 Debug。当前先在 Debug 配置下验证
+
+=== 添加源文件
+从示例工程中复制 `source` 和 `third` 两个文件夹，粘贴到新工程的 `src` 目录下。之后，新工程的 src 目录结构应是下面这样
+
+[.text-center]
+--
+image::Snipaste_2026-01-21_11-42-41.png[role="thumb"]
+--
+
+=== 添加头文件路径
+在项目资源管理器中对项目名右键单击，打开工程属性设置窗口，依次选择 `C/C++构建`->`设置`，在工具设置选项卡里选择 `Compiler` 下的 `Includes`，点击 `Include file directories` 右侧的绿色加号，如下图所示
+
+[.text-center]
+--
+image::Snipaste_2026-01-05_17-03-23.png[role="thumb"]
+--
+
+之后会弹出如下图所示的对话框，点击 `工作空间`
+
+[.text-center]
+--
+image::Snipaste_2026-01-05_17-58-19.png[role="thumb"]
+--
+
+之后在对话框中选择 src 下的 source 文件夹，点击确定。再用相同的方式添加 src 下的 third 文件夹，添加完成后在包含目录里应该能看到新添加的两个目录
+
+[.text-center]
+--
+image::Snipaste_2026-01-07_17-32-16.png[role="thumb"]
+--
+
+=== 设置优化等级
+e^2^studio 默认给到 `-Os` 优化等级，在 Debug 配置下，可以调低优化等级避免编译器优化和重排指令影响调试状态下观察变量和程序执行步骤。在 `C/C++ 构建` -> `设置` 中的 Optimization 中可以选择 Optimization Level，并不要勾选 Linker-time Optimizer。
+
+[.text-center]
+--
+image::Snipaste_2026-01-09_14-43-28.png[role="thumb"]
+--
+
+=== 设置输入输出
+source 文件夹下的 `console.c` 和 `console.h` 已实现 C 库中的标准输入输出流，添加一个预定义宏 `CONSOLE_CFG_USE_RTT=1` 即可通过 RTT View 进行输入和输出。打开工程属性选项卡，点击 `Macro Defines(-D)` 右侧的绿色加号。如下图所示
+
+image::Snipaste_2026-01-05_18-16-31.png[role="thumb"]
+
+=== 编写要测量的代码
+编辑 `src/hal_entry.c` 文件，在文件开头先包含需要的头文件
+
+[source,c,subs="verbatim,attributes"]
+----
+#include <stdio.h>
+
+#include "console.h"
+#include "hal_data.h"
+
+#include "perf_counter/perf_counter.h"
+----
+
+编写待测代码
+[source,c,subs="verbatim,attributes"]
+----
+static void pinToggleTest(int num)
+{
+    bsp_io_level_t pin_level;
+    int i;
+
+    for (i = 0; i < num; i++) {
+        R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_HIGH);
+        R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        while (pin_level != BSP_IO_LEVEL_HIGH) {
+            R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        }
+
+        R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_LOW);
+        R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        while (pin_level != BSP_IO_LEVEL_LOW) {
+            R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        }
+    }
+}
+----
+
+在生成的 while 循环前初始化其它组件然后调用要测试的函数
+
+[source,c,subs="verbatim,attributes"]
+----
+CONSOLE_Init();
+perfc_init(false);
+
+R_BSP_PinAccessEnable();
+
+__cycleof__("PinToggle") {
+    pinToggleTest(10000);
+}
+
+R_BSP_PinAccessDisable();
+----
+
+=== 运行
+点击调试按钮，进入调试界面。打开 RTT Viewer，在工程目录 Debug 文件夹下的 `.map` 文件中查找 `_SEGGER_RTT`，这是 JLink 需要读取的内存地址。RTT Viewer 的配置如下图所示，红色方框内填写从 map 文件中查找到的内存地址。
+
+[.text-center]
+--
+image::Snipaste_2026-01-06_13-24-58.png[role="thumb"]
+--
+
+运行结果如下：
+
+[.text-center]
+--
+image::Snipaste_2026-01-21_14-01-26.png[role="thumb"]
+--
+
+== Release
+在 Debug 配置下验证后，可以切换到 Release 配置。打开工程的 C/C++ 属性配置。在 `C/C++构建`->`设置`->`管理配置`，弹出的对话框中选中 Release，然后选择设置为活跃。
+
+image::Snipaste_2026-01-06_13-31-34.png[role="thumb"]
+
+NOTE: 切换配置后，先前配置的头文件路径、预定义宏等不会继承过来。头文件的位置同 Debug 配置。
+
+=== 设置优化等级
+在 Release 配置下，可以使用高优化等级获取最佳性能。在 `C/C++ 构建` -> `设置` 中的 Optimization 中可以选择 Optimization Level。在使用 LLVM 编译器的情况下，可以选择 `-O3` 并勾选 Linker-time Optimizer 获得最快的运行速度。
+
+[.text-center]
+--
+image::Snipaste_2026-01-09_14-43-28.png[role="thumb"]
+--
+
+=== 设置输入输出
+在 Release 下，一般不会在调试状态下运行，因此，可以把输入输出指定为使用 UART，source 文件夹下的 `console.c` 和 `console.h` 已实现相关功能，需要添加预定义宏 `CONSOLE_CFG_USE_UART=1` 而不添加 `CONSOLE_CFG_USE_RTT=1`
+
+=== 修改 perf_counter 的实现
+在 Debug 下使用 perf_counter 使用 SysTick 来统计 CPU 周期，在 Release 下可以使用 PMU 来统计 CPU 周期。添加以下两个预定义宏
+
+* `+__PERFC_USE_PMU_PORTING__=1+`
+* `+__PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__=1+`
+
+添加后，完整的预定义宏内容如下
+
+[.text-center]
+--
+image::Snipaste_2026-01-21_14-27-07.png[role="thumb"]
+--
+
+=== 运行
+打开串口终端，波特率 2000000，8bit 数据位，1bit 停止位，无奇偶校验。使用 JLink Lite 或 RFP 烧录工具烧录 Release 文件夹下的 `.srec` 文件。运行结果如下：
+
+[.text-center]
+--
+image::Snipaste_2026-01-21_14-15-46.png[role="thumb"]
+--
+
+=== 统计 Cache Miss-Rate
+使用 PMU 时，还可以统计 ICache 和 DCache 的 Miss-Rate。只需要将 `+__cycleof__+` 修改为 `+__cpu_perf__+`。下图为使用 `+__cpu_perf__+` 的运行结果
+
+image::Snipaste_2026-01-26_17-29-08.png[role="thumb"]
+
+== 设置代码和变量的位置
+对于需要高效运行的代码，例如各种算法，可以将算法函数放进 ITCM，变量放进 DTCM 来获得更快速度。在示例工程中，可以添加以下两个预定义宏：
+
+* `__DATA_AREA=DATA_DTCM`: 把数据放在 DTCM。可以根据变量类型使用宏 `DATA_AREA_BSS` 或 `DATA_AREA_DATA` 或 `DATA_AREA_ZERO` 来修饰变量，让变量放在 DTCM 中
+* `__CODE_AREA=CODE_ITCM`: 把代码放在 ITCM。可以用 `CODE_AREA` 来修饰函数定义，这样，如果开启了这个宏，那么这段函数会被放在 ITCM 里。
+
+之后，可以对指定的函数进行修饰如下，这样，被 `CODE_AREA` 修饰的函数将存储在 ITCM 中
+
+[source,c,subs="verbatim,attributes"]
+----
+CODE_AREA
+static void pinToggleTest(int num)
+{
+    bsp_io_level_t pin_level;
+    int i;
+
+    for (i = 0; i < num; i++) {
+        R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_HIGH);
+        R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        while (pin_level != BSP_IO_LEVEL_HIGH) {
+            R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        }
+
+        R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_LOW);
+        R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        while (pin_level != BSP_IO_LEVEL_LOW) {
+            R_IOPORT_PinRead(g_ioport.p_ctrl, USER_LED, &pin_level);
+        }
+    }
+}
+----

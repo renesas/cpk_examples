@@ -1,0 +1,149 @@
+:imagesdir: images
+
+= RA8T2 将原运行在 CPU0 上的代码迁移至 CPU1
+
+RA8T2 包含两个 CPU 核心：CPU0(Cortex-M85 1GHz) 和 CPU1(Cortex-M33 250MHz)。在应用中可以将部分任务如 UI 渲染交由 CPU1 运行以让 CPU0 专注于计算任务。本示例即演示如何在已有一个单核 CPU0 工程的情况下将代码迁移到 CPU1
+
+== 新建 FSP Solution
+
+在 e^2^ studio 选择 `文件` -> `瑞萨 C/C++ 项目` -> `Renesas RA`，在对话框中选择 Renesas RA FSP Solution
+
+[.text-center]
+--
+image::Snipaste_2026-03-17_14-08-13.png[role="thumb"]
+--
+
+给 Solution 命名，这里以 `dual_core_spi_screen_cm33` 作为示例，可以更改，但不要使用中文。
+
+[.text-center]
+--
+image::Snipaste_2026-03-17_14-03-39.png[role="thumb"]
+--
+
+随后进入 Solution 模板选择界面。根据使用的板子做以下修改：
+
+* 在 Board 一栏中选择 `CPKNET-RA8T2`，这是本示例所使用的开发板
+* Solution Template Selection 选择 `Multicore` -> `Flat` -> `Bare Metal` -> `Minimal`
+
+[.text-center]
+--
+image::Snipaste_2026-04-01_14-05-50.png[role="thumb"]
+--
+
+之后在 e^2^ studio 的资源管理器可以看见新建的 Solution，分为三个文件夹。
+
+* dual_core_spi_screen_cm33 是 Solution 的顶层配置文件夹
+* dual_core_spi_screen_cm33_CPU0 是 CPU0 工程
+* dual_core_spi_screen_cm33_CPU1 是 CPU1 工程
+
+[.text-center]
+--
+image::Snipaste_2026-03-17_14-45-00.png[role="thumb"]
+--
+
+== 导出导入 FSP Stack
+
+针对于同一个开发板，引脚连接都一样，因此在双核工程中可以直接使用单核工程中验证过的 FSP Stack。打开旧的单核工程的 FSP Configuration，这里以导出 `g_sci_spi4` 这个 Stack 为例，选中 Stack，选择 Export
+
+[.text-center]
+--
+image::Snipaste_2026-03-17_14-52-09.png[role="thumb"]
+--
+
+然后选择保存的位置，最后点击确认即可。当选择导出的 Stack 底下还有其它 Stack 时，那些 Stack 会被一起保存
+
+[.text-center]
+--
+image::Snipaste_2026-03-17_14-52-48.png[role="thumb"]
+--
+
+回到 Solution 工程，在 dual_core_spi_screen_cm33_CPU1 的 FSP Configuration，在 Stacks 界面的空白处右键，点击 Import
+
+[.text-center]
+--
+image::Snipaste_2026-03-17_15-47-01.png[role="thumb"]
+--
+
+选择之前导出的 Stack 导入即可。最后，点击 Generate Project Content
+
+== 复制文件添加配置
+
+从单核工程中选择需要运行在 CPU1 上的代码，将对应文件添加到 CPU1 工程下。如下图，红框中的文件直接从单核工程中复制过来
+
+[.text-center]
+--
+image::Snipaste_2026-04-01_14-09-39.png[role="thumb"]
+--
+
+在单核工程中，可能有一些自定义宏来控制代码行为，这些宏在双核工程中也要添加到对应核心的工程中。本示例是为了原单核工程中的部分代码放到 CPU1 上，因此修改 CPU1 工程的 C/C++ 配置，修改方式同单核工程。在此示例中，需要添加以下三个宏
+
+[.text-center]
+--
+image::Snipaste_2026-04-01_14-27-56.png[role="thumb"]
+--
+
+最后，在 `hal_entry.c` 中添加初始化并调用即可
+[source,c,subs="verbatim,attributes"]
+----
+#include "console.h"
+#include "hal_data.h"
+#include "lcd.h"
+#include "picture.h"
+
+...
+
+static LCD_Device s_lcd;
+
+...
+
+void hal_entry(void)
+{
+    int i;
+
+	CONSOLE_Init();
+	LOG_Reset();
+
+	s_lcd.orientation = SCREEN_ORIENTATION_VERTICAL;
+	LCD_Init(&s_lcd);
+
+    ...
+
+    LCD_PortDrawBitmap(&s_lcd, 0, 0, 222, 480, (const uint8_t *)g_picture01.pixel_data);
+    while (1) {
+    	for (i = 0; i < 5; i++) {
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_HIGH);
+			R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_LOW);
+			R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
+    	}
+    	LCD_PortDrawBitmap(&s_lcd, 0, 0, 222, 480, (const uint8_t *)g_picture02.pixel_data);
+
+    	for (i = 0; i < 5; i++) {
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_HIGH);
+			R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_LOW);
+			R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
+    	}
+    	LCD_PortDrawBitmap(&s_lcd, 0, 0, 222, 480, (const uint8_t *)g_picture01.pixel_data);
+    }
+}
+
+...
+----
+
+== 其它注意事项
+
+=== 导入双核工程
+
+本示例工程使用 git 进行管理，构建目录 `Debug` 是被排除在外的，而 Smart Bundle 位于 Debug 文件夹下。因此若直接导入本示例工程，会出现无法打开 CPU1 工程的 configuration.xml 的情况，会出现如下报错：
+
+[.text-center]
+--
+image::Snipaste_2026-04-01_14-35-58.png[role="thumb"]
+--
+
+需要先打开 CPU0 工程的 configuration.xml，点击 Generate Project Content，然后构建 CPU0 工程，即可重新在 CPU0 工程的 Debug 文件夹下生成 Smart Bundle 文件，之后，可以打开 CPU1 工程的 configuration.xml 生成并构建工程。
+
+=== 自动生成的 .gitignore
+
+Solution 工程会将最顶层的 Smart Bundle 放在自身的 build 目录下，如果使用 git 对工程进行管理且没有忽略 build 目录，那么 e^2^ studio 会自己在 Solution 的目录下添加一个 .gitignore 文件将 build 目录排除。请根据需要删除此自动生成的 .gitignore 或强制将 Solution 目录下的 Smart Bundle 添加进 git。最顶层的 Smart Bundle 仅在创建工程时生成一次，若该文件丢失，将无法生成双核工程。

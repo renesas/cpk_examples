@@ -1,0 +1,25 @@
+:imagesdir: images
+
+打开工程，在 FSP Configuration 界面点击生成，烧录、运行，将看到以下内容。同时，屏幕还会继续滚动刷新新的内容
+
+[.text-center]
+--
+image::IMG_20260210_155408.jpg[width=480, heigth=600, role="thumb"]
+--
+
+屏幕显示的内容来自 src/hal_entry.c 文件中 hal_entry() 的以下部分。使用 printf() 输出的内容会直接显示到屏幕上。要注意不要使用 scanf 等标准库的输入函数，因为屏幕不支持输入，因此这些调用会在标准库内部进入死循环等待。
+
+[source,c,subs="verbatim,attributes"]
+----
+while (1) {
+    disp_adapter0_task();
+    if (s_event) {
+        s_event = 0;
+        if ((s_cnt % 10) == 0) {
+            printf("\r\nYou can directly print string to LCD with printf()\r\n\r\n");
+        }
+        printf("Current cnt: %u\r\n", s_cnt);
+        s_cnt++;
+    }
+}
+----

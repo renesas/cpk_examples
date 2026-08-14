@@ -35,6 +35,12 @@
 ### 第三方软件
 - 无 
 
+**详细的样例程序配置和使用，请参考下面的文件。**
+
+[acmphs_cpknet_ra8t2_ep_readme](acmphs_cpknet_ra8t2_ep_readme.md)
+
+----
+
 ### 在其他开发板上使用本样例程序
 
 - 本样例程序只与MCU本身相关，修改设置后即可在以下核心板上运行：
@@ -42,8 +48,5 @@
   - [CPKCOR-RA8P1 核心板](../../cpkcor_ra8p1/)
   - [CPKCOR-RA8T2 核心板](../../cpkcor_ra8t2/)
 
-**详细的样例程序配置和使用，请参考下面的文件。**
-
-[acmphs_cpknet_ra8t2_ep_readme](acmphs_cpknet_ra8t2_ep_readme.md)
 
 

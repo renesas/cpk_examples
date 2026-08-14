@@ -1,0 +1,3 @@
+# RASC version and installation file
+6.4.0
+D:\Programs\Dev\rasc_2025_12\eclipse\rasc.exe
