@@ -43,7 +43,7 @@
 
 ### 在其他开发板上使用本样例程序
 
-- 以下开发套件上，样例程序所需要使用的硬件和本开发套件配置基本，修改设置后即可运行：
+- 以下开发套件上，样例程序所需要使用的硬件和本开发套件配置基本一致，修改设置后即可运行：
   - [CPKCOR-RA8P1 + CPKEXP-MINI8x2 套件](../cpkcor_ra8p1_mini8x2/)
   - [CPKNET-RA8T2 + CPKEXP-MINI8x2 套件](../cpknet_ra8t2_mini8x2/)
   - [CPKCOR-RA8T2 + CPKEXP-MINI8x2 套件](../cpkcor_ra8t2_mini8x2/)
