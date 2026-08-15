@@ -28,7 +28,7 @@
 - FSP版本
   - FSP 6.4.0
 - 集成开发环境和编译器：
-  - e2studio v2026-04.2 + LLVM v21.1.1
+  - e2studio v2025-12 + LLVM v21.1.1
 
 ### 第三方软件
 - perf_counter - [Github](https://github.com/GorgonMeducer/perf_counter/blob/CMSIS-Pack/README.md)

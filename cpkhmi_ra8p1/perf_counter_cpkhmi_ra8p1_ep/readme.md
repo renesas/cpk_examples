@@ -30,8 +30,8 @@
 - FSP版本
   - FSP 6.4.0
 - 集成开发环境和编译器：
-  - e2studio v2026-04.2 + LLVM v21.1.1
-  - e2studio v2026-04.2 + arm-none-eabi-gcc 13.2.1.arm-13-7
+  - e2studio v2025-12 + LLVM v21.1.1
+  - e2studio v2025-12 + arm-none-eabi-gcc 13.2.1.arm-13-7
   - keil mdk v5.43 + ARMCC6.23
 
 ### 第三方软件
