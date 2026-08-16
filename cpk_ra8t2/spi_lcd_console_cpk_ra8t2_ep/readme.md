@@ -5,7 +5,7 @@
 - 该示例工程演示了基于瑞萨 FSP ，在RA8T2 MCU 上配合 arm2d 实现终端屏幕效果，并将 C 标准输出流重定向到屏幕。
 - 本目录下也存放了已经编译好的程序镜像文件（hex/srec/mot等格式），可以直接烧录到开发板上的MCU中运行，查看演示结果。
   - 有关如何烧录编译好的镜像文件，请参考[RA8 MCU的程序烧录](../../docs/ra8_nvm_programming.adoc)。  
-- 如果您没有同步代码库及版本控制的需求，也可以[直接下载样例程序的ZIP压缩包](../_ep_archive/spi_screen_console_cpk_ra8t2_ep_rafsp6.4.0.zip)，其中包含了文档和代码。
+- 如果您没有同步代码库及版本控制的需求，也可以[直接下载样例程序的ZIP压缩包](../_ep_archive/spi_lcd_console_cpk_ra8t2_ep_rafsp6.4.0.zip)，其中包含了文档和代码。
   
 ### 支持的开发板 / 开发套件 / 演示板：
 
@@ -44,7 +44,7 @@
 
 **详细的样例程序配置和使用，请参考下面的说明文件。**
 
-[spi_screen_console工程使用说明](spi_screen_console_cpk_ra8t2_ep_readme.adoc) 
+[spi_screen_console工程使用说明](spi_lcd_console_cpk_ra8t2_ep_readme.adoc) 
 
 ----
 
