@@ -1,0 +1,84 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接使用当前文件夹下的 sdram_cpkcor_ra8p1_ep.hex 直接烧录。打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序会先对 SDRAM 进行检查，确保正常工作，随后测试从 SDRAM 到其它存储区域在 DCache 影响下的速度。烧录后可直接在终端中看到如下结果：
+
+[.text-center]
+--
+image::Snipaste_2026-06-17_15-02-11.png[role="thumb"]
+image::Snipaste_2026-06-17_15-02-32.png[role="thumb"]
+image::Snipaste_2026-06-17_15-02-53.png[role="thumb"]
+image::Snipaste_2026-06-17_15-03-08.png[role="thumb"]
+--
+
+== FSP 配置
+
+SDRAM 不需要在 configuration.xml 中添加 stack，而是在 BSP 属性页面填写参数并使能，如下图所示：
+
+[.text-center]
+--
+image::Snipaste_2026-06-17_15-10-42.png[role="thumb"]
+--
+
+点击配置项，底部会出现说明
+
+[.text-center]
+--
+image::Snipaste_2026-06-17_15-19-59.png[role="thumb"]
+--
+
+按 SDRAM 的 Datasheet 将参数填写好后，FSP 会在生成时自动在 `R_BSP_WarmStart()` 中调用 `R_BSP_SdramInit()` 对 SDRAM 进行初始化。因此，在 `hal_entery()` 中不需要再对 SDRAM 进行初始化。
+
+== 驱动文件
+
+在 configuration.xml 完成配置后，FSP 已可以完成对 SDRAM 的所有操作，因此仅需要一个 `src/sdram.h` 补充 FSP 没有的 SDRAM 大小或者其它信息方便程序使用即可
+
+[source,c,subs="verbatim,attributes"]
+----
+#define SDRAM_MAP_START_ADDR	0x68000000
+#define SDRAM_MAP_END_ADDR		0x70000000
+#define SDRAM_SIZE				(1024 * 1024 * 32)
+#define SDRAM_DATA_WIDTH		16
+#define SDRAM_ADDR_WIDTH		25
+----
+
+对 SDRAM 的其它操作可以参考 FSP 的文档，文档在 e^2^ studio 安装目录下的 `fsp_documentation` 文件夹内，相关章节如下图所示：
+
+[.text-center]
+--
+image::Snipaste_2026-06-17_15-37-53.png[role="thumb"]
+--
+
+== SDRAM 测试
+
+对 SDRAM 的测试位于 `src/test/test_sdram.c` 中，入口函数为 `TestSDRAM()`，该函数会检查 SDRAM 并测试读写速度
+
+[source,c,subs="verbatim,attributes"]
+----
+result = checkDataPin(start_addr);
+CHECK_RESULT(result, "Data pin check PASS", "Data pin check FAILED");
+
+result = checkAddressPin();
+CHECK_RESULT(result, "Address pin check PASS", "Address pin check FAILED");
+
+result = checkDQM(start_addr);
+CHECK_RESULT(result, "DQM pin check PASS", "DQM pin check FAILED");
+
+result = checkFullChipNoCache();
+CHECK_RESULT(result, "Full chip check PASS", "Full chip check FAILED");
+
+result = checkFullChipWithSeq();
+CHECK_RESULT(result, "Full chip check with ordered sequence PASS", "Full chip check with ordered sequence FAILED");
+
+result = checkFullChipWithRand(42);
+CHECK_RESULT(result, "Full chip check with random sequence PASS", "Full chip check with random sequence FAILED");
+
+result = checkAutoRefresh();
+CHECK_RESULT(result, "Auto refresh check PASS", "Auto refresh check FAILED");
+
+checkSpeedWrite();
+/* 上位机使用 100ms 的时间戳，这个延时仅为了内容分在两个时间戳里 */
+R_BSP_SoftwareDelay(300, BSP_DELAY_UNITS_MILLISECONDS);
+checkSpeedRead();
+----

@@ -1,0 +1,64 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 sd_base_wr.hex。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，会等待 SD 插入，然后进行读写速度测试。SD 卡读写速度与 SD 卡本身关系较大，以下是两张不同的 SD 卡的速度测试结果。在测试完成后，程序不会再对 SD 卡进行读写操作，此时可以插拔 SD 卡来检查 RA8P1 的插拔检测功能是否正常
+
+SD Card 1
+
+[.text-center]
+--
+image::Snipaste_2026-07-29_18-13-45.png[role="thumb"]
+--
+
+SD Card 2
+
+[.text-center]
+--
+image::Snipaste_2026-07-21_10-11-30.png[role="thumb"]
+--
+
+== 驱动代码
+
+=== FSP
+
+SD 卡在 FSP 中使用 rm_block_media_sdmmc 进行驱动。因此在 configuration.xml 中添加一个 rm_block_media_sdmmc stack。具体属性可以打开工程查看。
+
+[.text-center]
+--
+image::Snipaste_2026-07-21_10-24-15.png[role="thumb"]
+--
+
+=== 驱动文件
+
+SD 卡驱动文件位于 src 目录下的 sd.c 和 sd.h。在程序入口 hal_entry() 中先进行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+SD_Init();
+----
+
+随后等待插入和执行基本读写测试
+
+[source,c,subs="verbatim,attributes"]
+----
+R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
+if (SD_IsInsert() == 0) {
+    printf("Wait SD Card insert");
+    R_BSP_SoftwareDelay(1, BSP_DELAY_UNITS_SECONDS);
+    while (SD_IsInsert() == 0) {
+        printf(".");
+        R_BSP_SoftwareDelay(1, BSP_DELAY_UNITS_SECONDS);
+    }
+}
+printf("\r\nDetect SD Card insert\r\n");
+SD_InitMedia();
+TestSD();
+----
+
+sd.c 和 sd.h 只是对 FSP 中 rm_block_media_sdmmc 相关 API 的简单封装。FSP 的相关 API 在 e^2^ studio 安装目录下的 fsp_documentation 文件夹内。相关章节位置如下
+
+[.text-center]
+--
+image::Snipaste_2026-07-21_10-29-33.png[role="thumb"]
+--
