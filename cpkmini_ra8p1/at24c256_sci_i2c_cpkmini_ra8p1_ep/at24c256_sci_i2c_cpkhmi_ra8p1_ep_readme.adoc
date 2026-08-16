@@ -1,0 +1,106 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 at24c256_sci_i2c.hex。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，串口会输出以下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_17-09-51.png[role="thumb"]
+--
+
+程序会先对 AT24C256 进行全片的读写校验，然后擦除，再验证擦除结果。擦除是将全片写为 0xFF
+
+== 驱动
+
+=== FSP
+
+* 引脚配置
+
+AT24C256 连接至 RA8P1 的 SCI1。BSP 中默认没有勾选，因此在 Pins 界面勾选
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_16-03-46.png[role="thumb"]
+--
+
+* 添加 stack
+
+添加的 stack 如下，详细属性可以打开工程查看
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_17-15-22.png[role="thumb"]
+--
+
+=== 代码
+
+对 EEPROM 的操作全部在 src/at24c256.c 和 at24c256.h 中。使用时先初始化：
+
+[source,c,subs="verbatim,attributes"]
+----
+AT24C256_Init();
+----
+
+然后可以参照 src/test/test_at24c256.c 对 AT24C256 进行读写
+
+[source,c,subs="verbatim,attributes"]
+----
+uint32_t TestAT24C256(void)
+{
+	uint16_t i;
+	uint32_t ret;
+
+	uint8_t failed = 0;
+	uint16_t *p16_r = (uint16_t *)s_rcache;
+	uint16_t *p16_w = (uint16_t *)s_wcache;
+
+	for (i = 0; i < 16384; i++) {
+    	p16_w[i] = i;
+    }
+	ret = AT24C256_Write(0x00, s_wcache, 32768);
+	if (ret != 0) {
+		return ret;
+	}
+	ret = AT24C256_Read(0x00, s_rcache, 32768);
+	if (ret != 0) {
+		return ret;
+	}
+	for (i = 0; i < 16384; i++) {
+		if (p16_r[i] != p16_w[i]) {
+			failed = 1;
+			break;
+		}
+	}
+	if (failed) {
+		LOG_E(__FUNCTION__, "WR failed at %d", i);
+		LOG_E(__FUNCTION__, "Write: 0x%X, Read: 0x%X", p16_w[i], p16_r[i]);
+		return 1;
+	}
+    LOG_D(__FUNCTION__, "WR pass");
+
+    ret = AT24C256_Fill(0x00, 0xFF, 32768);
+    if (ret != 0) {
+    	return ret;
+    }
+    ret = AT24C256_Read(0x00, s_rcache, 32768);
+    if (ret != 0) {
+    	return ret;
+    }
+    for (i = 0; i < 32768; i++) {
+		if (s_rcache[i] != 0xFF) {
+			failed = 1;
+			break;
+		}
+	}
+	if (failed) {
+		LOG_E(__FUNCTION__, "Erase failed at %d", i);
+		LOG_E(__FUNCTION__, "Erase: 0xFF, Read: 0x%X", s_rcache[i]);
+		return 1;
+	}
+    LOG_D(__FUNCTION__, "Erase pass");
+
+
+	return 0;
+}
+----

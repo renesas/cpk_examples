@@ -1,0 +1,64 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 oled.hex。烧录后，OLED 屏幕会显示如下画面
+
+[.text-center]
+--
+image::IMG_20260806_113943.jpg[role="thumb"]
+--
+
+== 驱动
+
+=== FSP
+
+* 引脚配置
+
+OLED 模组连接至 RA8P1 的 SCI1。BSP 中默认没有勾选，因此在 Pins 界面勾选
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_16-03-46.png[role="thumb"]
+--
+
+* 添加 stack
+
+添加的 stack 如下，详细属性可以打开工程查看
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_17-15-22.png[role="thumb"]
+--
+
+=== 代码
+
+对 OLED 的操作全部在 src/oled 文件夹中。使用时先初始化：
+
+[source,c,subs="verbatim,attributes"]
+----
+static OLED_Dev s_oled;
+
+void hal_entry(void)
+{
+	...
+	s_oled.write = oledWrite;
+    OLED_Init(&s_oled);
+	...
+}
+----
+
+然后可以参照 hal_entry.c 对 OLED 进行写入
+
+[source,c,subs="verbatim,attributes"]
+----
+void hal_entry(void)
+{
+	...
+	OLED_Fill(&s_oled, 0x00);
+	OLED_DrawStr(&s_oled, 0, 0, "CPKHMI-RA8P1", OLED_FONT_8X16);
+    OLED_DrawStr(&s_oled, 0, 2, "with", OLED_FONT_8X16);
+    OLED_DrawStr(&s_oled, 0, 4, "CPKExp-MINI", OLED_FONT_8X16);
+	...
+}
+----

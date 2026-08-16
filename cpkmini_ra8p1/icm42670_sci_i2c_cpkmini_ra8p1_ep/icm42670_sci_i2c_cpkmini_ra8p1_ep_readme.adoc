@@ -1,0 +1,118 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 icm42670_sci_i2c.hex。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，串口会输出以下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_14-56-52.png[role="thumb"]
+--
+
+输出的数据均为板子静止不动的结果。在 I2C 接口下，读取 16 字节 FIFO 再加上地址信息和其它协议开销，共耗时约 455us。
+
+== 驱动
+
+=== FSP
+
+* 引脚配置
+
+icm42670 i2c 引脚连接至 RA8P1 的 SCI1，BSP 中默认没有勾选，因此在 Pins 界面勾选
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_16-03-46.png[role="thumb"]
+--
+
+icm42670 的中断输出引脚连接至 RA8P1 的 external_irq4（P402），在 Pins 界面勾选。工程将 icm42670 的中断引脚设置为了高阻态，因此还需要打开 P402 的内部上拉
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_16-08-20.png[role="thumb"]
+image::Snipaste_2026-08-04_16-09-38.png[role="thumb"]
+--
+
+* 添加 stack
+
+添加的 stack 如下，详细属性可以打开工程查看
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_16-23-13.png[role="thumb"]
+--
+
+=== 代码
+
+ICM42670 驱动文件位于 src/imu 目录下。驱动来自芯片厂商 https://github.com/tdk-invn-oss/motion.mcu.icm42670p.driver[Github]。驱动使用大致流程如下：
+
+* 创建 imu 对象
+
+[source,c,subs="verbatim,attributes"]
+----
+static inv_imu_device_t s_imu_device;
+static inv_imu_serif_t s_imu_serif;
+----
+
+* 实现读写函数
+
+[source,c,subs="verbatim,attributes"]
+----
+static int imuReadReg(struct inv_imu_serif *serif, uint8_t reg, uint8_t *buf, uint32_t len)
+{
+	uint32_t err;
+
+	(void)serif;
+
+	err = IIC_ReadMemory(0x68, reg, 8, buf, (uint16_t)len);
+	if (err) {
+		LOG_E(__FUNCTION__, "ReadMemory failed: %u", err);
+	}
+
+	return (int)err;
+}
+
+static int imuWriteReg(struct inv_imu_serif *serif, uint8_t reg, const uint8_t *buf, uint32_t len)
+{
+	uint32_t err;
+
+	(void)serif;
+
+	err = IIC_WriteMemory(0x68, reg, 8, buf, (uint16_t)len);
+	if (err) {
+		LOG_E(__FUNCTION__, "WriteMemory failed: %u", err);
+	}
+
+	return (int)err;
+}
+----
+
+* 提供读取完成的回调函数
+
+[source,c,subs="verbatim,attributes"]
+----
+void TestICMCallback(inv_imu_sensor_event_t *event)
+{
+    ...
+}
+----
+
+* 初始化 icm42670
+
+[source,c,subs="verbatim,attributes"]
+----
+s_imu_serif.read_reg = imuReadReg;
+s_imu_serif.write_reg = imuWriteReg;
+s_imu_serif.max_read = 126;
+s_imu_serif.max_write = 126;
+s_imu_serif.serif_type = UI_I2C;
+s_imu_serif.context = NULL;
+rc = inv_imu_init(&s_imu_device, &s_imu_serif, TestICMCallback);
+if (rc) {
+    LOG_E(__FUNCTION__, "IMU bus/driver initialization failed: %d", rc);
+}
+else {
+    TestICM42670(&s_imu_device);
+}
+----
+
+随后可以参考 src/test/test_icm42670.c 中的流程，根据具体要求对传感器进行功能配置。对 i2c 的读写封装可以参考 src/iic.c。

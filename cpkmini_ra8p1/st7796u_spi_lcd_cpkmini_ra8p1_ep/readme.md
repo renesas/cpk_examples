@@ -3,6 +3,8 @@
 ### 工程概述
 
 - 该示例工程演示了基于瑞萨 FSP ，在RA8P1 MCU 上驱动SPI接口的TFT LCD。
+- 本目录下也存放了已经编译好的程序镜像文件（hex/srec/mot等格式），可以直接烧录到开发板上的MCU中运行，查看演示结果。
+  - 有关如何烧录编译好的镜像文件，请参考[RA8 MCU的程序烧录](../../docs/ra8_nvm_programming.adoc)。  
 - 如果您没有同步代码库及版本控制的需求，也可以[直接下载样例程序的ZIP压缩包](../_ep_archive/st7796u_spi_lcd_cpkmini_ra8p1_ep_rafsp6.4.0.zip)，其中包含了文档和代码。
   
 ### 支持的开发板 / 演示板：
@@ -37,7 +39,7 @@
 
 **详细的样例程序配置和使用，请参考下面的说明文件。**
 
-[ST7796U SPI接口LCD驱动工程使用说明](lcd_spi_cpkhmi_ra8p1_ep_readme.adoc)
+[ST7796U SPI接口LCD驱动工程使用说明](st7796u_spi_lcd_cpkmini_ra8p1_ep_readme.adoc)
 
 ----
 

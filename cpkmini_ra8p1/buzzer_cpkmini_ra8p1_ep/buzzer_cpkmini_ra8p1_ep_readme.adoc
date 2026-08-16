@@ -1,0 +1,44 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 beep.hex。扩展板上的拨码开关 BEEP 丝印位拨到 ON，其它拨到 OFF。烧录后，蜂鸣器开始发声。
+
+== FSP Stacks
+
+工程使用定时器来获得准确频率的方波。因此在 Stacks 选项卡中，选择添加 r_gpt stack：
+
+[.text-center]
+--
+image::Snipaste_2026-07-31_10-53-11.png[role="thumb"]
+--
+
+== 驱动蜂鸣器
+
+开启定时器
+
+[source,c,subs="verbatim,attributes"]
+----
+R_GPT_Open(g_timer0.p_ctrl, g_timer0.p_cfg);
+R_GPT_Start(g_timer0.p_ctrl);
+----
+
+然后再定时器中断中翻转 IO
+
+[source,c,subs="verbatim,attributes"]
+----
+void TIMER0_Callback(timer_callback_args_t *p_args)
+{
+	bsp_io_level_t level;
+
+	if (p_args->event == TIMER_EVENT_CYCLE_END) {
+		R_IOPORT_PinRead(g_ioport.p_ctrl, BSP_IO_PORT_12_PIN_05, &level);
+		if (level == BSP_IO_LEVEL_HIGH) {
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, BSP_IO_PORT_12_PIN_15, BSP_IO_LEVEL_LOW);
+		}
+		else {
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, BSP_IO_PORT_12_PIN_15, BSP_IO_LEVEL_HIGH);
+		}
+	}
+}
+----

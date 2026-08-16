@@ -1,0 +1,52 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 mmc5603.hex。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，串口会输出以下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-07-31_14-18-47.png[role="thumb"]
+--
+
+在外部无磁场源的情况下，MMC5603 测量地磁场会有细微的扰动。当施加外部磁场，如用手机靠近开发板，可以看到数据出现大幅变化。图中数据的大幅变化即是用手机靠近开发板的结果
+
+== 驱动
+
+=== FSP
+
+* 引脚配置
+
+mmc5603 i2c 引脚连接至 RA8P1 的 SCI1，BSP 中默认没有勾选，因此在 Pins 界面勾选
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_16-03-46.png[role="thumb"]
+--
+
+* 添加 stack
+
+添加的 stack 如下，详细属性可以打开工程查看
+
+[.text-center]
+--
+image::Snipaste_2026-08-04_16-23-13.png[role="thumb"]
+--
+
+=== 代码
+
+MMC5603 驱动文件位于 src 目录下的 mmc5603.c 和 mmc5603.h。关于 I2C 的操作在 iic.c 和 iic.h 中。在程序入口 hal_entry() 中先进行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+IIC_Init();
+MMC5603_Init();
+----
+
+随后可使用 mmc5603.h 中的 API 读取测量到的磁场数据
+
+[source,c,subs="verbatim,attributes"]
+----
+MMC5603_GetXYZ(&x, &y, &z);
+printf("x: %d, y: %d, z: %d\r\n", x, y, z);
+----
