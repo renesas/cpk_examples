@@ -18,8 +18,8 @@ image::cpkmini_ra8p1.png[width=480]
 
 . link:../cpkmini_ra8p1/ov5640_mipi_csi_cpkmini_ra8p1_ep/[RA8P1驱动MIPI-CSI接口的OV5640摄像头] - link:../cpkmini_ra8p1/_ep_archive/ov5640_mipi_csi_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpkmini_ra8p1/st7796u_spi_lcd_cpkmini_ra8p1_ep/[RA8P1驱动SPI接口的TFT LCD] - link:../cpkmini_ra8p1/_ep_archive/st7796u_spi_lcd_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
-. link:../cpkmini_ra8p1/at24c256_sci_i2c_cpkhmi_ra8p1_ep/[RA8P1使用 r_sci_i2c 驱动 EEPROM] - link:../cpkmini_ra8p1/_ep_archive/at24c256_sci_i2c_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
-. link:../cpkmini_ra8p1/at24c256_soft_i2c_cpkhmi_ra8p1_ep/[RA8P1使用软件模拟i2c 驱动 EEPROM] - link:../cpkmini_ra8p1/_ep_archive/at24c256_soft_i2c_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkmini_ra8p1/at24c256_sci_i2c_cpkmini_ra8p1_ep/[RA8P1使用 r_sci_i2c 驱动 EEPROM] - link:../cpkmini_ra8p1/_ep_archive/at24c256_sci_i2c_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkmini_ra8p1/at24c256_soft_i2c_cpkmini_ra8p1_ep/[RA8P1使用软件模拟i2c 驱动 EEPROM] - link:../cpkmini_ra8p1/_ep_archive/at24c256_soft_i2c_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpkmini_ra8p1/buzzer_cpkmini_ra8p1_ep/[RA8P1驱动无源蜂鸣器] - link:../cpkmini_ra8p1/_ep_archive/buzzer_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpkmini_ra8p1/icm42670_sci_i2c_cpkmini_ra8p1_ep/[RA8P1使用 I2C(r_sci_i2c) 驱动 ICM42670 六轴传感器] - link:../cpkmini_ra8p1/_ep_archive/icm42670_sci_i2c_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpkmini_ra8p1/icm42670_comms_i2c_cpkmini_ra8p1_ep/[RA8P1 使用 I2C(rm_comms_i2c) 驱动 ICM42670 六轴传感器] - link:../cpkmini_ra8p1/_ep_archive/icm42670_comms_i2c_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
@@ -29,6 +29,6 @@ image::cpkmini_ra8p1.png[width=480]
 
 以下例程使用的硬件配置和系统设置与本开发套件类似，可以将这些例程移植到本开发套件上运行：
 
-* 暂无
+- 暂无
 
 Ver. 20260816
