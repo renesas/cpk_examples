@@ -1,0 +1,80 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接使用当前文件夹下的 qspi_flash.hex 直接烧录。打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序会先对 QSPI Flash 进行检查，确保正常工作，随后测试从 QSPI Flash 到其它存储区域在 DCache 影响下的速度。烧录后可直接在终端中看到如下结果：
+
+[.text-center]
+--
+image::Snipaste_2026-07-07_14-59-58.png[role="thumb"]
+--
+
+== FSP 配置
+
+DCache 需要在 configuration.xml 的 BSP 属性界面打开，如下图所示
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_11-08-05.png[role="thumb"]
+--
+
+在 Colcks 界面，打开 OCTCLK
+
+[.text-center]
+--
+image::Snipaste_2026-07-07_15-02-01.png[role="thumb"]
+--
+
+QSPI Flash 使用 OSPI 接口，在 configuration.xml 中添加一个 r_ospi_b stack，如下图所示，具体的属性可打开工程，点击此 stack 查看
+
+[.text-center]
+--
+image::Snipaste_2026-07-06_10-38-49.png[role="thumb"]
+--
+
+== 驱动文件
+
+在 src 文件夹下，有 `w25qxx.c` 和 `w25qxx.h`，其中包含了 QSPI Flash 的操作。QSPI Flash 在 RA8P1 上在读取时可以通过内存映射方式访问，因此头文件中还定义了内存映射的起始地址和 QSPI Flash 的大小，方便程序内使用
+
+[source,c,subs="verbatim,attributes"]
+----
+#define W25QXX_MAP_START_ADDR	0x80000000
+#define W25QXX_MAP_END_ADDR		0x90000000
+#define W25QXX_SIZE				(1024 * 1024 * 32)
+#define W25QXX_SECTOR_SIZE		(1024 * 4)
+#define W25QXX_BLOCK_SIZE		(1024 * 64)
+----
+
+驱动文件中对 QSPI Flash 提供的 API 如下，主要提供擦除和写入操作，读取操作可以直接通过内存映射的方式完成
+
+[source,c,subs="verbatim,attributes"]
+----
+uint32_t W25QXX_EraseChip(void);
+uint32_t W25QXX_EraseSector(uint32_t sector);
+uint32_t W25QXX_GetID(uint8_t *manufacturer_id, uint8_t *device_id, uint64_t *unique_id);
+uint32_t W25QXX_Init(void);
+uint32_t W25QXX_WaitOperation(uint32_t timeout);
+uint32_t W25QXX_Write(uint8_t * const src, uint8_t * const dest, uint32_t length, uint8_t erase);
+uint32_t W25QXX_WriteEnable(uint32_t timeout);
+----
+
+== QSPI Flash 测试
+
+对 QSPI Flash 的测试位于 `src/test/test_qspi_flash.c` 中，入口函数为 `TestQSPIFlash()`，该函数会测试读写速度。只需在 hal_entry() 中完成对 QSPI Flash 的初始化后调用即可
+
+[source,c,subs="verbatim,attributes"]
+----
+W25QXX_Init();
+TestQSPIFlash(W25QXX_MAP_START_ADDR, W25QXX_SIZE);
+----
+
+在 `src/test/test_qspi_flash.c` 中有一个宏
+
+[source,c,subs="verbatim,attributes"]
+----
+#ifndef TEST_QSPI_FLASH_EN_FULL_CHECK
+#define TEST_QSPI_FLASH_EN_FULL_CHECK	0
+#endif
+----
+
+该宏在工程中关闭，若打开，会对全片进行读写校验，但要注意，全片的读写校验耗时约至少十分钟

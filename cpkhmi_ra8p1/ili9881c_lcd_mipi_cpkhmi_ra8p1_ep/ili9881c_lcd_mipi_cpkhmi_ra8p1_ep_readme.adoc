@@ -1,0 +1,92 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本目录下的 `lcd_ili9881c_mipi.hex`。烧录后可看到如下结果。注意如果图像偏移或闪烁，可以尝试断电重新插拔 FPC 排线，确保 FPC 排线插紧
+
+[.text-center]
+--
+image::PXL_20260626_092551765.jpg[role="thumb"]
+--
+
+== FSP Stacks
+
+屏幕使用 MIPI 接口。因此在 Stacks 选项卡中，选择添加 r_glcdc stack，并在其下添加 MIPI Output，如下图所示：
+
+[.text-center]
+--
+image::Snipaste_2026-06-25_13-38-38.png[role="thumb"]
+--
+
+其部分属性配置如下图：
+
+* r_glcdc
+
+[.text-center]
+--
+image::Snipaste_2026-06-26_16-38-35.png[role="thumb"]
+--
+
+* r_mipi_dsi
+
+[.text-center]
+--
+image::Snipaste_2026-06-26_16-39-57.png[role="thumb"]
+--
+
+* r_mipi_phy
+
+[.text-center]
+--
+image::Snipaste_2026-06-26_16-41-08.png[role="thumb"]
+--
+
+== 驱动文件
+
+相关驱动在 `src/lcd` 文件夹中，除此之外还有两张图片资源用于测试。
+
+[.text-center]
+--
+image::Snipaste_2026-06-26_10-08-55.png[role="thumb"]
+--
+
+在该文件夹中，除了 ILI9881C 外，还有其它屏幕 IC 的驱动，它们适用于其它底板和屏幕模块。当前工程连接的是 ILI9881C，因此需要对驱动型号和接口进行指定，在当前工程中，都已指定好。可以在以下位置查看：
+
+* 在 `src/lcd/lcd.h` 中指定驱动芯片
+
+[source,c,subs="verbatim,attributes"]
+----
+#define LCD_DRIVER_UNSELECT		0
+#define LCD_DRIVER_EK79001D		1
+#define LCD_DRIVER_EK79007		2
+#define LCD_DRIVER_ILI9881C		3
+#define LCD_DRIVER_ST7796U		4
+#define LCD_DRIVER_TFP410		5
+
+#ifndef LCD_DIRVER
+#define LCD_DIRVER				LCD_DRIVER_ILI9881C
+#endif
+----
+
+== 初始化屏幕和简单测试
+
+* 声明一个 `LCD_Device` 设备
+
+[source,c,subs="verbatim,attributes"]
+----
+static LCD_Device s_lcd;
+----
+
+* 然后执行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+LCD_PortInit(&s_lcd);
+----
+
+在 `src/test` 文件夹中有对屏幕的简单测试，用于测试屏幕本身及相关 API 是否正常，该工程在初始化屏幕后，随即进行了测试，以显示彩条
+
+[source,c,subs="verbatim,attributes"]
+----
+TestLCD(&s_lcd);
+----

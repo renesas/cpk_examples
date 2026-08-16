@@ -1,0 +1,124 @@
+:imagesdir: images
+
+= 使用 FUSB303B 识别和控制 USB TypeC 中 Source 和 Sink 角色
+
+CPKHMI-RA8P1 的 JUSB 端口上有 FUSB303B 来识别和控制 TypeC 连接中的 CC 逻辑，可以通过此芯片优化 15W 以内的 USB TypeC 应用。
+
+== 以 DFP 模式运行
+
+该模式下，FUSB303B 固定尝试作为供电方运行。在 src/hal_entry.c 中将 `FUSB303B_DEMO_ROLE` 设置为 `FUSB303B_ROLE_DFP`，编译后下载工程。打开一个串口工具，RA8P1 会将信息输出到调试器（JDBG）对应的串口中，波特率 2000000，停止位 1，数据位 8bit，无奇偶校验。通过 USB Type-C -> Type-A 母座转换线在 JUSB 上插拔 U 盘或其它 USB 设备，显示输出如下：
+
+[.text-center]
+--
+image::Snipaste_2026-04-16_14-38-14.png[role="thumb"]
+--
+
+如果插入另一个供电设备，如连接至 PC 的 TypeA 接口，显示输出如下：
+
+[.text-center]
+--
+image::Snipaste_2026-04-16_14-38-45.png[role="thumb"]
+--
+
+== 以 UFP 模式运行
+
+该模式下，FUSB303B 固定尝试作为受电方运行。在 src/hal_entry.c 中将 `FUSB303B_DEMO_ROLE` 设置为 `FUSB303B_ROLE_UFP`，编译后下载工程。将 USB Type A->Type C 线在 JUSB 上插拔，显示输出如下：
+
+[.text-center]
+--
+image::Snipaste_2026-04-16_14-40-06.png[role="thumb"]
+--
+
+== 以 DRP 模式运行
+
+该模式下，FUSB303B 会根据插入的设备类型不同，尝试作为供电方或受电方运行。在 src/hal_entry.c 中将 `FUSB303B_DEMO_ROLE` 设置为 `FUSB303B_ROLE_DRP`，编译后下载工程。此时在 JUSB 接口上分别插拔 USB 设备或连接 PC 等 USB 主机，显示输出如下：
+
+[.text-center]
+--
+image::Snipaste_2026-04-16_14-44-15.png[role="thumb"]
+--
+
+== API 使用
+
+示例工程中对 FUSB303B 的所有操作都在 src/fusb303b 文件夹内。可实现以下功能
+
+=== 设置自动检测模式
+
+`FUSB303B_SetAutoPortrole(FUSB303B_AutoPortroleEnum role, bool en_audioacc)`
+
+* role：要设置的检测模式
+* en_audioacc：是否启用音频附件支持
+
+FUSB303B_AutoPortroleEnum 的定义如下：
+
+[source,c,subs="verbatim,attributes"]
+----
+typedef enum {
+	AUTO_PORTROLE_DRP,
+	AUTO_PORTROLE_DRP_ONLY_SNK,
+	AUTO_PORTROLE_DRP_ONLY_SRC,
+	AUTO_PORTROLE_DRP_DONT_SAME_TIME,
+	AUTO_PORTROLE_ONLY_SNK,
+	AUTO_PORTROLE_ONLY_SRC
+} FUSB303B_AutoPortroleEnum;
+----
+
+=== 设置手动控制
+
+`FUSB303B_SetManualControl(FUSB303B_ManualControlEnum ctrl)`
+
+FUSB303B_ManualControlEnum 的定义如下：
+
+[source,c,subs="verbatim,attributes"]
+----
+typedef enum {
+	MANUAL_CONTROL_SRC,
+	MANUAL_CONTROL_SNK,
+	MANUAL_CONTROL_UNATTACHED_SNK,
+	MANUAL_CONTROL_UNATTACHED_SRC,
+	MANUAL_CONTROL_DISABLED,
+	MANUAL_CONTROL_ERROR_RECOVERY
+} FUSB303B_ManualControlEnum;
+----
+
+=== 设置供电能力
+
+`FUSB303B_SetCurrentLevel(FUSB303B_CurrentLevel level)`
+
+FUSB303B_CurrentLevel 的定义如下，仅在作为 Source 时有效
+[source,c,subs="verbatim,attributes"]
+----
+typedef enum {
+	CURRENT_LEVEL_UNCONNECTION,
+	CURRENT_LEVEL_DEFAULT,
+	CURRENT_LEVEL_1_DOT_5_A,
+	CURRENT_LEVEL_3_DOT_0_A
+} FUSB303B_CurrentLevel;
+----
+
+=== 检测
+
+`FUSB303B_Check(FUSB303_Status *status)`
+
+FUSB303_Status 的定义如下：
+
+[source,c,subs="verbatim,attributes"]
+----
+typedef struct {
+	uint32_t attached : 1;
+	uint32_t powerd_by_jusb : 1;
+	uint32_t vbus_connect : 1;
+	uint32_t : 29;
+	FUSB303B_DetectTypeEnum type;
+	FUSB303B_DetectCCOrientEnum cc_orient;
+	FUSB303B_CurrentLevel current_level;
+} FUSB303_Status;
+----
+
+`powerd_by_jusb` 指示是否是由 JUSB 接口进行供电，但要注意在发生以下操作时，该标志位将不正确
+
+1. 仅通过 JUSB 供电，芯片完成初始化并进入了用户程序，此时 `powerd_by_jusb` 为 1
+2. 通过其它供电口进行供电，如 JDBG、底板接口
+3. JUSB 进行了设备的插拔
+
+经过以上三步后 `powerd_by_jusb` 将保持为 0，无论此时其它供电口的电源是否已断开
