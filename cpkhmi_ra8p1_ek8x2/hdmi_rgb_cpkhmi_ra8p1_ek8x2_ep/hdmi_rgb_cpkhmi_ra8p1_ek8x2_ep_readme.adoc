@@ -1,0 +1,137 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本目录下的 `lcd_hdmi.hex`。烧录后可看到如下结果。当前设置的输出为 1280x720 @50Hz，少数显示器可能不支持该模式，此时需要更换显示器
+
+[.text-center]
+--
+image::IMG_20260717_142719.jpg[role="thumb"]
+--
+
+== FSP Stacks
+
+TFP410 是 RGB 转 HDMI 芯片，使用 IIC 接口进行配置。因此在 Stacks 选项卡中，选择添加 r_glcdc 和 r_iic_master stack，注意不要在 r_glcdc 这个 stack 下方再添加 MIPI DSI Output，部分重要的属性配置如下图：
+
+* r_glcdc
+
+[.text-center]
+--
+image::Snipaste_2026-07-17_15-16-53.png[role="thumb"]
+--
+
+* r_iic_master
+
+[.text-center]
+--
+image::Snipaste_2026-06-25_11-27-19.png[role="thumb"]
+--
+
+另外，BSP 中默认没有配置 RGB 相关引脚，需要在 configuration.xml 的 Pins 页面勾选
+
+[.text-center]
+--
+image::Snipaste_2026-06-25_11-07-37.png[role="thumb"]
+--
+
+== 驱动文件
+
+相关驱动在 `src/lcd` 文件夹中，除此之外还有两张图片资源用于测试。
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_15-02-15.png[role="thumb"]
+--
+
+在该文件夹中，除了 TFP410 外，还有其它屏幕 IC 的驱动，它们适用于其它底板和屏幕模块。当前工程使用的是 TFP410，因此需要对驱动型号和接口进行指定，在当前工程中，都已指定好。可以在以下位置查看：
+
+* 在 `src/lcd/lcd.h` 中指定驱动芯片
+
+[source,c,subs="verbatim,attributes"]
+----
+#define LCD_DRIVER_UNSELECT		0
+#define LCD_DRIVER_EK79001D		1
+#define LCD_DRIVER_ILI9881C		2
+#define LCD_DRIVER_ST7796U		3
+#define LCD_DRIVER_TFP410		4
+
+#ifndef LCD_DIRVER
+#define LCD_DIRVER				LCD_DRIVER_TFP410
+#endif
+----
+
+== 初始化屏幕和简单测试
+
+* 声明一个 `LCD_Device` 设备
+
+[source,c,subs="verbatim,attributes"]
+----
+static LCD_Device s_lcd;
+----
+
+* 然后执行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+LCD_PortInit(&s_lcd);
+----
+
+在 `src/test` 文件夹中有对屏幕的简单测试，用于测试屏幕本身及相关 API 是否正常，该工程在初始化屏幕后，随即进行了测试，以显示彩条
+
+[source,c,subs="verbatim,attributes"]
+----
+TestLCD(&s_lcd);
+----
+
+== 修改到 60Hz 刷新率
+
+GLCDC 在 RA8P1 的手册中写明支持的最高像素时钟为 54MHz，但实测可以运行到更高的频率，如 60MHz。在这个像素时钟下，可以调整参数让刷新率达到 60Hz
+
+. 修改时钟。
+
+在 configuration.xml 的 Clocks 界面将时钟做如下修改
+
+* PLL2 Mul 改为 x300.00
+* PLL2P Div 改为 /4
+* PLL2Q Div 改为 /9
+* PLL2R Div 改为 /5
+* EBCLK Src 改为 BCLKA(Asynchronous)
+* LCDCLK Src 改为 PLL2R
+* LCDCLK Div 改为 /2
+* USBCLK Src 改为 PLL2R
+* USBCLK Div 改为 /10
+* USB60CLK Src 改为 PLL2R
+* USB60CLK Div 改为 /8
+
+[.text-center]
+--
+image::Snipaste_2026-07-17_14-15-25.png[role="thumb"]
+image::Snipaste_2026-07-17_14-15-54.png[role="thumb"]
+--
+
+[start=2]
+. 修改 r_glcdc stack
+
+该 stack 中如下参数需要修改
+
+* Output->Timing->Horizontal total cycles 改为 1355
+* Output->Timing->Horizontal back porch cycles 改为 55
+* Output->Timing->Vertical total lines 改为 738
+* Output->Timing->Vertical back porch lines 改为 10
+* TCON->Panel clock division radio 改为 1/1
+
+[.text-center]
+--
+image::Snipaste_2026-07-17_14-43-15.png[role="thumb"]
+image::Snipaste_2026-07-17_14-18-31.png[role="thumb"]
+--
+
+[start=3]
+. 重新生成并编译工程
+
+烧录后，可以看到显示器显示的刷新率为 60Hz
+
+[.text-center]
+--
+image::IMG_20260717_142023.jpg[role="thumb"]
+--
