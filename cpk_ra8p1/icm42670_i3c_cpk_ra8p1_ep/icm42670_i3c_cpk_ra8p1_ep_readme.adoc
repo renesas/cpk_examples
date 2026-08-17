@@ -1,0 +1,58 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 icm42670.hex。底板上的 SW400 拨到 I3C 侧。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，串口会输出以下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-07-27_17-17-37.png[role="thumb"]
+--
+
+输出的数据均为板子静止不动的结果。在 I3C 接口下，读取 16 字节 FIFO 再加上地址信息和其它协议开销，共耗时约 31us。在 src/hal_entry.c 中把宏 `IMU_INTERFACE` 改为 `IMU_USING_I2C` 可以将接口切换到 I2C 做对比。注意使用 I2C 接口时，SW400 应拨到另一侧。I2C 接口时运行结果如下：
+
+[.text-center]
+--
+image::Snipaste_2026-07-28_14-17-33.png[role="thumb"]
+--
+
+可以看到在 I2C 模式下，读取相同的 16 字节 FIFO，共耗时约 496us
+
+== 驱动代码
+
+=== FSP
+
+ICM42670 可以使用 I3C 或 I2C 接口，以及一个中断引脚用于接收中断。因此在 configuration.xml 中添加三个 stack
+
+[.text-center]
+--
+image::Snipaste_2026-07-27_17-36-00.png[role="thumb"]
+--
+
+=== 驱动文件
+
+ICM42670 驱动文件位于 src/imu 目录下。驱动来自芯片厂商 https://github.com/tdk-invn-oss/motion.mcu.icm42670p.driver[Github] ，工程在其基础上增加了对 I3C 的支持。在 hal_entry.c 中初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+#if IMU_INTERFACE == IMU_USING_I2C
+    IIC_Init();
+#else
+    I3C_Init();
+#endif
+    R_ICU_ExternalIrqOpen(g_external_irq31.p_ctrl, g_external_irq31.p_cfg);
+
+	s_imu_serif.read_reg = imuReadReg;
+	s_imu_serif.write_reg = imuWriteReg;
+	s_imu_serif.max_read = 126;
+	s_imu_serif.max_write = 126;
+#if IMU_INTERFACE == IMU_USING_I2C
+	s_imu_serif.serif_type = UI_I2C;
+#else
+	s_imu_serif.serif_type = UI_I3C;
+#endif
+	s_imu_serif.context = NULL;
+	rc = inv_imu_init(&s_imu_device, &s_imu_serif, TestICMCallback);
+----
+
+随后可以参考 src/test/test_icm42670.c 中的流程，根据具体要求对传感器进行功能配置。

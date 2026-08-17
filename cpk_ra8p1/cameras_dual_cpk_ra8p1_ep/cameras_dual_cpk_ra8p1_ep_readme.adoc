@@ -1,0 +1,63 @@
+:imagesdir: images
+
+== 运行
+
+=== 使用一个 OV5640 和 一个 OV7725
+
+在 e^2^ studio 中导入工程，生成并编译。底板上的 SW302 的 1 开关拨到 ON，其它拨到 OFF。打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。工程中默认使用一个 OV5640 和一个 OV7725。OV5640 使用 MIPI CSI 接口，对应 RA8P1 的外设 VIN；OV7725 使用 DVP 接口，对应 RA8P1 的外设 CEU。连接如下，注意不要接反
+
+[.text-center]
+--
+image::IMG_20260714_095251.jpg[role="thumb"]
+--
+
+用 e2sutdio 进入调试模式，自由运行，之后程序会在 hal_entry.c 中的如下位置停下
+
+[.text-center]
+--
+image::Snipaste_2026-07-14_10-00-51.png[role="thumb"]
+--
+
+串口终端中输出消息如下：
+
+[.text-center]
+--
+image::Snipaste_2026-07-13_18-17-31.png[role="thumb"]
+--
+
+此时 VIN 和 CEU 均已捕获到完整的摄像头数据。CEU 捕获的数据在变量 `s_dvp_image` 中，可以将其添加到内存窗口中查看，并指定格式为 Raw Image，分辨率 640x480，RGB565 格式。
+
+[.text-center]
+--
+image::Snipaste_2026-07-13_18-11-51.png[role="thumb"]
+--
+
+对于 VIN 接口，图像数据在 `vin_image_buffer_1` 中。可以将其添加到内存窗口中查看，并指定格式为 Raw Image，分辨率 1024x600，RGB565 格式。
+
+[.text-center]
+--
+image::Snipaste_2026-07-13_18-08-31.png[role="thumb"]
+--
+
+=== 使用两个 OV5640
+
+板子上的开关不动。在 src/hal_entry.c 中把 `DEMO_MODE` 改为 `DEMO_MODE_TWO_OV5640`，然后重新编译并进入调试。串口终端输出如下：
+
+[.text-center]
+--
+image::Snipaste_2026-07-13_18-18-02.png[role="thumb"]
+--
+
+CEU 和 VIN 捕获的数据依然在 `s_dvp_image` 和 `vin_image_buffer_1` 中。CEU 图像：
+
+[.text-center]
+--
+image::Snipaste_2026-07-13_18-08-51.png[role="thumb"]
+--
+
+VIN 图像：
+
+[.text-center]
+--
+image::Snipaste_2026-07-13_18-08-31.png[role="thumb"]
+--

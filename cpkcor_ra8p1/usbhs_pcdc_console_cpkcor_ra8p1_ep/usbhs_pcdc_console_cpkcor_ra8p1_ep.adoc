@@ -1,0 +1,94 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 usbhs_pcdc_console.hex。再用第二根 USB 线连接 PC 和 JUSB 端口，打开一个串口终端，参数可以任意设置，会输出类似如下信息
+
+[.text-center]
+--
+image::Snipaste_2026-08-12_17-53-52.png[role="thumb"]
+--
+
+其中的 Received 语句是回显终端的输入
+
+== 驱动
+
+=== FSP
+
+在 configuration.xml 的 stack 界面添加一个 r_usb_pcdc stack，如下图，具体属性可打开工程查看
+
+[.text-center]
+--
+image::Snipaste_2026-08-12_18-15-51.png[role="thumb"]
+--
+
+=== 代码
+
+* 此工程还使用 FUSB303B 来设置 USB TypeC 中的 SOURCE 和 SINK，相关例程可以参考 link:../fusb303b_cpkcor_ra8p1_ep/readme.md[fusb303b_cpkcor_ra8p1_ep]
+
+* console
+
+使用时先执行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+/* 等待 USB 连接且明确设置为 SINK
+ * 由 FUSB303B 实现，USB 协议栈自身只能检查到插入或断开，不能确定自身作为 SINK 或 SOURCE */
+wait_usb_attach(false);
+/* console 初始化，内部包含对 USB 的初始化 */
+CONSOLE_Init();
+----
+
+随后需要在应用循环中调用 `CONSOLE_Task()` 处理 USB 事件，以及处理其它应用逻辑：
+[source,c,subs="verbatim,attributes"]
+----
+while (1) {
+    CONSOLE_Task();
+
+    if (s_time_cnt > 1000) {
+        s_time_cnt = 0;
+        printf("Redirect stdio to USB, cnt: %" PRIu32 "\r\n", cnt);
+        cnt++;
+    }
+
+    if (CONSOLE_HasData()) {
+        rlen = CONSOLE_Read(s_rdata, RECEIVE_SIZE);
+        if (rlen > 0) {
+            printf("Received: %s", s_rdata);
+            if (s_rdata[rlen - 1] != '\n') {
+                printf("\r\n");
+            }
+        }
+        memset(s_rdata, 0, RECEIVE_SIZE);
+    }
+
+    if (s_irq_flag) {
+        FUSB303B_Check(&fusb_status);
+        if (fusb_status.attached == 0) {
+            printf("USB detach\r\n");
+            wait_usb_attach(true);
+            printf("USB attach and as a sink");
+            s_time_cnt = 0;
+        }
+    }
+}
+----
+
+* 其它注意事项
+** 在裸机环境中，不要长时间阻塞 `CONSOLE_Task()` 的执行，此函数会处理 USB 事件，如果此函数长时间被阻塞不能执行，会丢失对 USB 事件的响应，造成 PC 如串口终端无响应等问题。对于 C stdin，默认都会阻塞，因此在调用 C stdint 函数如 `scanf()` 时，最好先使用 `CONSOLE_HasData()` 来判断是否已有接收到的数据。
+** console 使用队列来存储发送和接收到数据
++
+[source,c,subs="verbatim,attributes"]
+----
+/* 每个队列的发送/接收大小 */
+#define CONSOLE_CFG_USB_PACK_SIZE	512
+/* 队列长度 */
+#define CONSOLE_CFG_USB_FIFO_LEN	8
+----
++
+调用 `printf()` 或 `puts()` 等 stdout 时，数据会先存储至队列中，随后在 `CONSOLE_Task()` 中发送和处理事件。当队列满时，将忽略所有写入。
+
+** 触发 USB 实际发起写入的条件是有需要写入的队列，以下两个条件会使程序认为需要发起 USB 写入
+*** 遇到任意一次换行符 `\n`
+*** 对一个队列元素已写入 `CONSOLE_CFG_USB_PACK_SIZE` 字节
+** 读取时，依然会先将接收到的数据放入内部队列，但与写入不同的时，当队列满时会丢弃旧数据

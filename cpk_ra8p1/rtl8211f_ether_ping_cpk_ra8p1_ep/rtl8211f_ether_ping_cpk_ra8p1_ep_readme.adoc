@@ -1,0 +1,27 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 network_ping.hex。底板上的 SW800 拨到靠近排母一侧，即丝印标记为 P806/P805 侧。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，串口会输出以下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-08-05_16-13-37.png[role="thumb"]
+--
+
+程序会先通过 DHCP 获取 IP 地址，然后以 1s 的间隔 ping 223.5.5.5 这个在公网上的服务器地址。ping 延迟与具体网络有关。当前设置 ping 的超时时间为 1s，如果网络延迟过高，可能频繁出现下图中的情况：
+
+[.text-center]
+--
+image::Snipaste_2026-08-05_16-16-55.png[role="thumb"]
+--
+
+此时可以在 src/app_thread_entry.c 中修改以下两个宏调大
+
+[source,c,subs="verbatim,attributes"]
+--
+#define PING_PERIOD_MS             (1000U)
+#define PING_REPLY_TIMEOUT_MS      (1000U)
+--
+
+`PING_PERIOD_MS` 是 ping 时间间隔，`PING_REPLY_TIMEOUT_MS` 是 ping 超时时间

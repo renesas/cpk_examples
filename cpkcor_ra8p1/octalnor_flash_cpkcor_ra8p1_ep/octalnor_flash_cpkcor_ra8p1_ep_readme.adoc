@@ -1,0 +1,84 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接使用当前文件夹下的 nor_flash.hex 直接烧录。打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序会先对 NorFlash 进行检查，确保正常工作，随后测试从 NorFlash 到其它存储区域在 DCache 影响下的速度。烧录后可直接在终端中看到如下结果：
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_15-50-36.png[role="thumb"]
+--
+
+== FSP 配置
+
+DCache 需要在 configuration.xml 的 BSP 属性界面打开，如下图所示
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_11-08-05.png[role="thumb"]
+--
+
+在 Colcks 界面，打开 OCTCLK
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_15-58-43.png[role="thumb"]
+--
+
+NorFlash 使用 OSPI 接口，在 configuration.xml 中添加一个 r_ospi_b stack，如下图所示，具体的属性可打开工程，点击此 stack 查看
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_16-00-12.png[role="thumb"]
+--
+
+== 驱动文件
+
+在 src 文件夹下，有 `nor_flash.c` 和 `nor_flash.h`，其中包含了 NorFlash 的操作。NorFlash 在 RA8P1 上在读取时可以通过内存映射方式访问，因此头文件中还定义了内存映射的起始地址和 NorFlash 的大小，方便程序内使用
+
+[source,c,subs="verbatim,attributes"]
+----
+#define NORFLASH_MAP_START_ADDR		0x78000000
+#define NORFLASH_MAP_END_ADDR		0x80000000
+#define NORFLASH_SIZE				(1024 * 1024 * 64)
+#define NORFLASH_SECTOR_SIZE		(1024 * 4)
+#define NORFLASH_BLOCK_SIZE			(1024 * 64)
+----
+
+对 NorFlash 的写操作由 FSP 提供
+
+[source,c,subs="verbatim,attributes"]
+----
+fsp_err_t R_OSPI_B_Write(spi_flash_ctrl_t *p_ctrl, uint8_t const *const p_src, uint8_t *const p_dest, uint32_t byte_count);
+fsp_err_t R_OSPI_B_Erase(spi_flash_ctrl_t *p_ctrl, uint8_t *const p_device_address, uint32_t byte_count);
+----
+
+注意 `R_OSPI_B_Write()` 的参数 `byte_count` 最大为 64。除此之外，有些操作如等待 Flash 内部空闲标志等， FSP 没有提供，因此在 `nor_flash.h` 中提供了对应的 API
+
+[source,c,subs="verbatim,attributes"]
+----
+uint32_t NorFlash_EraseChip(void);
+uint32_t NorFlash_EraseSector(uint32_t sector);
+uint32_t NorFlash_WaitOperation(uint32_t timeout);
+----
+
+== NorFlash 测试
+
+对 NorFlash 的测试位于 `src/test/test_nor_flash.c` 中，入口函数为 `TestNorFlash()`，该函数会测试读写速度。只需在 hal_entry() 中完成对 NorFlash 的初始化后调用即可
+
+[source,c,subs="verbatim,attributes"]
+----
+NorFlash_Init();
+TestNorFlash(NORFLASH_MAP_START_ADDR, NORFLASH_SIZE);
+----
+
+在 `src/test/test_nor_flash.c` 中有一个宏
+
+[source,c,subs="verbatim,attributes"]
+----
+#ifndef TEST_NOR_FLASH_EN_FULL_CHECK
+#define TEST_NOR_FLASH_EN_FULL_CHECK	0
+#endif
+----
+
+该宏在工程中关闭，若打开，会对全片进行读写校验，但要注意，全片的读写校验耗时约至少五分钟

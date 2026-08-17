@@ -1,0 +1,75 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译。底板上的 SW302 的 1 开关拨到 ON，其它拨到 OFF。OV5640 的接入位置如下，注意不要插错接口
+
+[.text-center]
+--
+image::IMG_20260715_115730.jpg[role="thumb"]
+--
+
+用 e2sutdio 进入调试模式，自由运行，之后程序会在 hal_entry.c 中的如下位置停下
+
+[.text-center]
+--
+image::Snipaste_2026-07-14_10-00-51.png[role="thumb"]
+--
+
+MIPI 接口的摄像头，在 RA8P1 上对应于外设 VIN，图像数据在 `vin_image_buffer_1` 中。可以将其添加到内存窗口中查看，并指定格式为 Raw Image，分辨率 1024x600，RGB565 格式。
+
+[.text-center]
+--
+image::Snipaste_2026-07-15_11-47-19.png[role="thumb"]
+--
+
+== 驱动代码
+
+=== FSP
+
+OV5640 摄像头使用 IIC 接口配置寄存器，使用 MIPI CSI 接口接收图像数据，因此在 confguration.xml 中添加两个 stack
+
+[.text-center]
+--
+image::Snipaste_2026-07-15_13-23-10.png[role="thumb"]
+--
+
+=== 驱动文件
+
+对相机的驱动文件都在 src/camera 文件夹中，使用方式如下
+
+[source,c,subs="verbatim,attributes"]
+----
+/* 相机控制结构体 */
+static Camera s_camera_ov5640_mipi;
+
+void hal_entry(void)
+{
+    /* 相机配置结构体 */
+    CameraConfig ov5640_config_mipi;
+
+    /* 相机使用 IIC 接口进行配置，因此需要先初始化 IIC */
+    IIC_Init();
+
+    /* 填写相机配置 */
+    ov5640_config_mipi.model = CAMERA_MODEL_OV5640;
+    ov5640_config_mipi.interface = CAMERA_INTERFACE_MIPI_CSI;
+    ov5640_config_mipi.length = 1024;
+    ov5640_config_mipi.width = 600;
+    ov5640_config_mipi.peripheral_inst = &g_vin_ov5640;
+    /* 相机初始化 */
+    CameraInit(&s_camera_ov5640_mipi, &ov5640_config_mipi);
+    /* 开始捕获相机的图像 */
+    CameraStartCapture(&s_camera_ov5640_mipi, NULL);
+
+    ...
+    /* 检查是否获取到了完整的一帧图像 */
+    ret = CameraIsCaptureDone(&s_camera_ov5640_mipi);
+    /* 如果已有一帧完整的图像，那么相机控制结构体下的变量 image_ready 会指向
+     * 对应的图像接收块，随后可根据应用逻辑进行处理。 */
+    if (s_camera_ov5640_mipi.image_ready != NULL) {
+        ...
+    }
+    ...
+}
+----

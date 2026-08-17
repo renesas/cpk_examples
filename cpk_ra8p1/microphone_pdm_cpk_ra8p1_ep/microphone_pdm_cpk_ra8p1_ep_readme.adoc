@@ -1,0 +1,69 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 audio_pdm.hex。底板上的 SW302 的 3、4、7、8 开关拨到 ON，其它拨到 OFF。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。注意不要使用如 MobaXterm 这类的串口终端，而是使用如 ATK-XCOM 这类的串口调试工具。程序没有实现 Linux Shell 下的行规程，因此在终端下的输入不会回显。程序烧录后，串口会输出以下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-07-23_14-20-32.png[role="thumb"]
+--
+
+输入 1，程序开始录音，录音时间 5 秒。注意输入时勾选发送新行
+
+[.text-center]
+--
+image::Snipaste_2026-07-23_14-26-46.png[role="thumb"]
+--
+
+输入 2，程序开始播放录音。
+
+[.text-center]
+--
+image::Snipaste_2026-07-23_14-28-16.png[role="thumb"]
+--
+
+如果声音太小，可以输入 3 调整音量，程序默认设置音量为 30%
+
+[.text-center]
+--
+image::Snipaste_2026-07-23_14-29-15.png[role="thumb"]
+--
+
+== 驱动代码
+
+=== FSP
+
+ES8311 使用 I2C 进行寄存器配置，使用 I2S 与 RA8P1 传输音频数据，以及一个定时器提供音频时钟 MCLK。因此在 configuration.xml 中添加三个 stack
+
+[.text-center]
+--
+image::Snipaste_2026-07-15_10-53-59.png[role="thumb"]
+--
+
+两个麦克风型号为 SPH0690LM4H-1，对于 RA8P1 可以使用 PDM 外设直接读取并转换为原始音频数据。有两个麦克风，因此添加两个 PDM stack。
+
+[.text-center]
+--
+image::Snipaste_2026-07-23_14-37-07.png[role="thumb"]
+--
+
+注意对下降沿采集的麦克风，PDM 实际使用的通道是设定通道 - 1。如图中设定的通道是 2，那么实际上使用的 1
+
+[.text-center]
+--
+image::Snipaste_2026-07-23_14-42-01.png[role="thumb"]
+--
+
+=== 驱动文件
+
+ES8311 驱动文件位于 src 目录下，es8311.c 和 es8311.h。关于 I2C 的操作在 iic.c 和 iic.h 中。对 PDM 外设的操作在 src 目录下的 pdm.c 和 pdm.h。在程序入口 hal_entry() 中先进行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+IIC_Init();
+ES8311_Init();
+PDM_Init();
+----
+
+随后可参考 `src/test/test_pdm.c` 中的流程进行录音和播放

@@ -1,0 +1,65 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 usbhs_pcdc.hex。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。此时输出如下信息
+
+[.text-center]
+--
+image::Snipaste_2026-08-10_17-26-36.png[role="thumb"]
+--
+
+再用第二根 USB 线连接 PC 和 JUSB 端口，输出如下信息
+
+[.text-center]
+--
+image::Snipaste_2026-08-10_17-29-33.png[role="thumb"]
+--
+
+此时再打开第二个串口调试工具，打开 PC 识别到的 CDC 串口，即可开始读写测试。测试结果如下：
+
+[.text-center]
+--
+image::Snipaste_2026-08-10_17-07-57.png[role="thumb"]
+--
+
+测试写入时，要求输入 1M 字节的数据，可以直接加载本文件夹下的 test.txt。并注意，不同的 PC 串口调试工具因为使用不同的接收与渲染显示逻辑，得到的结果可能不同。
+
+== 驱动
+
+=== FSP
+
+在 configuration.xml 的 stack 界面添加一个 r_usb_pcdc stack，如下图，具体属性可打开工程查看
+
+[.text-center]
+--
+image::Snipaste_2026-08-10_17-36-58.png[role="thumb"]
+--
+
+=== 代码
+
+* 此工程还使用 FUSB303B 来设置 USB TypeC 中的 SOURCE 和 SINK，相关例程可以参考 link:../fusb303b_cpkcor_ra8p1_ep/readme.md[fusb303b_cpkcor_ra8p1_ep]
+
+* r_usb_pcdc
+
+使用时先执行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+R_USB_Open(g_basic0.p_ctrl, g_basic0.p_cfg);
+----
+
+随后在应用循环中处理 USB 事件：
+[source,c,subs="verbatim,attributes"]
+----
+usb_event_info_t usb_event;
+usb_status_t usb_status;
+R_USB_EventGet(&usb_event, &usb_status);
+switch (usb_status) {
+    ...
+}
+----
+
+* 设备描述符
+
+FSP 会生成一个默认的 PCDC 设备描述符模板，位于 `{e2studio工程位置}\ra\fsp\src\r_usb_pcdc\r_usb_pcdc_descriptor.c.template`。此模板默认可直接用于测试使用，但注意若要实际生产使用，需要修改 VID、描述字符串等信息。

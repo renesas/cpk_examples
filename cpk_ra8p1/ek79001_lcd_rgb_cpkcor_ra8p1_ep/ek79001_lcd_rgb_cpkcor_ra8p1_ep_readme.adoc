@@ -1,0 +1,75 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本目录下的 `lcd_ek79001_rgb.hex`。烧录后可看到如下结果
+
+[.text-center]
+--
+image::IMG_20260625_103439_1.jpg[role="thumb"]
+--
+
+== FSP Stacks
+
+屏幕使用 RGB 接口。因此在 Stacks 选项卡中，选择添加 r_glcdc stack，注意不要在这个 stack 下方再添加 MIPI DSI Output，部分重要的属性配置如下图：
+
+[.text-center]
+--
+image::Snipaste_2026-06-25_10-59-27.png[role="thumb"]
+--
+
+另外，BSP 中默认没有配置 RGB 相关引脚，需要在 configuration.xml 的 Pins 页面勾选
+
+[.text-center]
+--
+image::Snipaste_2026-06-25_11-07-37.png[role="thumb"]
+--
+
+== 驱动文件
+
+相关驱动在 `src/lcd` 文件夹中，除此之外还有两张图片资源用于测试。
+
+[.text-center]
+--
+image::Snipaste_2026-06-16_15-02-15.png[role="thumb"]
+--
+
+在该文件夹中，除了 EK79001 外，还有其它屏幕 IC 的驱动，它们适用于其它底板和屏幕模块。当前工程连接的是 EK79001，因此需要对驱动型号和接口进行指定，在当前工程中，都已指定好。可以在以下位置查看：
+
+* 在 `src/lcd/lcd.h` 中指定驱动芯片
+
+[source,c,subs="verbatim,attributes"]
+----
+#define LCD_DRIVER_UNSELECT		0
+#define LCD_DRIVER_EK79001D		1
+#define LCD_DRIVER_ILI9881C		2
+#define LCD_DRIVER_ST7796U		3
+#define LCD_DRIVER_TFP410		4
+
+#ifndef LCD_DIRVER
+#define LCD_DIRVER				LCD_DRIVER_EK79001D
+#endif
+----
+
+== 初始化屏幕和简单测试
+
+* 声明一个 `LCD_Device` 设备
+
+[source,c,subs="verbatim,attributes"]
+----
+static LCD_Device s_lcd;
+----
+
+* 然后执行初始化
+
+[source,c,subs="verbatim,attributes"]
+----
+LCD_PortInit(&s_lcd);
+----
+
+在 `src/test` 文件夹中有对屏幕的简单测试，用于测试屏幕本身及相关 API 是否正常，该工程在初始化屏幕后，随即进行了测试，以显示彩条
+
+[source,c,subs="verbatim,attributes"]
+----
+TestLCD(&s_lcd);
+----

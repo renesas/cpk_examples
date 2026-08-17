@@ -1,0 +1,84 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译。OV5640 或者 OV7725 的接入位置如下，注意不要插错接口
+
+[.text-center]
+--
+image::IMG_20260715_142816.jpg[role="thumb"]
+--
+
+=== 使用 OV7725
+
+用 e2sutdio 进入调试模式，自由运行，之后程序会在 hal_entry.c 中的如下位置停下
+
+[.text-center]
+--
+image::Snipaste_2026-07-15_14-45-00.png[role="thumb"]
+--
+
+DVP 接口的摄像头，在 RA8P1 上对应于外设 CEU，图像数据在 `s_dvp_image` 中。可以将其添加到内存窗口中查看，并指定格式为 Raw Image，分辨率 640x480，RGB565 格式。
+
+[.text-center]
+--
+image::Snipaste_2026-07-15_14-32-10.png[role="thumb"]
+--
+
+=== 使用 OV5640
+
+在 src/hal_entry.c 中将 `DEMO_MODE` 改为 `DEMO_MODE_OV5640`。重新编译，进入调试模式。程序会在相同的位置停下，随后可以在 `s_dvp_image` 中查看 OV5640 捕获到的图像，分辨率 640x480，RGB565 格式
+
+[.text-center]
+--
+image::Snipaste_2026-07-15_14-05-55.png[role="thumb"]
+--
+
+== 驱动代码
+
+=== FSP
+
+OV5640 和 OV7725 摄像头使用 IIC 接口配置寄存器，使用 CEU 接口接收图像数据，使用一个定时器提供时钟。涉及三种外设，两个不同的摄像头，CEU 配置有少数不同，因此需要两个 CEU stack，共需要添加 4 个 stack
+
+[.text-center]
+--
+image::Snipaste_2026-07-15_14-55-03.png[role="thumb"]
+--
+
+=== 驱动文件
+
+对相机的驱动文件都在 src/camera 文件夹中，使用方式如下，以 OV5640 为例
+
+[source,c,subs="verbatim,attributes"]
+----
+/* 相机控制结构体 */
+static Camera s_camera_ov5640_dvp;
+
+void hal_entry(void)
+{
+    /* 相机配置结构体 */
+    CameraConfig ov5640_config_dvp;
+
+    /* 相机使用 IIC 接口进行配置，因此需要先初始化 IIC */
+    IIC_Init();
+    /* 用定时器提供时钟 */
+    R_GPT_Open(g_timer10.p_ctrl, g_timer10.p_cfg);
+    R_GPT_Start(g_timer10.p_ctrl);
+
+    /* 填写相机配置 */
+    ov5640_config_dvp.model = CAMERA_MODEL_OV5640;
+    ov5640_config_dvp.interface = CAMERA_INTERFACE_DVP;
+    ov5640_config_dvp.length = g_ceu_ov5640_cfg.x_capture_pixels;
+    ov5640_config_dvp.width = g_ceu_ov5640_cfg.y_capture_pixels;
+    ov5640_config_dvp.peripheral_inst = &g_ceu_ov5640;
+    /* 相机初始化 */
+    CameraInit(&s_camera_ov5640_dvp, &ov5640_config_dvp);
+    /* 开始捕获相机的图像 */
+    CameraStartCapture(&s_camera_ov5640_dvp, s_dvp_image);
+
+    ...
+    /* 检查是否获取到了完整的一帧图像 */
+    ret = CameraIsCaptureDone(&s_camera_ov5640_dvp);
+    ...
+}
+----

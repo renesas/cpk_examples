@@ -1,0 +1,66 @@
+:imagesdir: images
+
+== 运行结果
+
+在 e^2^ studio 中导入工程，生成并编译，或直接使用当前文件夹下的 hyper_ram.hex 直接烧录。打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序会先对 HyperRAM 进行检查，确保正常工作，随后测试从 HyperRAM 到其它存储区域在 DCache 影响下的速度。烧录后可直接在终端中看到如下结果：
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_11-04-01.png[role="thumb"]
+image::Snipaste_2026-07-02_11-05-13.png[role="thumb"]
+image::Snipaste_2026-07-02_11-05-30.png[role="thumb"]
+--
+
+== FSP 配置
+
+DCache 需要在 configuration.xml 的 BSP 属性界面打开，如下图所示
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_11-08-05.png[role="thumb"]
+--
+
+在 Colcks 界面，打开 OCTCLK
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_11-11-10.png[role="thumb"]
+--
+
+HyperRAM 使用 OSPI 接口，在 configuration.xml 中添加一个 r_ospi_b stack，如下图所示，具体的属性可打开工程，点击此 stack 查看
+
+[.text-center]
+--
+image::Snipaste_2026-07-02_11-14-22.png[role="thumb"]
+--
+
+== 驱动文件
+
+在 src 文件夹下，有 `hyper_ram.c` 和 `hyper_ram.h`，其中包含了 HyperRAM 的操作。HyperRAM 在 RA8P1 上可以通过内存映射的方式访问，因此只有一个初始化函数，以及定义内存映射的起始地址和 HyperRAM 的大小，方便程序内使用
+
+[source,c,subs="verbatim,attributes"]
+----
+#define HYPER_RAM_MAP_START_ADDR	0x70000000
+#define HYPER_RAM_MAP_END_ADDR		0x78000000
+#define HYPER_RAM_SIZE				(1024 * 1024 * 32)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void HyperRAM_Init(void);
+
+#ifdef __cplusplus
+}
+#endif
+----
+
+== HyperRAM 测试
+
+对 HyperRAM 的测试位于 `src/test/test_hyper_ram.c` 中，入口函数为 `TestHyperRAM()`，该函数会检查 HyperRAM 并测试读写速度。只需在 hal_entry() 中完成对 HyperRAM 的初始化后调用即可
+
+[source,c,subs="verbatim,attributes"]
+----
+HyperRAM_Init();
+TestHyperRAM(HYPER_RAM_MAP_START_ADDR, HYPER_RAM_SIZE);
+----
