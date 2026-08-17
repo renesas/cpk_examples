@@ -14,60 +14,23 @@ image::cpknet_ra8t2.png[width=480]
 
 样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
-样例程序主要分为三大类别
-
-=== A. 在CPKNET-RA8T2上开发的样例程序，可以直接运行
-
-. link:../cpknet_ra8t2/perf_counter_cpknet_ra8t2_ep/[在CPKNET-RA8T2上使用 perf_counter 进行性能测试]
-. link:../cpknet_ra8t2/memconfig_benchmark_cpknet_ra8t2_ep/[RA8T2程序/数据存储位置对性能的影响评测样例]
-
-=== B. 在其他CPK上开发的样例程序，仅使用了RA8P1/T2（以及RA8D2/M2） MCU的基础功能和片内外设。
-
-这些样例程序仅需要最小系统（电源，时钟）即可运行，重新选择CPK的BSP后，可以在任何CPK开发板上运行
-
-==== 01 - 基于CPKNET-RA8T2核心板开发的样例程序
-
-. link:../cpknet_ra8t2/adc_continues_scan_cpknet_ra8t2_ep/[RA8T2 MCU上ADC16H（ADC_B）连续扫描驱动程序的基本功能]
-. link:../cpknet_ra8t2/adc_singlescan_cpknet_ra8t2_ep/[RA8T2 MCU上ADC16H（ADC_B）单次扫描驱动程序的基本功能]
-. link:../cpknet_ra8t2/dac_cpknet_ra8t2_ep/[RA8T2 MCU上DAC12（DAC_B）驱动程序的基本功能]
-. link:../cpknet_ra8t2/dma_block_cpknet_ra8t2_ep/[RA8T2 MCU上DMAC驱动程序的基本功能 - 块传输]
-. link:../cpknet_ra8t2/dma_normal_cpknet_ra8t2_ep/[RA8T2 MCU上DMAC驱动程序的基本功能]
-. link:../cpknet_ra8t2/dma_repeat_cpknet_ra8t2_ep/[RA8T2 MCU上DMAC驱动程序的基本功能 - 重复模式]
-. link:../cpknet_ra8t2/dma_repeatblock_cpknet_ra8t2_ep/[RA8T2 MCU上DMAC驱动程序的基本功能 - 重复模式块传输]
-. link:../cpknet_ra8t2/elc_cpknet_ra8t2_ep/[RA8T2 MCU上ELC驱动程序的基本功能]
-. link:../cpknet_ra8t2/gpt_capture_cpknet_ra8t2_ep/[RA8T2 MCU上GPT驱动程序的基本功能 - 输入捕捉模式]
-. link:../cpknet_ra8t2/gpt_cpknet_ra8t2_ep/[RA8T2 MCU上GPT驱动程序的基本功能 - 多种定时器工作模式]
-. link:../cpknet_ra8t2/iwdt_cpknet_ra8t2_ep/[RA8T2 MCU上iwdt驱动程序的基本功能]
-. link:../cpknet_ra8t2/rtc_cpknet_ra8t2_ep/[RA8T2 MCU上RTC驱动程序的基本功能]
-. link:../cpknet_ra8t2/sci_i2c_cpknet_ra8t2_ep/[RA8T2 MCU上SCI-I2C驱动程序的基本功能]
-. link:../cpknet_ra8t2/sci_uart_cpknet_ra8t2_ep/[RA8T2 MCU上SCI-UART驱动程序的基本功能]
-
-==== 04 - 基于CPKCOR-RA8T2核心板开发的样例程序
-
-无
-
-==== 03 - 基于CPKHMI-RA8P1核心板开发的样例程序
-
-无
-
-==== 02 - 基于CPKCOR-RA8P1核心板开发的样例程序
-
-无
-
-=== C. 在其他CPK上开发的样例程序，得益于开发板的硬件兼容设计，可以直接（或简单修改后）在CPKNET-RA8T2上运行
-
-==== 04 - 基于CPKCOR-RA8T2核心板开发的样例程序
-
-无
-
-==== 03 - 基于CPKHMI-RA8P1核心板开发的样例程序
-
-无
-
-==== 02 - 基于CPKCOR-RA8P1核心板开发的样例程序
-
-无
+. link:../cpknet_ra8t2/perf_counter_cpknet_ra8t2_ep/[基于perf_counter的CoreMark基准测试程序] - link:../cpknet_ra8t2/_ep_archive/perf_counter_cpknet_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpknet_ra8t2/memconfig_benchmark_cpknet_ra8t2_ep/[RA8T2在不同的存储配置下使用CoreMark进行性能测试] - link:../cpknet_ra8t2/_ep_archive/memconfig_benchmark_cpknet_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpknet_ra8t2/acmphs_cpknet_ra8t2_ep/[RA8P1/x2 MCU的ACMPHS 驱动程序的基本功能] - link:../cpknet_ra8t2/_ep_archive/acmphs_cpknet_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
+. link:../cpknet_ra8t2/sdram_cpknet_ra8t2_ep/[RA8T2驱动32位SDRAM] - link:../cpknet_ra8t2/_ep_archive/sdram_cpknet_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
 
 
+以下样例程序只与MCU本身相关，或开发板硬件配置一致，修改设置后即可在此核心板上运行：
 
-Ver. 20260228
+. link:../cpkhmi_ra8p1/blinky_benchmark_tutorial_cpkhmi_ra8p1_ep/[基于Blinky程序，添加perf_counter和串口通信程序，实现基础程序框架] - link:../cpkhmi_ra8p1/_ep_archive/blinky_benchmark_tutorial_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包] - CPKHMI-RA8P1 核心板
+. link:../cpkhmi_ra8p1/fusb303b_cpkhmi_ra8p1_ep/[RA8P1使用 FUSB303B 识别和控制 USB Type-C的Source 和 Sink 角色] - link:../cpkhmi_ra8p1/_ep_archive/fusb303b_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包] - CPKHMI-RA8P1 核心板
+. link:../cpkhmi_ra8p1/qspi_flash_cpkhmi_ra8p1_ep/[RA8P1驱动QSPI Flash] - link:../cpkhmi_ra8p1/_ep_archive/qspi_flash_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包] - CPKHMI-RA8P1 核心板
+. link:../cpkcor_ra8t2/microsd_basic_rw_cpkcor_ra8t2_ep/[RA8T2对 MicroSD 卡进行无文件系统的基本读写] - link:../cpkcor_ra8t2/_ep_archive/microsd_basic_rw_cpkcor_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包] - CPKCOR-RA8T2 核心板
+
+
+以下例程使用的硬件配置和系统设置与本核心板类似，可将将这些例程移植到本核心板上运行：
+
+* 无
+
+
+Ver. 20260817

@@ -12,18 +12,23 @@ image::cpkhmi_ra8p1.png[width=480]
 
 各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
-. link:../cpkhmi_ra8p1/perf_counter_cpkhmi_ra8p1_ep/[在CPKHMI-RA8P1上使用 perf_counter 进行性能测试]
-. link:../cpkhmi_ra8p1/memconfig_benchmark_cpkhmi_ra8p1_ep/[RA8P1程序/数据存储位置对性能的影响评测样例]
-. link:../cpkhmi_ra8p1/blinky_benchmark_tutorial_cpkhmi_ra8p1_ep/[RA8P1 如何在用户工程中添加性能评估测试代码]
-. link:../cpkhmi_ra8p1/qspi_cpkhmi_ra8p1_ep/[RA8P1 QSPI NOR-Flash 样例程序]
+. link:../cpkhmi_ra8p1/perf_counter_cpkhmi_ra8p1_ep/[RA8P1基于perf_counter的CoreMark基准测试程序] - link:../cpkhmi_ra8p1/_ep_archive/perf_counter_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkhmi_ra8p1/memconfig_benchmark_cpkhmi_ra8p1_ep/[RA8P1在不同的存储配置下使用CoreMark进行性能测试] - link:../cpkhmi_ra8p1/_ep_archive/memconfig_benchmark_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkhmi_ra8p1/blinky_benchmark_tutorial_cpkhmi_ra8p1_ep/[基于Blinky程序，添加perf_counter和串口通信程序，实现基础程序框架] - link:../cpkhmi_ra8p1/_ep_archive/blinky_benchmark_tutorial_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkhmi_ra8p1/ek79007_lcd_mipi_cpkhmi_ra8p1_ep/[RA8P1 MIPI-DSI 驱动 EK79007 屏幕 1024 x 600] - link:../cpkhmi_ra8p1/_ep_archive/ek79007_lcd_mipi_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkhmi_ra8p1/ili9881c_lcd_mipi_cpkhmi_ra8p1_ep/[RA8P1 MIPI-DSI 驱动 ILI9881C 屏幕 800 x 1280] - link:../cpkhmi_ra8p1/_ep_archive/ili9881c_lcd_mipi_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkhmi_ra8p1/fusb303b_cpkhmi_ra8p1_ep/[RA8P1使用 FUSB303B 识别和控制 USB Type-C的Source 和 Sink 角色] - link:../cpkhmi_ra8p1/_ep_archive/fusb303b_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkhmi_ra8p1/sdram_cpkhmi_ra8p1_ep/[RA8P1驱动32位SDRAM] - link:../cpkhmi_ra8p1/_ep_archive/sdram_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpkhmi_ra8p1/qspi_flash_cpkhmi_ra8p1_ep/[RA8P1驱动QSPI Flash] - link:../cpkhmi_ra8p1/_ep_archive/qspi_flash_cpkhmi_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
 
+以下样例程序只与MCU本身相关，或开发板硬件配置一致，修改设置后即可在此核心板上运行：
 
-以下样例程序只与MCU本身相关，修改设置后即可在此开核心板上运行：
+. link:../cpknet_ra8t2/acmphs_cpknet_ra8t2_ep/[ARA8P1/x2 MCU的CMPHS 驱动程序的基本功能] - link:../cpknet_ra8t2/_ep_archive/acmphs_cpknet_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包] - CPKNET-RA8T2 核心板
+. link:../cpkcor_ra8t2/microsd_basic_rw_cpkcor_ra8t2_ep/[RA8T2对 MicroSD 卡进行无文件系统的基本读写] - link:../cpkcor_ra8t2/_ep_archive/microsd_basic_rw_cpkcor_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包] - CPKCOR-RA8T2 核心板
 
-* 暂无
 
 以下例程使用的硬件配置和系统设置与本核心板类似，可将将这些例程移植到本核心板上运行：
 
-* 暂无
+* 无
 
-Ver. 202608xx
+Ver. 20260817

@@ -14,12 +14,32 @@ image::cpk_ra8p1.png[]
 
 各个样例程序所需的软硬件配置也请查看对应样例程序目录下的Readme文件。
 
+. link:../cpk_ra8p1/hdmi_rgb_cpk_ra8p1_ep/[RA8P1通过RGB转HDMI芯片输出到显示器-16位SDRAM] - link:../cpk_ra8p1/_ep_archive/hdmi_rgb_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/audio_codec_cpk_ra8p1_ep/[RA8P1驱动 ES8311 I2S音频芯片进行录音和音频播放] - link:../cpk_ra8p1/_ep_archive/audio_codec_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/ov5640_7725_ceu_cpk_ra8p1_ep/[RA8P1驱动 CEU接口上的OV5640和OV7725摄像头] - link:../cpk_ra8p1/_ep_archive/ov5640_7725_ceu_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/ov5640_mipi_cpk_ra8p1_ep/[RA8P1驱动 MIPI接口上的OV5640摄像头] - link:../cpk_ra8p1/_ep_archive/ov5640_mipi_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/cameras_dual_cpk_ra8p1_ep/[RA8P1通过 MIPI接口和CEU接口同时驱动2个摄像头] - link:../cpk_ra8p1/_ep_archive/cameras_dual_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/ek79001_lcd_rgb_cpkcor_ra8p1_ep/[RA8P1 通过RGB接口驱动 EK79001 屏幕 1024 x 600] - link:../cpk_ra8p1/_ep_archive/ek79001_lcd_rgb_cpkcor_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/icm42670_i3c_cpk_ra8p1_ep/[RA8P1使用 I3C 驱动 ICM42670 六轴传感器] - link:../cpk_ra8p1/_ep_archive/icm42670_i3c_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/microphone_pdm_cpk_ra8p1_ep/[RA8P1驱动 PDM 立体声麦克风] - link:../cpk_ra8p1/_ep_archive/microphone_pdm_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/rtl8211f_ether_ping_cpk_ra8p1_ep/[RA8P1使用以太网 PHY RTL8211F 接入网络] - link:../cpk_ra8p1/_ep_archive/rtl8211f_ether_ping_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/st7796u_lcd_mipi_cpk_ra8p1_ep/[RA8P1 驱动MIPI接口的ST7796U TFT LCD 222 x 480] - link:../cpk_ra8p1/_ep_archive/st7796u_lcd_mipi_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8p1/st7796u_lcd_spi_cpk_ra8p1_ep/[RA8P1 驱动SPI接口的TFT LCD] - link:../cpk_ra8p1/_ep_archive/st7796u_lcd_spi_cpk_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包]
+
+以下例程使用的硬件配置和系统设置与本开发套件基本一致，可将将这些例程简单修改后在本开发套件上运行：
+
+. link:../cpkmini_ra8p1/icm42670_sci_i2c_cpkmini_ra8p1_ep/[RA8P1使用 I2C(r_sci_i2c) 驱动 ICM42670 六轴传感器] - link:../cpkmini_ra8p1/_ep_archive/icm42670_sci_i2c_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包] - CPKMINI-RA8P1 开发套件
+. link:../cpkmini_ra8p1/icm42670_comms_i2c_cpkmini_ra8p1_ep/[RA8P1使用 I2C(rm_comms_i2c) 驱动 ICM42670 六轴传感器] - link:../cpkmini_ra8p1/_ep_archive/icm42670_comms_i2c_cpkmini_ra8p1_ep_rafsp6.4.0.zip[下载ZIP包] - CPKMINI-RA8P1 开发套件
 
 
 以下例程使用的硬件配置和系统设置与本开发套件类似，可将将这些例程移植到本开发套件上运行：
 
-* 暂无
+. link:../cpk_ra8t2/rpmsg_lite_rtos_cpk_ra8t2_ep/[FreeRTOS下通过 RPMsg-lite组件实现了CM85和CM33的核间通信] - link:../cpk_ra8t2/_ep_archive/rpmsg_lite_rtos_cpk_ra8t2_ep_rafsp6.2.0.zip[下载ZIP包] - CPK-RA8T2 开发套件
+. link:../cpk_ra8t2/spi_lcd_console_cpk_ra8t2_ep/[RA8T2使用ARM-2D将标准输出流重定向到SPI TFT LCD] - link:../cpk_ra8t2/_ep_archive/spi_lcd_console_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包] - CPK-RA8T2 开发套件
+. link:../cpk_ra8t2/mcu_core_migration_spi_lcd_cpknet_ra8t2_ep/[RA8T2双核MCU将应用代码迁移另一个CPU内核运行] - link:../cpk_ra8t2/_ep_archive/mcu_core_migration_spi_lcd_cpknet_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包] - CPK-RA8T2 开发套件
+. link:../cpk_ra8t2/dual_core_spi_lcd_console_cpk_ra8t2_ep/[RA8T2双核MCU将输出重定向到CPU1的LCD Console] - link:../cpk_ra8t2/_ep_archive/dual_core_spi_lcd_console_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包] - CPK-RA8T2 开发套件
 
-Ver. 202608xx
+
+Ver. 20260817
 
 

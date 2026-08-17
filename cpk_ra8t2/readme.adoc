@@ -14,19 +14,13 @@ image::cpk_ra8t2.png[]
 
 各个样例程序所需的软硬件配置也请查看对应样例程序目录下的Readme文件。
 
-. link:../cpk_ra8t2/ecat_402_cpk_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的CiA402应用]
-. link:../cpk_ra8t2/ecat_io_cpk_ra8t2_cpu0_ep/[RA8T2 EtherCAT实现简单的I/O应用]
-. link:../cpk_ra8t2/motor_encoder_cpk_ra8t2_ep/[RA8T2 增量型编码器电机控制样例]
-. link:../cpk_ra8t2/motor_sensorless_cpk_ra8t2_ep/[RA8T2 无位置传感器电机控制样例]
-. link:../cpk_ra8t2/rpmsg_lite_rtos_cpk_ra8t2_ep/[RA8T2 通过核间通信中间组件RPMsg-lite实现了双核通信]
-. link:../cpk_ra8t2/spi_screen_cpk_ra8t2_ep/[RA8T2 MCU 使用SPI接口的TFT彩屏（CPU0 CM85）]
-. link:../cpk_ra8t2/spi_screen_console_cpk_ra8t2_ep/[RA8T2使用ARM-2D将标准输出流重定向到SPI TFT LCD]
+. link:../cpk_ra8t2/ethercat_cpk_ra8t2_ep/[RA8T2 EtherCAT 应用演示] - link:../cpk_ra8t2/_ep_archive/ethercat_cpk_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/st7796u_lcd_spi_cpk_ra8t2_ep/[RA8T2 驱动SPI接口的TFT LCD] - link:../cpk_ra8t2/_ep_archive/st7796u_lcd_spi_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/spi_lcd_console_cpk_ra8t2_ep/[RA8T2使用ARM-2D将标准输出流重定向到SPI TFT LCD] - link:../cpk_ra8t2/_ep_archive/spi_lcd_console_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/mcu_core_migration_spi_lcd_cpknet_ra8t2_ep/[RA8T2双核MCU将应用代码迁移另一个CPU内核运行] - link:../cpk_ra8t2/_ep_archive/mcu_core_migration_spi_lcd_cpknet_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/dual_core_spi_lcd_console_cpk_ra8t2_ep/[RA8T2双核MCU将输出重定向到CPU1的LCD Console] - link:../cpk_ra8t2/_ep_archive/dual_core_spi_lcd_console_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
 
 
-以下例程使用的硬件配置和系统设置与本开发套件类似，可将将这些例程移植到本开发套件上运行：
-
-* 暂无
-
-Ver. 202608xx
+Ver. 20260817
 
 
