@@ -1,0 +1,66 @@
+:imagesdir: images
+
+== 运行
+
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 i2c_multi_device.hex。底板上的 SW400 拨到非 I3C 侧。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，串口会输出以下信息：
+
+[.text-center]
+--
+image::Snipaste_2026-08-18_17-25-16.png[role="thumb"]
+--
+
+程序会间隔输出两个 I2C 设备（MMC5603 和 ICM42670P）的数据
+
+== 驱动代码
+
+=== FSP
+
+当前工程使用了两个在同一个 I2C 总线上的设备，因此添加了两个 rm_comms_i2c stack，并配置为使用相同的 i2c 外设
+
+[.text-center]
+--
+image::Snipaste_2026-08-18_17-30-28.png[role="thumb"]
+--
+
+后续若要新增一个在同一个总线设备，可以继续添加新的 rm_comms_i2c stack。添加新的设备，并复用相同的 i2c 外设的步骤如下：
+
+* 添加新的 rm_comms_i2c stack
+
+[.text-center]
+--
+image::Snipaste_2026-08-18_17-36-30.png[role="thumb"]
+--
+
+* 选择已有的 I2C Shared Bus。现在新 stack 下面的 I2C Shared Bus 还是空的，对它右键，选择 Use，然后选择要使用哪个 Shared Bus，一个 Shared Bus 就代表一个实际的 i2c 外设的抽象接口
+
+[.text-center]
+--
+image::Snipaste_2026-08-18_17-37-35.png[role="thumb"]
+--
+
+* 然后根据器件地址填写新的 rm_comms_i2c stack 的 Slave address 属性，并根据需要修改其它属性
+
+[.text-center]
+--
+image::Snipaste_2026-08-18_17-45-28.png[role="thumb"]
+--
+
+如果 I2C 设备是挂载在其它总线上，对应于不同的 i2c 外设，那么在添加 I2C Shared Bus 时就要选择 New
+
+* 添加新的 I2C Share Bus
+
+[.text-center]
+--
+image::Snipaste_2026-08-18_18-06-25.png[role="thumb"]
+--
+
+* 然后添加要使用的实际 i2c 外设，在 RA8P1 上，有三种 stack 可供选择
+
+[.text-center]
+--
+image::Snipaste_2026-08-18_18-11-39.png[role="thumb"]
+--
+
+=== 驱动文件
+
+对 rm_comms_i2c stack 的操作可以参考 src 文件夹下的 `i2c_comms.c` 和 `i2c_comms.h`。注意，rm_comms_i2c 的 `RM_COMMS_I2C_Open()` 不会调用底层外设的 open 函数，需要用户手工调用。

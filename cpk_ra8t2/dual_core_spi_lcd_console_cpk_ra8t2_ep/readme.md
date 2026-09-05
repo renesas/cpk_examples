@@ -28,7 +28,7 @@
 
 ### 硬件设置注意事项：
 
-- 样例程序的主要运行参数： CPU0 - 600MHz, CPU1 - 不使用, ICLK 200MHz
+- 样例程序的主要运行参数： CPU0 - 600MHz, CPU1 - 250MHz, ICLK 200MHz
 - 该运行参数是模拟 Tj=125 摄氏度规格的 RA8T2 MCU，核心板上实装的 RA8T2 MCU 为 Tj=95 摄氏度规格的产品，可支持的最快运行速度为 1G/250M/250M。您可以根据您的目标使用环境进行调整。
 
 ### 软件开发环境：
@@ -65,4 +65,3 @@
   - [CPKCOR-RA8P1 + CPKEXP-MINI8x2 套件](../cpkcor_ra8p1_mini8x2/)
   - [CPKNET-RA8T2 + CPKEXP-MINI8x2 套件](../cpknet_ra8t2_mini8x2/)
   - [CPKCOR-RA8T2 + CPKEXP-MINI8x2 套件](../cpkcor_ra8t2_mini8x2/)
-  

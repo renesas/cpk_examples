@@ -25,7 +25,7 @@ If you are willing to contribute you codes, please mailto:craig.wu.wx@renesas.co
 .2+| image:./cpk_ra8p1/cpk_ra8p1.png[width=360]
 ^.^| link:./cpk_ra8p1/[CPK-RA8P1 开发套件样例代码]
 
-.2+^.^| RA8T2
+.2+^.^| RA8P1
 ^.^| link:./cpkmini_ra8p1/docs/41_overview.adoc[CPKMINI-RA8P1 开发套件使用手册] 
 .2+| image:./cpkmini_ra8p1/cpkmini_ra8p1.png[width=320]
 ^.^| link:./cpkmini_ra8p1/[CPKMINI-RA8P1 开发套件样例代码]

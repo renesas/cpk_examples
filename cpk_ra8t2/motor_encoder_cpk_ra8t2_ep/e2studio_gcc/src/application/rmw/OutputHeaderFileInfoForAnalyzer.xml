@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<OutputHeaderFileForAnalyzerSetting>
+	<Header>/***********************************************************************************************************************</Header>
+	<Header>* File Name    : {{CREATED FILENAME(r_mtr_control_parameter.h  )}}</Header>
+	<Header>* Description  : Definition of default control parameters for position speed control</Header>
+	<Header>***********************************************************************************************************************/</Header>
+	<Header>/* Guard against multiple inclusion */</Header>
+	<Header>#ifndef R_MTR_CONTROL_PARAMETER_H</Header>
+	<Header>#define R_MTR_CONTROL_PARAMETER_H</Header>
+	<Header />
+	<Header>/***********************************************************************************************************************</Header>
+	<Header>* Macro definitions  </Header>
+	<Header>***********************************************************************************************************************/</Header>
+	<Header>#define    MTR_CONTROL_PARAMETER     (1)</Header>
+	<Header />
+	<Header>/* Target control parameter definitions */</Header>
+	<OutputData Macro="CP_CURRENT_OMEGA" VariableName="com_f4_current_omega" Value="300.0f" Comment="/* Natural frequency for current loop */" />
+	<OutputData Macro="CP_CURRENT_ZETA" VariableName="com_f4_current_zeta" Value="1.0f" Comment="/* Damping ratio for current loop */" />
+	<OutputData Macro="CP_SPEED_OMEGA" VariableName="com_f4_speed_omega" Value="12.0f" Comment="/* Natural frequency for speed loop */" />
+	<OutputData Macro="CP_SPEED_ZETA" VariableName="com_f4_speed_zeta" Value="1.0f" Comment="/* Damping ratio for speed loop */" />
+	<OutputData Macro="CP_POS_OMEGA" VariableName="com_f4_pos_omega" Value="10.0f" Comment="/* natural frequency for position loop */" />
+	<OutputData Macro="CP_SOB_OMEGA" VariableName="com_f4_sob_omega" Value="100.0f" Comment="/* natural frequency for speed observer */" />
+	<OutputData Macro="CP_SOB_ZETA" VariableName="com_f4_sob_zeta" Value="1.0f" Comment="/* damping ratio for speed observer */" />
+	<OutputData Macro="CP_MIN_SPEED_RPM" VariableName="" Value="0" Comment="/* minimum speed [rpm] (mechanical angle) */" />
+	<OutputData Macro="CP_MAX_SPEED_RPM" VariableName="com_f4_max_speed_rpm" Value="4000" Comment="/* maximum speed [rpm] (mechanical angle) */" />
+	<OutputData Macro="CP_SPEED_LIMIT_RPM" VariableName="com_f4_speed_limit_rpm" Value="4500" Comment="/* over speed limit [rpm] (mechanical angle) */" />
+	<OutputData Macro="CP_OL_ID_REF" VariableName="com_f4_ol_ref_id" Value="1.0f" Comment="/* Id reference when low speed [A] */" />
+	<Footer />
+	<Footer>#endif /* R_MTR_CONTROL_PARAMETER_H */</Footer>
+</OutputHeaderFileForAnalyzerSetting>
