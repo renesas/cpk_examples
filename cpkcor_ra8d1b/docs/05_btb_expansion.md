@@ -14,7 +14,7 @@
 
 核心板的设计上可以通过J1、J2实现部分外部电源输入，此时需要修改一些跳接电阻，具体内容请参考[CPKCOR-RA8D1B的电源设计](09_powerdesign.md)章节。
 
-RA8D1B MCU带有MIPI-DSI接口，这部分管脚是专用的，分布在CPKCOR-RA8D1B的J1管脚上。其中DSI TE信号可以和GPIO服用，但一般的MIPI LCD屏驱动芯片都需要使用TE信号，所以在此作标注为专用管脚。
+RA8D1B MCU带有MIPI-DSI接口，这部分管脚是专用的，分布在CPKCOR-RA8D1B的J1管脚上。其中DSI TE信号可以和GPIO复用，但一般的MIPI LCD屏驱动芯片都需要使用TE信号，所以在此作标注为专用管脚。
 
 J1的44和46脚以灰色标注，这两个管脚在核心板上缺省是连接到SDRAM的（DQM1和CKE），放在扩展口上是为了提供SCI0的通信管脚。SCI0的所有可用管脚都与SDRAM管脚冲突，设计时选取了两个时序要求没那么严格的信号管脚，通过跳线电阻实现SCI0的UART功能（TXD0_A和RXD0_A）及I2C功能（SDA0_A和SCL0_A）。
 

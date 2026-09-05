@@ -3,6 +3,7 @@
 
 #if TEST_EN_SDRAM
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -24,7 +25,7 @@
 #endif
 
 #ifndef TEST_SDRAM_EN_DMA
-#define TEST_SDRAM_EN_DMA		0
+#define TEST_SDRAM_EN_DMA		1
 #endif
 
 #ifndef TEST_SDRAM_EN_8BIT
@@ -125,8 +126,10 @@ uint32_t TestSDRAM(uint32_t start_addr, uint32_t size)
 	result = checkFullChipWithRand(42);
 	CHECK_RESULT(result, "Full chip check with random sequence PASS", "Full chip check with random sequence FAILED");
 
+#if TEST_SDRAM_EN_AUTO_RF
 	result = checkAutoRefresh();
 	CHECK_RESULT(result, "Auto refresh check PASS", "Auto refresh check FAILED");
+#endif
 
 #if TEST_SDRAM_EN_DMA
 	s_dma_done = 0;
@@ -591,8 +594,8 @@ static void checkSpeedRead(void)
 {
     uint32_t i;
     float speed;
-    volatile int64_t time_start, time_end;
-    volatile int64_t tick_start, tick_end;
+    VOLATILE int64_t time_start, time_end;
+    VOLATILE int64_t tick_start, tick_end;
 
     VOLATILE uint8_t *p8_dtcm = s_cache;
     VOLATILE uint8_t *p8_ram = s_ram;
@@ -1189,7 +1192,81 @@ static void checkSpeedRead(void)
 
     /* 上位机使用 100ms 的时间戳，这个延时仅为了内容分在两个时间戳里 */
     R_BSP_SoftwareDelay(300, BSP_DELAY_UNITS_MILLISECONDS);
+#endif
 
+#if TEST_SDRAM_EN_DMA
+	puts("DMA  Operation");
+
+	uint32_t dtcm_cpu0_addr = (uint32_t)p8_dtcm;
+	uint32_t dtcm_dma_addr = dtcm_cpu0_addr + (0x28020000 - 0x20000000);
+	uint8_t *p_dtcm_dma = (uint8_t *)dtcm_dma_addr;
+
+	/* DMA 读取：SDRAM -> DTCM 区域，64bit 宽度 */
+	SCB_InvalidateDCache();
+	s_dma_done = 0;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).num_blocks = 8;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).length = 1024;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_dest = (void *)p_dtcm_dma;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_src = (void *)p8_sdram;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(DMA_INSTANCE.p_ctrl, DMA_INSTANCE.p_cfg);
+	R_DMAC_Reconfigure(DMA_INSTANCE.p_ctrl, &DMA_FSP_GEN_INFO(DMA_INSTANCE));
+	R_DMAC_Enable(DMA_INSTANCE.p_ctrl);
+	R_DMAC_SoftwareStart(DMA_INSTANCE.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(DMA_INSTANCE.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from SDRAM to DTCM with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+
+	/* DMA 读取：SDRAM -> RAM 区域，64bit 宽度 */
+	SCB_InvalidateDCache();
+	s_dma_done = 0;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).num_blocks = 8;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).length = 1024;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_dest = (void *)p8_ram;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_src = (void *)p8_sdram;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(DMA_INSTANCE.p_ctrl, DMA_INSTANCE.p_cfg);
+	R_DMAC_Reconfigure(DMA_INSTANCE.p_ctrl, &DMA_FSP_GEN_INFO(DMA_INSTANCE));
+	R_DMAC_Enable(DMA_INSTANCE.p_ctrl);
+	R_DMAC_SoftwareStart(DMA_INSTANCE.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(DMA_INSTANCE.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from SDRAM to RAM  with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+#endif
+
+#if BSP_CFG_DCACHE_ENABLED
     /* DCache 进入 write-through 模式 */
     SCB_DisableDCache();
     MEMSYSCTL->MSCR |= MEMSYSCTL_MSCR_FORCEWT_Msk;
@@ -1713,8 +1790,8 @@ static void checkSpeedWrite(void)
 {
 	uint32_t i;
 	float speed;
-	volatile int64_t time_start, time_end;
-	volatile int64_t tick_start, tick_end;
+	VOLATILE int64_t time_start, time_end;
+	VOLATILE int64_t tick_start, tick_end;
 
 	VOLATILE uint8_t *p8_dtcm = s_cache;
 	VOLATILE uint8_t *p8_ram = s_ram;
@@ -2232,10 +2309,6 @@ static void checkSpeedWrite(void)
 	}
 	else {
 		puts("Test size is too small with this case");
-		time_start = get_system_us();
-		R_BSP_SoftwareDelay(2, BSP_DELAY_UNITS_MILLISECONDS);
-		time_end = get_system_us();
-		printf("Delay 2ms test: %llu\r\n", time_end - time_start);
 	}
 
 	/* 不可缓存的 RAM 区域 -> 不可缓存的 SDRAM 区域，8bit 宽度 */
@@ -2328,15 +2401,20 @@ static void checkSpeedWrite(void)
 	/* 上位机使用 100ms 的时间戳，这个延时仅为了内容分在两个时间戳里 */
 	R_BSP_SoftwareDelay(200, BSP_DELAY_UNITS_MILLISECONDS);
 
-	puts("DMA Operation");
+	uint32_t dtcm_cpu0_addr = (uint32_t)p8_dtcm;
+	uint32_t dtcm_dma_addr = dtcm_cpu0_addr + (0x28020000 - 0x20000000);
+	uint8_t *p_dtcm_dma = (uint8_t *)dtcm_dma_addr;
 
-	/* DMA 写入：不可缓存的 RAM -> 可缓存的 SDRAM 区域，8bit 宽度 */
+	puts("DMA  Operation");
+
+	/* DMA 写入：DTCM -> SDRAM，64bit 宽度 */
 	SCB_InvalidateDCache();
 	s_dma_done = 0;
-	DMA_FSP_GEN_INFO(DMA_INSTANCE).length = (uint16_t)(CACHE_SIZE - 1);
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).num_blocks = 8;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).length = 1024;
 	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_dest = (void *)p8_sdram;
-	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_src = (void *)p8_ram;
-	DMA_FSP_GEN_INFO(DMA_INSTANCE).transfer_settings_word_b.size = TRANSFER_SIZE_1_BYTE;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_src = (void *)p_dtcm_dma;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
 	time_start = get_system_us();
 	tick_start = get_system_ticks();
 	R_DMAC_Open(DMA_INSTANCE.p_ctrl, DMA_INSTANCE.p_cfg);
@@ -2348,10 +2426,43 @@ static void checkSpeedWrite(void)
 	}
 	tick_end = get_system_ticks();
 	time_end = get_system_us();
+	R_DMAC_Close(DMA_INSTANCE.p_ctrl);
 	if (time_start != time_end) {
 		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
 		speed = speed * 1000000 / 1024 / 1024;
-		printf("DMA   from RAM (uncacheable area) to SDRAM(uncacheable area) with 64bit width, ");
+		printf("DMA  from DTCM to SDRAM with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+
+	/* DMA 写入：RAM -> SDRAM，64bit 宽度 */
+	SCB_InvalidateDCache();
+	s_dma_done = 0;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).num_blocks = 8;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).length = 1024;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_dest = (void *)p8_sdram;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_src = (void *)p8_ram;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(DMA_INSTANCE.p_ctrl, DMA_INSTANCE.p_cfg);
+	R_DMAC_Reconfigure(DMA_INSTANCE.p_ctrl, &DMA_FSP_GEN_INFO(DMA_INSTANCE));
+	R_DMAC_Enable(DMA_INSTANCE.p_ctrl);
+	R_DMAC_SoftwareStart(DMA_INSTANCE.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(DMA_INSTANCE.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from RAM  to SDRAM with 64bit width, Repeat-Block mode, ");
 		printf("using cycle: %llu, ", tick_end - tick_start);
 		printf("using time: %llu us, ", time_end - time_start);
 		printf("speed: %.2f MB/s\r\n", speed);

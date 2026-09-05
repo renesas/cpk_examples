@@ -2,11 +2,11 @@
 
 == 运行结果
 
-在 e^2^ studio 中导入工程，生成并编译，或直接使用当前文件夹下的 nor_flash.hex 直接烧录。打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序会先对 NorFlash 进行检查，确保正常工作，随后测试从 NorFlash 到其它存储区域在 DCache 影响下的速度。烧录后可直接在终端中看到如下结果：
+在 e^2^ studio 中导入工程，生成并编译，或直接使用当前文件夹下的 octalnor_flash_cpkcor_ra8p1_ep.hex 直接烧录。打开一个串口终端，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序会先对 NorFlash 进行检查，确保正常工作，随后测试从 NorFlash 到其它存储区域在 DCache 影响下的速度。烧录后可直接在终端中看到如下结果：
 
 [.text-center]
 --
-image::Snipaste_2026-07-02_15-50-36.png[role="thumb"]
+image::Snipaste_2026-09-03_14-40-31.png[role="thumb"]
 --
 
 == FSP 配置

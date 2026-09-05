@@ -9,6 +9,11 @@
 #include "nor_flash.h"
 #include "perf_counter/perf_counter.h"
 #include "utils/log.h"
+#include "utils/util.h"
+
+#ifndef TEST_NOR_FLASH_EN_DMA
+#define TEST_NOR_FLASH_EN_DMA			1
+#endif
 
 #ifndef TEST_NOR_FLASH_EN_FULL_CHECK
 #define TEST_NOR_FLASH_EN_FULL_CHECK	0
@@ -22,6 +27,12 @@
 
 #define CACHE_SIZE		(1024 * 64)
 
+#if TEST_NOR_FLASH_EN_DMA
+#define DMA_INSTANCE			g_dma0
+#define DMA_CALLBACK			DMA0_Callback
+#define DMA_FSP_GEN_INFO(inst)	UTIL_CONCAT(inst, _info)
+#endif
+
 #if ENABLE_VOLATILE
 #define VOLATILE	volatile
 #else
@@ -31,12 +42,17 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
 
-static VOLATILE uint8_t s_rcache[NORFLASH_SECTOR_SIZE];
 static VOLATILE uint8_t s_cache[CACHE_SIZE] __attribute__((section(".dtcm_noinit")));
 static VOLATILE uint8_t s_ram[CACHE_SIZE] __attribute__((section(".ram_noinit")));
 static VOLATILE uint8_t s_ram_nc[CACHE_SIZE] __attribute__((section(".ram_noinit_nocache")));
 
+#if TEST_NOR_FLASH_EN_DMA
+extern transfer_info_t DMA_FSP_GEN_INFO(DMA_INSTANCE);
+static VOLATILE uint8_t s_dma_done;
+#endif
+
 #if TEST_NOR_FLASH_EN_FULL_CHECK
+static VOLATILE uint8_t s_rcache[NORFLASH_SECTOR_SIZE];
 static uint8_t checkFullChipNoCache(uint32_t num_sector);
 #else
 static void checkSpeedWrite(void);
@@ -69,6 +85,15 @@ uint32_t TestNorFlash(uint32_t start_addr, uint32_t size)
 
 	return 0;
 }
+
+#if TEST_NOR_FLASH_EN_DMA
+void DMA_CALLBACK(transfer_callback_args_t *p_args)
+{
+	(void)p_args;
+
+	s_dma_done = 1;
+}
+#endif
 
 #if TEST_NOR_FLASH_EN_FULL_CHECK
 static uint8_t checkFullChipNoCache(uint32_t num_sector)
@@ -565,6 +590,77 @@ static void checkSpeedRead(void)
 	else {
 		puts("Test size is too small with this case");
 	}
+
+#if TEST_NOR_FLASH_EN_DMA
+	puts("DMA  Operation");
+
+	uint32_t dtcm_cpu0_addr = (uint32_t)p8_dtcm;
+	uint32_t dtcm_dma_addr = dtcm_cpu0_addr + (0x28020000 - 0x20000000);
+	uint8_t *p_dtcm_dma = (uint8_t *)dtcm_dma_addr;
+
+	/* DMA 读取：NorFlash -> DTCM 区域，64bit 宽度 */
+	s_dma_done = 0;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).num_blocks = 8;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).length = 1024;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_dest = (void *)p_dtcm_dma;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_src = (void *)p8_flash;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(DMA_INSTANCE.p_ctrl, DMA_INSTANCE.p_cfg);
+	R_DMAC_Reconfigure(DMA_INSTANCE.p_ctrl, &DMA_FSP_GEN_INFO(DMA_INSTANCE));
+	R_DMAC_Enable(DMA_INSTANCE.p_ctrl);
+	R_DMAC_SoftwareStart(DMA_INSTANCE.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(DMA_INSTANCE.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from NorFlash to DTCM with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+
+	/* DMA 读取：NorFlash -> RAM 区域，64bit 宽度 */
+	SCB_InvalidateDCache();
+	s_dma_done = 0;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).num_blocks = 8;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).length = 1024;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_dest = (void *)p8_ram;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).p_src = (void *)p8_flash;
+	DMA_FSP_GEN_INFO(DMA_INSTANCE).transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(DMA_INSTANCE.p_ctrl, DMA_INSTANCE.p_cfg);
+	R_DMAC_Reconfigure(DMA_INSTANCE.p_ctrl, &DMA_FSP_GEN_INFO(DMA_INSTANCE));
+	R_DMAC_Enable(DMA_INSTANCE.p_ctrl);
+	R_DMAC_SoftwareStart(DMA_INSTANCE.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(DMA_INSTANCE.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from NorFlash to RAM  with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+#endif
 
 #if BSP_CFG_DCACHE_ENABLED
 	R_BSP_SoftwareDelay(200, BSP_DELAY_UNITS_MILLISECONDS);

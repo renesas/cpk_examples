@@ -454,6 +454,10 @@
       <description/>
       <originalPack>Renesas.RA_board_ra8p1_cpkcor.6.4.0.pack</originalPack>
     </component>
+    <component apiversion="" class="HAL Drivers" condition="" group="all" subgroup="r_dmac" variant="" vendor="Renesas" version="6.4.0">
+      <description>Direct Memory Access Controller</description>
+      <originalPack>Renesas.RA.6.4.0.pack</originalPack>
+    </component>
   </raComponentSelection>
   <raElcConfiguration/>
   <raIcuConfiguration/>
@@ -570,10 +574,28 @@
       <property id="module.driver.ospi_b.dotf.end_address" value="0x90001FFF"/>
       <property id="module.driver.ospi_b.row_addressing.row_index_bytes" value="module.driver.ospi_b.address_bytes.none"/>
     </module>
+    <module id="module.driver.transfer_on_dmac.188102158">
+      <property id="module.driver.transfer.name" value="g_dma0"/>
+      <property id="module.driver.transfer.channel" value="0"/>
+      <property id="module.driver.transfer.mode" value="module.driver.transfer.mode.mode_repeat_block"/>
+      <property id="module.driver.transfer.size" value="module.driver.transfer.size.size_2_byte"/>
+      <property id="module.driver.transfer.dest_addr_mode" value="module.driver.transfer.dest_addr_mode.addr_mode_incremented"/>
+      <property id="module.driver.transfer.src_addr_mode" value="module.driver.transfer.src_addr_mode.addr_mode_incremented"/>
+      <property id="module.driver.transfer.repeat_area" value="module.driver.transfer.repeat_area.repeat_area_source"/>
+      <property id="module.driver.transfer.length" value="1"/>
+      <property id="module.driver.transfer.num_blocks" value="0"/>
+      <property id="module.driver.transfer.activation_event" value="enum.elc_none.none"/>
+      <property id="module.driver.transfer.p_callback" value="DMA0_Callback"/>
+      <property id="module.driver.transfer.ipl" value="board.icu.common.irq.priority14"/>
+      <property id="module.driver.transfer.interrupt" value="module.driver.transfer.interrupt.interrupt_end"/>
+      <property id="module.driver.transfer.offset" value="1"/>
+      <property id="module.driver.transfer.src.buffer" value="8192"/>
+    </module>
     <context id="_hal.0">
       <stack module="module.driver.ioport_on_ioport.0"/>
       <stack module="module.driver.uart_on_sci_b_uart.1969344562"/>
       <stack module="module.driver.ospi_on_ospi_b.1402760760"/>
+      <stack module="module.driver.transfer_on_dmac.188102158"/>
     </context>
     <config id="config.driver.ospi_b">
       <property id="config.driver.ospi_b.param_checking_enable" value="config.driver.ospi_b.param_checking_enable.bsp"/>
@@ -590,6 +612,9 @@
       <property id="config.driver.sci_b_uart.fifo_support" value="config.driver.sci_b_uart.fifo_support.disabled"/>
       <property id="config.driver.sci_b_uart.dtc_support" value="config.driver.sci_b_uart.dtc_support.disabled"/>
       <property id="config.driver.sci_b_uart.flow_control" value="config.driver.sci_b_uart.flow_control.disabled"/>
+    </config>
+    <config id="config.driver.dmac">
+      <property id="config.driver.dmac.param_checking_enable" value="config.driver.dmac.param_checking_enable.bsp"/>
     </config>
     <config id="config.driver.ioport">
       <property id="config.driver.ioport.checking" value="config.driver.ioport.checking.system"/>

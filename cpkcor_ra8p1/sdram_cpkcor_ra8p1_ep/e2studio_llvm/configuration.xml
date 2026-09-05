@@ -497,7 +497,7 @@
     <module id="module.driver.transfer_on_dmac.1571912919">
       <property id="module.driver.transfer.name" value="g_dma0"/>
       <property id="module.driver.transfer.channel" value="0"/>
-      <property id="module.driver.transfer.mode" value="module.driver.transfer.mode.mode_normal"/>
+      <property id="module.driver.transfer.mode" value="module.driver.transfer.mode.mode_repeat_block"/>
       <property id="module.driver.transfer.size" value="module.driver.transfer.size.size_2_byte"/>
       <property id="module.driver.transfer.dest_addr_mode" value="module.driver.transfer.dest_addr_mode.addr_mode_incremented"/>
       <property id="module.driver.transfer.src_addr_mode" value="module.driver.transfer.src_addr_mode.addr_mode_incremented"/>
@@ -509,7 +509,7 @@
       <property id="module.driver.transfer.ipl" value="board.icu.common.irq.priority14"/>
       <property id="module.driver.transfer.interrupt" value="module.driver.transfer.interrupt.interrupt_end"/>
       <property id="module.driver.transfer.offset" value="1"/>
-      <property id="module.driver.transfer.src.buffer" value="1"/>
+      <property id="module.driver.transfer.src.buffer" value="8192"/>
     </module>
     <context id="_hal.0">
       <stack module="module.driver.ioport_on_ioport.0"/>

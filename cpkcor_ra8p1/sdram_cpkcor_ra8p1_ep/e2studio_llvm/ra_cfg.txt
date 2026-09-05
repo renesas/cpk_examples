@@ -968,7 +968,7 @@ FSP Configuration
     Instance "g_dma0 Transfer (r_dmac) No ELC Trigger"
       Name: g_dma0
       Channel: 0
-      Mode: Normal
+      Mode: Repeat-Block
       Transfer Size: 2 Bytes
       Destination Address Mode: Incremented
       Source Address Mode: Incremented
@@ -980,5 +980,5 @@ FSP Configuration
       Transfer End Interrupt Priority: Priority 14
       Interrupt Frequency: Interrupt after all transfers have completed
       Offset value (Valid only when address mode is Offset addition): 1
-      Source Buffer Size: 1
+      Source Buffer Size: 8192
       

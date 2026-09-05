@@ -7,8 +7,10 @@
 [.text-center]
 --
 image::Snipaste_2026-06-17_17-43-30.png[role="thumb"]
+image::Snipaste_2026-09-03_13-26-38.png[role="thumb"]
 image::Snipaste_2026-06-17_17-43-50.png[role="thumb"]
 image::Snipaste_2026-06-17_17-44-19.png[role="thumb"]
+image::Snipaste_2026-09-03_13-30-39.png[role="thumb"]
 image::Snipaste_2026-06-17_17-44-35.png[role="thumb"]
 --
 

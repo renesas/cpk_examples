@@ -675,6 +675,79 @@ static void checkSpeedRead(void)
 
 	R_BSP_SoftwareDelay(200, BSP_DELAY_UNITS_MILLISECONDS);
 
+#if TEST_HYPER_RAM_EN_DMA
+	puts("DMA  Operation");
+	R_BSP_SoftwareDelay(200, BSP_DELAY_UNITS_MILLISECONDS);
+
+	uint32_t dtcm_cpu0_addr = (uint32_t)p8_dtcm;
+	uint32_t dtcm_dma_addr = dtcm_cpu0_addr + (0x28020000 - 0x20000000);
+	uint8_t *p_dtcm_dma = (uint8_t *)dtcm_dma_addr;
+
+	/* DMA 读取：HyperRAM -> DTCM，64bit 宽度 */
+	SCB_InvalidateDCache();
+	s_dma_done = 0;
+	g_dma1_info.num_blocks = 8;
+	g_dma1_info.length = 1024;
+	g_dma1_info.p_dest = (void *)p_dtcm_dma;
+	g_dma1_info.p_src = (void *)p8_hyper_ram;
+	g_dma1_info.transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(g_dma1.p_ctrl, g_dma1.p_cfg);
+	R_DMAC_Reconfigure(g_dma1.p_ctrl, &g_dma1_info);
+	R_DMAC_Enable(g_dma1.p_ctrl);
+	R_DMAC_SoftwareStart(g_dma1.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(g_dma1.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from HyperRAM to DTCM with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+
+	/* DMA 写入：RAM -> HyperRAM，64bit 宽度 */
+	SCB_InvalidateDCache();
+	s_dma_done = 0;
+	g_dma1_info.num_blocks = 8;
+	g_dma1_info.length = 1024;
+	g_dma1_info.p_dest = (void *)p8_ram;
+	g_dma1_info.p_src = (void *)p8_hyper_ram;
+	g_dma1_info.transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(g_dma1.p_ctrl, g_dma1.p_cfg);
+	R_DMAC_Reconfigure(g_dma1.p_ctrl, &g_dma1_info);
+	R_DMAC_Enable(g_dma1.p_ctrl);
+	R_DMAC_SoftwareStart(g_dma1.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(g_dma1.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from HyperRAM to RAM  with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+#endif
+
 	/* DCache 进入 write-through 模式 */
 	SCB_DisableDCache();
 	MEMSYSCTL->MSCR |= MEMSYSCTL_MSCR_FORCEWT_Msk;
@@ -1527,13 +1600,50 @@ static void checkSpeedWrite(void)
 	}
 
 #if TEST_HYPER_RAM_EN_DMA
-	puts("DMA Operation");
+	puts("DMA  Operation");
 	R_BSP_SoftwareDelay(200, BSP_DELAY_UNITS_MILLISECONDS);
 
-	/* DMA 写入：可缓存的 RAM -> 可缓存的 HyperRAM 区域，64bit 宽度 */
+	uint32_t dtcm_cpu0_addr = (uint32_t)p8_dtcm;
+	uint32_t dtcm_dma_addr = dtcm_cpu0_addr + (0x28020000 - 0x20000000);
+	uint8_t *p_dtcm_dma = (uint8_t *)dtcm_dma_addr;
+
+	/* DMA 写入：DTCM -> HyperRAM，64bit 宽度 */
 	SCB_InvalidateDCache();
 	s_dma_done = 0;
-	g_dma1_info.length = (uint16_t)(CACHE_SIZE / 8 - 1);
+	g_dma1_info.num_blocks = 8;
+	g_dma1_info.length = 1024;
+	g_dma1_info.p_dest = (void *)p8_hyper_ram;
+	g_dma1_info.p_src = (void *)p_dtcm_dma;
+	g_dma1_info.transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
+	time_start = get_system_us();
+	tick_start = get_system_ticks();
+	R_DMAC_Open(g_dma1.p_ctrl, g_dma1.p_cfg);
+	R_DMAC_Reconfigure(g_dma1.p_ctrl, &g_dma1_info);
+	R_DMAC_Enable(g_dma1.p_ctrl);
+	R_DMAC_SoftwareStart(g_dma1.p_ctrl, TRANSFER_START_MODE_REPEAT);
+	while (s_dma_done == 0) {
+		__NOP();
+	}
+	tick_end = get_system_ticks();
+	time_end = get_system_us();
+	R_DMAC_Close(g_dma1.p_ctrl);
+	if (time_start != time_end) {
+		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
+		speed = speed * 1000000 / 1024 / 1024;
+		printf("DMA  from DTCM to HyperRAM with 64bit width, Repeat-Block mode, ");
+		printf("using cycle: %llu, ", tick_end - tick_start);
+		printf("using time: %llu us, ", time_end - time_start);
+		printf("speed: %.2f MB/s\r\n", speed);
+	}
+	else {
+		puts("Test size is too small with this case");
+	}
+
+	/* DMA 写入：RAM -> HyperRAM，64bit 宽度 */
+	SCB_InvalidateDCache();
+	s_dma_done = 0;
+	g_dma1_info.num_blocks = 8;
+	g_dma1_info.length = 1024;
 	g_dma1_info.p_dest = (void *)p8_hyper_ram;
 	g_dma1_info.p_src = (void *)p8_ram;
 	g_dma1_info.transfer_settings_word_b.size = TRANSFER_SIZE_8_BYTE;
@@ -1548,10 +1658,11 @@ static void checkSpeedWrite(void)
 	}
 	tick_end = get_system_ticks();
 	time_end = get_system_us();
+	R_DMAC_Close(g_dma1.p_ctrl);
 	if (time_start != time_end) {
 		speed = (float)CACHE_SIZE / (float)(time_end - time_start);
 		speed = speed * 1000000 / 1024 / 1024;
-		printf("DMA   from RAM (cacheable area)   to HyperRAM(cacheable area)   with 64bit width, ");
+		printf("DMA  from RAM  to HyperRAM with 64bit width, Repeat-Block mode, ");
 		printf("using cycle: %llu, ", tick_end - tick_start);
 		printf("using time: %llu us, ", time_end - time_start);
 		printf("speed: %.2f MB/s\r\n", speed);

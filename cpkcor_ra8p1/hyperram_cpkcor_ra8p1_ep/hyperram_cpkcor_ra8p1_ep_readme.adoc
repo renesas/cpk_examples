@@ -6,9 +6,10 @@
 
 [.text-center]
 --
-image::Snipaste_2026-07-02_11-04-01.png[role="thumb"]
-image::Snipaste_2026-07-02_11-05-13.png[role="thumb"]
-image::Snipaste_2026-07-02_11-05-30.png[role="thumb"]
+image::Snipaste_2026-09-04_09-45-04.png[role="thumb"]
+image::Snipaste_2026-09-03_11-34-23.png[role="thumb"]
+image::Snipaste_2026-09-03_11-34-44.png[role="thumb"]
+image::Snipaste_2026-09-03_11-34-58.png[role="thumb"]
 --
 
 == FSP 配置

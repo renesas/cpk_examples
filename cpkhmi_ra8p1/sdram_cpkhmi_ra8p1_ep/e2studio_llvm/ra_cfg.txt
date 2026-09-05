@@ -926,6 +926,9 @@ FSP Configuration
     DTC Support: Disable
     Flow Control Support: Disable
     
+  Module "Transfer (r_dmac)"
+    Parameter Checking: Default (BSP)
+    
   HAL
     Instance "g_ioport I/O Port (r_ioport)"
       Name: g_ioport
@@ -961,4 +964,21 @@ FSP Configuration
       Interrupts: Transmit Data Empty Interrupt Priority: Priority 12
       Interrupts: Transmit End Interrupt Priority: Priority 12
       Interrupts: Error Interrupt Priority: Priority 12
+      
+    Instance "g_dma0 Transfer (r_dmac) No ELC Trigger"
+      Name: g_dma0
+      Channel: 0
+      Mode: Repeat-Block
+      Transfer Size: 2 Bytes
+      Destination Address Mode: Incremented
+      Source Address Mode: Incremented
+      Repeat Area (Unused in Normal Mode): Source
+      Number of Transfers: 1
+      Number of Blocks (Valid only in Repeat,Block or Repeat-Block Mode): 0
+      Activation Source: No ELC Trigger
+      Callback: DMA0_Callback
+      Transfer End Interrupt Priority: Priority 14
+      Interrupt Frequency: Interrupt after all transfers have completed
+      Offset value (Valid only when address mode is Offset addition): 1
+      Source Buffer Size: 8192
       
