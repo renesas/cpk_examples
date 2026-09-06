@@ -504,11 +504,19 @@
       <property id="module.driver.comparator.p_callback" value="acmphs_user_callback"/>
       <property id="module.driver.comparator.ipl" value="board.icu.common.irq.priority12"/>
       <property id="module.driver.comparator.ivcmp" value="module.driver.acmphs.ivcmp_dac121_da"/>
-      <property id="module.driver.comparator.ivref" value="module.driver.acmphs.ivref.analog0_vref"/>
+      <property id="module.driver.comparator.ivref" value="module.driver.acmphs.ivref.dac120_da"/>
     </module>
     <module id="module.driver.dac_on_dac_b.1743421653">
       <property id="module.driver.dac.name" value="g_dac_b1"/>
       <property id="module.driver.dac.channel_id" value="1"/>
+      <property id="module.driver.dac.vref_range" value="module.driver.dac.vref_range.normal"/>
+      <property id="module.driver.dac.data_format" value="module.driver.dac.data_format.data_format_flush_right"/>
+      <property id="module.driver.dac.internal_output" value="enum.mcu.dac.internal_output.enabled"/>
+      <property id="module.driver.dac.elc_trigger" value="_disabled"/>
+    </module>
+    <module id="module.driver.dac_on_dac_b.506752051">
+      <property id="module.driver.dac.name" value="g_dac_b0"/>
+      <property id="module.driver.dac.channel_id" value="0"/>
       <property id="module.driver.dac.vref_range" value="module.driver.dac.vref_range.normal"/>
       <property id="module.driver.dac.data_format" value="module.driver.dac.data_format.data_format_flush_right"/>
       <property id="module.driver.dac.internal_output" value="enum.mcu.dac.internal_output.enabled"/>
@@ -519,6 +527,7 @@
       <stack module="module.driver.uart_on_sci_b_uart.1046485524"/>
       <stack module="module.driver.comparator_on_acmphs.2045501787"/>
       <stack module="module.driver.dac_on_dac_b.1743421653"/>
+      <stack module="module.driver.dac_on_dac_b.506752051"/>
     </context>
     <config id="config.driver.sci_b_uart">
       <property id="config.driver.sci_b_uart.param_checking_enable" value="config.driver.sci_b_uart.param_checking_enable.bsp"/>
@@ -548,6 +557,8 @@
       <configSetting altId="cgc.xtal.p213" configurationId="cgc.xtal"/>
       <configSetting altId="cmpout.mode.custom.free" configurationId="cmpout.mode"/>
       <configSetting altId="cmpout.vcout.pa07" configurationId="cmpout.vcout"/>
+      <configSetting altId="dac120.da0.p014" configurationId="dac120.da0"/>
+      <configSetting altId="dac120.mode.enabled.free" configurationId="dac120.mode"/>
       <configSetting altId="dac121.da1.p015" configurationId="dac121.da1"/>
       <configSetting altId="dac121.mode.enabled.free" configurationId="dac121.mode"/>
       <configSetting altId="gpt1.gtioc1a.p105" configurationId="gpt1.gtioc1a"/>
@@ -572,6 +583,8 @@
       <configSetting altId="ospi0.om_0_sio1.p803" configurationId="ospi0.om_0_sio1"/>
       <configSetting altId="ospi0.om_0_sio2.p103" configurationId="ospi0.om_0_sio2"/>
       <configSetting altId="ospi0.om_0_sio3.p101" configurationId="ospi0.om_0_sio3"/>
+      <configSetting altId="p014.dac120.da0" configurationId="p014"/>
+      <configSetting altId="p014.gpio_mode.gpio_mode_an" configurationId="p014.gpio_mode"/>
       <configSetting altId="p015.dac121.da1" configurationId="p015"/>
       <configSetting altId="p015.gpio_mode.gpio_mode_an" configurationId="p015.gpio_mode"/>
       <configSetting altId="p100.ospi0.om_0_sio0" configurationId="p100"/>

@@ -25,7 +25,7 @@ void hal_entry(void)
 	R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_HIGH);
     printf(BANNER_INFO);
     printf(EP_INFO);
-# if 1
+# if 0
 	printf("Input any character to start test\r\n");
 	while (1) {
 		R_BSP_SoftwareDelay(2, BSP_DELAY_UNITS_SECONDS);
@@ -33,23 +33,16 @@ void hal_entry(void)
 			break;
 		}
 		else {
-			//printf("Input any character to start coremark\r\n");
 		}
 	}
 	//printf("Coremark running, please wait...\r\n");
-	__cycleof__("Coremark") {
+	//__cycleof__("Coremark") {
 		//coremark_main();
-	    acmphs_test();
-	};
+	acmphs_test();
+	//};
 #endif
-
-	/*while (1) {
-		R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_HIGH);
-		R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
-		R_IOPORT_PinWrite(g_ioport.p_ctrl, USER_LED, BSP_IO_LEVEL_LOW);
-		R_BSP_SoftwareDelay(500, BSP_DELAY_UNITS_MILLISECONDS);
-	}*/
-
+	printf("\r\nStart test.....\r\n");
+	acmphs_test();
 	/* Wake up 2nd core if this is first core and we are inside a multicore project. */
 #if (0 == _RA_CORE) && (1 == BSP_MULTICORE_PROJECT) && !BSP_TZ_NONSECURE_BUILD
 
