@@ -10,17 +10,23 @@ image::cpk_ra8t2.png[]
 
 如果您需要查看可在CPKNET-RA8T2核心板上独立运行的样例代码及文档，请跳转至 link:../cpknet_ra8t2/[CPKNET-RA8T2]。
 
-如果您需要使用其他核心板配合CPKEXP-ECSMCB扩展板使用，请参考本代码仓库下对应的目录（核心板名称_ecsmcb）。本开发套件的部分样例代码可以在修改后用于其他组合，详见样例程序的Readme文件。
+如果您需要使用其他核心板配合CPKEXP-ECSMCB扩展板使用，请参考本代码仓库下对应的目录（核心板名称_ecsmcb）。
 
-各个样例程序所需的软硬件配置也请查看对应样例程序目录下的Readme文件。
+各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
+每个样例程序都准备了对应压缩包供下载，如果您没有同步代码库的需求，可以直接下载ZIP包使用。
+
+. link:../cpk_ra8t2/motor_encoder_cpk_ra8t2_ep/[通过增量型编码器控制电机的一般运转功能] - link:../cpk_ra8t2/_ep_archive/motor_encoder_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/motor_sensorless_cpk_ra8t2_ep/[无传感器控制电机的一般运转功能] - link:../cpk_ra8t2/_ep_archive/motor_sensorless_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpk_ra8t2/ethercat_cpk_ra8t2_ep/[RA8T2 EtherCAT 应用演示] - link:../cpk_ra8t2/_ep_archive/ethercat_cpk_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
 . link:../cpk_ra8t2/st7796u_lcd_spi_cpk_ra8t2_ep/[RA8T2 驱动SPI接口的TFT LCD] - link:../cpk_ra8t2/_ep_archive/st7796u_lcd_spi_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpk_ra8t2/spi_lcd_console_cpk_ra8t2_ep/[RA8T2使用ARM-2D将标准输出流重定向到SPI TFT LCD] - link:../cpk_ra8t2/_ep_archive/spi_lcd_console_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpk_ra8t2/mcu_core_migration_spi_lcd_cpknet_ra8t2_ep/[RA8T2双核MCU将应用代码迁移另一个CPU内核运行] - link:../cpk_ra8t2/_ep_archive/mcu_core_migration_spi_lcd_cpknet_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
 . link:../cpk_ra8t2/dual_core_spi_lcd_console_cpk_ra8t2_ep/[RA8T2双核MCU将输出重定向到CPU1的LCD Console] - link:../cpk_ra8t2/_ep_archive/dual_core_spi_lcd_console_cpk_ra8t2_ep_rafsp6.4.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/dac_cpk_ra8t2_ep/[RA8T2 MCU的ADC16H和DAC12驱动程序的基本功能] - link:../cpk_ra8t2/_ep_archive/dac_cpk_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/gpt_capture_cpk_ra8t2_ep/[RA8T2 MCU的GPT驱动程序的基本功能 - 输入捕捉模式] - link:../cpk_ra8t2/_ep_archive/gpt_capture_cpk_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
+. link:../cpk_ra8t2/sci_i2c_cpk_ra8t2_ep/[RA8T2 MCU的SCI-I2C驱动程序的基本功能] - link:../cpk_ra8t2/_ep_archive/sci_i2c_cpk_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
 
-
-Ver. 20260817
+Ver. 20260904
 
 
