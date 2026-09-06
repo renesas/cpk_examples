@@ -1,0 +1,17 @@
+eclipse.preferences.version=1
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/CPATH/delimiter=;
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/CPATH/operation=remove
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/C_INCLUDE_PATH/delimiter=;
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/C_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/LIBRARY_PATH/delimiter=;
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/LIBRARY_PATH/operation=remove
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/append=true
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.debug.1136336879/appendContributed=true
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/CPATH/delimiter=;
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/CPATH/operation=remove
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/C_INCLUDE_PATH/delimiter=;
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/C_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/LIBRARY_PATH/delimiter=;
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/LIBRARY_PATH/operation=remove
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/append=true
+environment/buildEnvironmentInclude/com.renesas.cdt.managedbuild.llvm.arm.configuration.release.1989282722/appendContributed=true
