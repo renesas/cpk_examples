@@ -6,6 +6,11 @@ CPK-RA8P1开发套件由核心板CPKCOR-RA8P1 + 扩展板CPKEXP-EK8x2组合而�
 
 本目录下仅存放适用于该开发套件的样例代码和link:../cpk_ra8p1/docs/31_overview.adoc[使用手册]。
 
+CPK-RA8P1的硬件版本和勘误表：
+
+* CPKCOR-RA8P1 核心板目前只有 v1.0 版量产，link:../cpkcor_ra8p1/docs/00_hw_revisions.adoc[勘误信息链接]
+* CPKEXP-EK8x2 扩展板目前只有 v1.0 版量产，暂无勘误信息
+
 image::cpk_ra8p1.png[]
 
 如果您需要查看可在CPKCOR-RA8P1核心板上独立运行的样例代码及文档，请跳转至 link:../cpkcor_ra8p1/[CPKCOR-RA8P1]。
@@ -44,6 +49,6 @@ image::cpk_ra8p1.png[]
 
 
 
-Ver. 20260904
+Ver. 20260909
 
 

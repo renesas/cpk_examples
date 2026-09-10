@@ -1,0 +1,130 @@
+:scripts: cjk
+
+:imagesdir: ../..
+:manual_common_dir: .
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
+//:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+//:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkcor_ra8p1_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ecsmcb
+//:cpk_set_name: cpk_ra8p1
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+//:cpk_set_name: cpkmini_ra8p1
+//:cpk_set_name: cpkcor_ra8p1_mini8x2
+
+:coreboardmcu: RA8T2
+:core_bd_mcu: ra8t2
+:core_bd_model: 410576
+:coreboardname: CPKNET-RA8T2
+:core_bd_name: cpknet_ra8t2
+:core_bd_version: v1.1
+
+// USB defination for manual
+:core_bd_usb: USB-2.0全速
+
+// pdf url on website
+
+// Renesas official web
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhurl1: https://www.renesas.com/document/mah/
+:uhurl2: -group-users-manual-hardware
+
+// Github - cpk_examples
+
+:pdfviewurl: https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/renesas/cpk_examples/main
+
+// ramcu.com
+
+// common subdir for pdf manual
+
+:manualpath: docs/mcu_manual_split
+:manualversion: 0130
+
+// PDF manual base name
+:manualname: r01uh1067ej{manualversion}-ra8t2
+
+// end of directives
+
+
+== {coreboardname} 核心板硬件版本和勘误信息
+
+
+=== v1.2 版硬件
+
+
+目前还未量产
+
+=== v1.1 版硬件
+
+20250920 量产，后续不会再生产，量产版本切换到v1.2。
+
+link:{core_bd_name}_v1.1_sch_release.pdf[点此下载 {coreboardname} 核心板 v1.1 原理图]
+
+{coreboardname} 核心板正面有激光打印的型号。
+v1.1 版硬件使用的是“A”版本的 {coreboardmcu} MCU，芯片左下角丝印标识“A"或“L ES3”，对应
+link:{pdfviewurl}/{manualpath}/{core_bd_mcu}/{manualname}_Specification%20Differences%20Between%20Products.pdf#page=1[{coreboardmcu} 硬件手册里的 "Chip version A"]。
+
+image::{core_bd_name}/docs/images/00_hw_revisions/{core_bd_name}_v1.1_top.jpg[width=480]
+
+{coreboardname} 核心板反面有PCB版本 （V1R1）和PCB定稿日期 20250920
+
+image::{core_bd_name}/docs/images/00_hw_revisions/{core_bd_name}_v1.1_bottom.jpg[width=480]
+
+==== v1.1 版硬件勘误
+
+---
+
+===== R205和R207阻值过大
+
+R205和R207为I^2^C总线上拉电阻，10K阻值，驱动能力弱。需修改为4.7K以增强驱动能力。
+
+image::docs/images/00_hw_revisions/{core_bd_model}_v1.1_errata1.jpg[width=320, role="thumb"]
+
+v1.2 版已经修正这个问题。
+
+===== R205和R207阻值过大的影响范围：
+
+. 单独使用 {coreboardname} 核心板
+** 无影响
+. {coreboardname} 核心板搭配 CPKEXP-ECSMCB 扩展板使用
+** 与扩展板上的I^2^C设备通信时，可能会不稳定
+. {coreboardname} 核心板搭配 CPKEXP-EK8x2 扩展板使用
+** 与扩展板上的I^2^C设备通信时，可能会不稳定
+. {coreboardname} 核心板搭配 CPKEXP-MINI8x2 扩展板使用
+** 无
+
+---
+
+===== R601阻值过大
+
+R601 是 MicroSD卡槽 Card Detect （CD）信号的硬件上拉电阻。CD信号也用作自动双向电平转换芯片 TXB0108 的使能信号。
+
+当Micro SD卡弹出时， 虽然卡槽端CD信号与VSS断开，但 R601 阻值为10K，电流变化较小无法触发电平转换芯片的方向判断，从而保持低电平，MCU PD07脚亦保持低电平，无法识别卡弹出。
+
+需要将R601阻值改小至1K，加大电流变化，TXB0108可以识别到CD电平翻转进而整体关断，MCU端的PD07通过片内上拉识别到卡弹出。
+
+image::docs/images/00_hw_revisions/{core_bd_model}_v1.1_errata2.jpg[width=800, role="thumb"]
+
+v1.2 版已经修正这个问题。
+
+===== R601阻值过大的影响范围
+
+只要使用v1.1版的 {coreboardname} 核心板就会受到影响。
+
+---
+
+=== v1.0 版硬件
+
+{coreboardname} 核心板 v1.0 版没有批量生产过。
+
+
+
+v20260909

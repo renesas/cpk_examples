@@ -1,0 +1,117 @@
+:scripts: cjk
+
+:imagesdir: ../..
+:manual_common_dir: .
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+//:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
+:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+//:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkcor_ra8p1_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ecsmcb
+//:cpk_set_name: cpk_ra8p1
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+//:cpk_set_name: cpkmini_ra8p1
+//:cpk_set_name: cpkcor_ra8p1_mini8x2
+
+:coreboardmcu: RA8P1
+:core_bd_mcu: ra8p1
+:core_bd_model: 410631
+:coreboardname: CPKCOR-RA8P1
+:core_bd_name: cpkcor_ra8p1
+:core_bd_version: v1.0
+
+// USB defination for manual
+:core_bd_usb: USB-2.0高速
+
+// pdf url on website
+
+// Renesas official web
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhurl1: https://www.renesas.com/document/mah/
+:uhurl2: -group-users-manual-hardware
+
+// Github - cpk_examples
+
+:pdfviewurl: https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/renesas/cpk_examples/main
+
+// ramcu.com
+
+// common subdir for pdf manual
+
+:manualpath: docs/mcu_manual_split
+:manualversion: 0130
+
+// PDF manual base name
+:manualname: r01uh1064ej{manualversion}-ra8p1
+
+// end of directives
+
+
+== {coreboardname} 核心板硬件版本和勘误信息
+
+
+=== v1.1 版硬件
+
+目前还未量产
+
+=== v1.0 版硬件
+
+20260613 量产，后续不会再生产，量产版本切换到 v1.1。
+
+link:{core_bd_name}_v1.0_sch_release.pdf[点此下载 {coreboardname} 核心板 v1.0 原理图]
+
+{coreboardname} 核心板正面有打印的型号贴纸（v1.0版PCB的激光打标有误）。
+v1.0 版硬件使用的是“B”版本的 {coreboardmcu} MCU，芯片左下角丝印标识“B"，对应
+link:{pdfviewurl}/{manualpath}/{core_bd_mcu}/{manualname}_Specification%20Differences%20Between%20Products.pdf#page=1[{coreboardmcu} 硬件手册里的 "Chip version B"]。
+
+image::{core_bd_name}/docs/images/00_hw_revisions/{core_bd_name}_v1.0_top.jpg[width=480]
+
+{coreboardname} 核心板反面有PCB版本 （V1R0）和PCB定稿日期 20260613
+
+image::{core_bd_name}/docs/images/00_hw_revisions/{core_bd_name}_v1.0_bottom.jpg[width=480]
+
+
+==== v1.0 版硬件勘误
+
+---
+
+===== J1连接器上的34脚（PC11）和38脚（PC14）设计错误
+
+image::docs/images/00_hw_revisions/{core_bd_model}_v1.0_errata1.jpg[width=400,role="thumb"]
+
+正确的设计应该是：
+
+* J1:34 - PC14
+* J1:38 - PC11
+
+v1.1 版会修正这个问题。
+
+===== J1连接器上的34脚（PC11）和38脚（PC14）设计错误的影响范围：
+
+. 单独使用 {coreboardname} 核心板
+** 无影响
+. {coreboardname} 核心板搭配 CPKEXP-ECSMCB 扩展板使用
+** CN2上的SPI接口无法使用
+** SPI LCD的触摸功能无法使用
+** RS485无法通过跳线块选择使用PC11/PC14
+*** 可以通过杜邦线对应连接DE和DI信号
+** PMOD Type6 接口上，1脚和4脚信号是反的
+** DSMIF接口上，PC11和PC14的信号是反的
+. {coreboardname} 核心板搭配 CPKEXP-EK8x2 扩展板使用
+** PMODA上的3脚和7脚信号线是反的，无法直接使用PMODA
+** SW800无法直接切换到MDC0 （PC11）使用，Arduino 的D0 （PC14）无法直接使用
+*** 在PMODA上短接3脚和7脚后，可以使用 MDC0 或 Arduino D0，但需要禁用另外一个端口功能（缺省输入高阻），即浪费一个端口
+image::docs/images/00_hw_revisions/{core_bd_model}_v1.0_errata1_1.jpg[width=480]
+. {coreboardname} 核心板搭配 CPKEXP-MINI8x2 扩展板使用
+** 无影响
+
+---
+
+v20260909

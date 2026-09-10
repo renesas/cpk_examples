@@ -63,4 +63,12 @@ image::Snipaste_2026-08-18_18-11-39.png[role="thumb"]
 
 === 驱动文件
 
-对 rm_comms_i2c stack 的操作可以参考 src 文件夹下的 `i2c_comms.c` 和 `i2c_comms.h`。注意，rm_comms_i2c 的 `RM_COMMS_I2C_Open()` 不会调用底层外设的 open 函数，需要用户手工调用。
+对 rm_comms_i2c stack 的操作可以参考 src 文件夹下的 `i2c_comms.c` 和 `i2c_comms.h`。注意，rm_comms_i2c 的 `RM_COMMS_I2C_Open()` 不会调用底层外设的 open 函数，底层外设的 open 需要额外调用：
+
+[source,c,subs="verbatim,attributes"]
+----
+rm_comms_i2c_bus_extended_cfg_t *p_extend = (rm_comms_i2c_bus_extended_cfg_t *)i2c->p_cfg->p_extend;
+const i2c_master_instance_t *p_lower_inst = (const i2c_master_instance_t *)p_extend->p_driver_instance;
+
+p_lower_inst->p_api->open(p_lower_inst->p_ctrl, p_lower_inst->p_cfg);
+----

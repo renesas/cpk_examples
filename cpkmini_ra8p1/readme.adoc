@@ -8,6 +8,11 @@ CPKMINI-RA8P1开发套件由核心板CPKHMI-RA8P1 + 扩展板CPKEXP-MINI8x2组�
 
 本目录下仅存放适用于该开发套件的样例代码和link:../cpkmini_ra8p1/docs/41_overview.adoc[使用手册]。
 
+CPKMINI-RA8P1的硬件版本和勘误表：
+
+* * CPKHMI-RA8P1 核心板目前只有 v1.2和 v1.1 两个版本的硬件有量产，link:../cpkhmi_ra8p1/docs/00_hw_revisions.adoc[版本信息和勘误链接]
+* CPKEXP-MINI8x2 扩展板目前只有 v1.0 版量产，暂无勘误信息
+
 image::cpkmini_ra8p1.png[width=480]
 
 如果您需要查看可在CPKHMI-RA8P1核心板上独立运行的样例代码及文档，请跳转至 link:../cpkhmi_ra8p1/[CPKHMI-RA8P1]。
@@ -31,4 +36,4 @@ image::cpkmini_ra8p1.png[width=480]
 
 - 暂无
 
-Ver. 20260816
+Ver. 20260909

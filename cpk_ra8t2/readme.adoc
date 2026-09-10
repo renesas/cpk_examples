@@ -6,13 +6,18 @@ CPK-RA8T2开发套件由核心板CPKNET-RA8T2 + 扩展板CPKEXP-ECSMCB组合而�
 
 本目录下仅存放适用于该开发套件的样例代码和link:../cpk_ra8t2/docs/21_overview.adoc[使用手册]。
 
+CPK-RA8T2的硬件版本和勘误表：
+
+* CPKNET-RA8T2 核心板目前只有 v1.1 版量产，link:../cpknet_ra8t2/docs/00_hw_revisions.adoc[勘误信息链接]
+* CPKEXP-ECSMCB 扩展板目前只有 v1.0 版量产，暂无勘误信息
+
 image::cpk_ra8t2.png[]
 
 如果您需要查看可在CPKNET-RA8T2核心板上独立运行的样例代码及文档，请跳转至 link:../cpknet_ra8t2/[CPKNET-RA8T2]。
 
 如果您需要使用其他核心板配合CPKEXP-ECSMCB扩展板使用，请参考本代码仓库下对应的目录（核心板名称_ecsmcb）。
 
-各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
+各个样例程序所需的软硬件配置请查看对应样例程序目录下的readme文件。
 
 每个样例程序都准备了对应压缩包供下载，如果您没有同步代码库的需求，可以直接下载ZIP包使用。
 
@@ -27,6 +32,6 @@ image::cpk_ra8t2.png[]
 . link:../cpk_ra8t2/gpt_capture_cpk_ra8t2_ep/[RA8T2 MCU的GPT驱动程序的基本功能 - 输入捕捉模式] - link:../cpk_ra8t2/_ep_archive/gpt_capture_cpk_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
 . link:../cpk_ra8t2/sci_i2c_cpk_ra8t2_ep/[RA8T2 MCU的SCI-I2C驱动程序的基本功能] - link:../cpk_ra8t2/_ep_archive/sci_i2c_cpk_ra8t2_ep_rafsp6.5.0.zip[下载ZIP包]
 
-Ver. 20260904
+Ver. 20260909
 
 

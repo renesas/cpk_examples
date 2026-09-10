@@ -4,14 +4,17 @@
 
 本目录下仅存放可以在 CPKNET-RA8T2 核心板上直接运行的的样例代码和该核心板的link:../cpknet_ra8t2/docs/01_overview.adoc[使用手册]。
 
+CPKNET-RA8T2的硬件版本和勘误表：
+
+* CPKNET-RA8T2 核心板目前只有 v1.1 版量产，link:../cpknet_ra8t2/docs/00_hw_revisions.adoc[勘误信息链接]
+
 image::cpknet_ra8t2.png[width=480]
 
-如果您需要查看RA8T2在缺省扩展板上运行的样例代码及文档，请参考 link:../cpk_ra8t2/[CPK-RA8T2]。
+本核心板为 CPK-RA8T2 开发套件缺省使用的核心板，套件信息请参考 link:../cpk_ra8t2/[CPK-RA8T2]。
 
 如果您需要使用本核心板配合其他扩展板，请参考本代码仓库下对应的目录（cpknet_ra8t2_扩展板名称）。
 
 本核心板的部分样例代码可以在修改后用于其他开发板，详见样例程序的Readme文件。
-
 各个样例程序所需的软硬件配置请查看对应样例程序目录下的Readme文件。
 
 每个样例程序都准备了对应压缩包供下载，如果您没有同步代码库的需求，可以直接下载ZIP包使用。
@@ -53,4 +56,4 @@ image::cpknet_ra8t2.png[width=480]
 * 无
 
 
-Ver. 20260904
+Ver. 20260910
