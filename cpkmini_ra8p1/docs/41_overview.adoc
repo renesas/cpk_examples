@@ -1,0 +1,165 @@
+:scripts: cjk
+//include::locale/attributes.adoc[]
+
+:scripts: cjk
+
+:imagesdir: ../..
+:manual_common_dir: docs
+:manual_doc_ext: adoc
+//:manual_doc_ext: html
+
+//:cpk_core_name: cpknet-ra8t2
+//:cpk_core_name: cpkhmi-ra8p1
+//:cpk_core_name: cpkcor-ra8p1
+//:cpk_core_name: cpkcor-ra8t2
+
+//:cpk_set_name: cpk_ra8t2
+//:cpk_set_name: cpkcor_ra8t2_ecsmcb
+//:cpk_set_name: cpkcor_ra8p1_ecsmcb
+//:cpk_set_name: cpkhmi_ra8p1_ecsmcb
+//:cpk_set_name: cpk_ra8p1
+//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+:cpk_set_name: cpkmini_ra8p1
+//:cpk_set_name: cpkcor_ra8p1_mini8x2
+
+:cpksetname: CPKMINI-RA8P1
+:coreboardmcu: RA8P1
+:core_bd_mcu: ra8p1
+:core_bd_model: 410576
+:coreboardname: CPKHMI-RA8P1
+:core_bd_name: cpkhmi_ra8p1
+:core_bd_version: v1.2
+:expboardname: CPKEXP-MINI8x2
+:exp_bd_name: cpkexp_mini8x2
+:exp_bd_version: v1.0
+
+// USB defination for manual
+:core_bd_usb: USB-2.0高速
+
+// pdf url on website
+
+// Renesas official web
+:dsurl1: https://www.renesas.com/document/dst/
+:dsurl2: -group-datasheet
+:uhurl1: https://www.renesas.com/document/mah/
+:uhurl2: -group-users-manual-hardware
+
+// Github - cpk_examples
+
+:pdfviewurl: https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/renesas/cpk_examples/main
+
+// ramcu.com
+
+// common subdir for pdf manual
+
+:manualpath: docs/mcu_manual_split
+:manualversion: 0130
+
+// PDF manual base name
+:manualname: r01uh1064ej{manualversion}-ra8p1
+
+// end of directives
+
+
+== {cpksetname}开发套件简介
+
+{cpksetname}是瑞萨电子推出的精简扩展板，主要评估及开发{corebdmcu}的AI相关的部分功能，如视觉AI，实时数据分析等。并带有简单的输出反馈，支持I2C的OLED和SPI接口的LCD模组。
+
+
+* [x] <<{cpksetname}开发套件简介,41. {cpksetname}开发套件简介>>
+* [ ] link:42_hardware.{manual_doc_ext}[42. {expboardname}硬件概述]
+* [ ] link:43_sensor.{manual_doc_ext}[43. {expboardname}的板载传感器]
+* [ ] link:44_display.{manual_doc_ext}[44. {expboardname}的显示功能]
+* [ ] link:45_camera.{manual_doc_ext}[45. {expboardname}的摄像头]
+* [ ] link:46_comm.{manual_doc_ext}[46. {expboardname}的通信接口]
+* [ ] link:47_powermisc.{manual_doc_ext}[47. {expboardname}的电源和其他设置]
+
+image::{cpk_set_name}/{cpk_set_name}.png[width=600]
+
+开发套件由{expboardname}核心板+{expboardname}扩展板组成，本手册的部分内容会以CPKHMI-RA8P1核心板为例进行说明。
+
+* 目前套件里使用的核心板为link:../../{core_bd_name}/[{coreboardname}] {core_bd_version} 版本，link:../../{core_bd_name}/docs/{core_bd_name}_{core_bd_version}_sch_release.pdf[原理图下载]。
+目前 {coreboardname} 核心板有多个量产版，具体您可以查看link:../../{core_bd_name}/docs/00_hw_revisions.adoc[{coreboardname} 的版本信息和勘误链接]。
+* {expboardname}扩展板原理图下载：link:{exp_bd_name}_{exp_bd_version}_sch_release.pdf[{expboardname} {exp_bd_version}版原理图]
+
+{cpksetname} 开发套件支持：
+
+. 外部存储芯片
+.. 32位SDRAM（16M字节）
+.. QSPI NOR Flash（32M字节）
+. 板载2.33英寸SPI LCD （222RGB x 480），可选触摸屏
+. MIPI-CSI摄像头接口（缺省支持OV5640）
+. I2C接口的OLED显示屏，EEPROM，地磁传感器和6轴IMU
+. 预留通用扩展接口，可连接WiFi模组等串行设备
+. LED/按键/蜂鸣器功能三选一
+
+=== 开发套件的开箱和安装
+
+开发套件的包装由以下三部分组成
+
+. 铁盒包装的 {coreboardname} 核心板
+. 塑盒包装的 {expboardname} 扩展板
+
+image::{cpk_set_name}\docs\images\41_overview\image.png[width=600]
+
+{expboardname} 扩展板除了板子本身，还包含以下附件内容：
+
+. H0233S001 全接口LCD 模组（222RGB x 480），支持 MIPI-DSI/3-SPI/4-SPI/RGB/8080总线 接口
+.. {expboardname} 扩展板上支持 4-SPI 接口
+. OV5640摄像头  （可支持MIPI-CSI和DVP接口）
+.. {expboardname} 扩展板上支持MIPI-CSI接口，已经设计了摄像头所需的电源电路，无需转接板，可以直接连接市售摄像头使用
+. 连接MIPI接口的 18Pin 同面FPC线
+. M2螺丝/螺柱，撬棒等安装工具
+
+image::{cpk_set_name}\docs\images\41_overview\image-1.png[width=360]
+
+==== 摄像头和 SPI LCD 的连接及固定
+
+{expboardname} 扩展板上支持MIPI-CSI摄像头，接口为下接。插入排线后压下即可。
+
+image::{cpk_set_name}\docs\images\41_overview\image-2.png[width=320]
+
+LCD使用板上的 50Pin 接口，并且在FPC接口上预留了双面胶，如果您后续还想取下LCD，则不建议用双面胶固定住LCD。*[.red]#用双面胶固定LCD后，取下会十分困难，务必注意。#*
+注意，如果您要用双面胶固定LCD前，请先确认已经安装了摄像头。LCD固安装后无法操作摄像头接口。
+
+板子左上角的电源排针焊接位置和LCD模组上裸露的部分做了绝缘遮蔽（黑色胶布和透明胶），以防LCD安装固定后造成短路。
+
+image::{cpk_set_name}\docs\images\41_overview\image-3.png[width=480]
+
+LCD接口为上接，排线插入后请务必从两边压紧接口，50pin的FPC接口比较长，可能会存在没有压紧的状况，此时可以用撬棒推一下压紧用的塑料片。
+
+image::{cpk_set_name}\docs\images\41_overview\image-4.png[width=360]
+
+==== 扩展板与核心板的链接
+
+核心板上安装J201，J202和5V电源排针，套件内的 {coreboardname} 核心板已经预先安装了排针，取下排针保护套即可使用。
+
+如果您手上的核心板没有安装排针，请参考link:..\..\{core_bd_name}\docs\04_th_expansion.{manual_doc_ext}[{coreboardname}的通孔扩展接口]章节，先安装排针。
+
+image::{cpk_set_name}\docs\images\41_overview\image-5.png[width=520]
+
+排针连接的合高约为10mm，为了稳定连接两个电路板，请使用M2螺丝包里的10mm螺柱进行固定。
+
+在核心板靠近排针一侧安装短螺丝和10mm螺柱，原理排针侧，安装10mm+6螺柱和10mm螺柱。
+
+image::{cpk_set_name}\docs\images\41_overview\image-6.png[width=640]
+
+将 18Pin 同面FPC安装到扩展板底面的FPC插座上，FPC插座为上接。并准备好已经安装螺柱的核心板。
+
+注意，核心板上J202是 6Pin，而扩展板上对应的接口为 5Pin，安装后会有一个插针（VCC）没用到。
+
+image::{cpk_set_name}\docs\images\41_overview\image-7.png[width=640]
+
+将核心板与扩展板的接插件对插后，连接 18Pin FPC电缆到核心板的插座上，并确认锁定连接（可以使用撬棒压一下）。然后使用短螺丝固定扩展板。
+
+image::{cpk_set_name}\docs\images\41_overview\image-8.png[width=600]
+
+安装好LCD和摄像头的开发套件，可以整体放回扩展板的塑盒里。
+
+image::{cpk_set_name}\docs\images\41_overview\image-9.png[width=400]
+
+=== 开发套件的功能扩展
+
+{cpksetname}并未使用核心板上的BTB接插件，所以还能通过BTB连接其他扩展板使用。
+
+* 例如可以将{cpksetname}整体连接到CPKEXP-ECSMCB+电机扩展底板，实现摄像头输入+电机驱动功能

@@ -88,7 +88,7 @@ link:{core_bd_name}_{core_bd_version}_sch_release.pdf[点此下载]
 {coreboardname}核心板上使用289BGA封装的{coreboardmcu}双核MCU（U1），除了实现{coreboardmcu}的最小系统外，还搭载了实用的外设功能，包括：
 
 . 16位SDRAM（U2），32M字节容量
-. HyperRAM（U6），64M字节容量
+. HyperRAM（U6），32M字节容量
 . {core_bd_usb}接口，支持双功能端口（DRP：Dual Role Port），支持Dead Battery功能
 . 板载Segger J-Link调试器，同时支持一路虚拟串口，使用JDBG USB Type-C 2.0 接口，仅支持UFP（作为USB设备）
 . 电源LED（白色），用户LED （绿色），复位按键和用户按键
