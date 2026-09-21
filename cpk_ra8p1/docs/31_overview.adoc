@@ -158,6 +158,13 @@ image::{cpk_set_name}\docs\images\31_overview\image-6.png[width=400]
 
 image::{cpk_set_name}\docs\images\31_overview\image-7.png[width=400]
 
+=== 拆除核心板时的注意事项
+
+CPK-RA8P1的核心板和扩展底板通过J1,J2,J3三个高密高速板对板连接器互联。连接器卡得较紧，如果需要取下核心板，请不要徒手拔出。
+
+板对板连接器的位置如果所示，两个板子间距为1.5mm，请使用附件盒里的塑料撬棒（或其他不会刮伤电路板的器械），从USB接口的2个角以及J3上方的位置，轻轻撬动核心板。核心板右侧位置较少，请在FPC座子附近找位置插入撬棒。待连接器松开脱离后，再取下核心板。
+
+image::{cpk_set_name}/docs/images/31_overview/{cpk_set_name}_unmount.jpg[width=800]
 
 === 扩展板的电源和电平兼容设计
 

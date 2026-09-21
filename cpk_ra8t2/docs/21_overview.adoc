@@ -117,4 +117,12 @@ image::{cpk_set_name}/docs/images/21_overview/{cpk_set_name}_motor.png[]
 
 本手册主要讲述{expboardname}扩展板配合{coreboardname}核心板实现的各项功能，如果您想了解核心板的详细信息，请查看link:../../{core_bd_name}/docs/01_overview.{manual_doc_ext}[{coreboardname}核心板使用手册]。
 
+=== 拆除核心板时的注意事项
+
+CPK-RA8T2的核心板和扩展底板通过J1,J2,J3三个高密高速板对板连接器互联。连接器卡得较紧，如果需要取下核心板，请不要徒手拔出。
+
+板对板连接器的位置如果所示，两个板子间距为1.5mm，请使用包装盒里的塑料撬棒（或其他不会刮伤电路板的器械），从四个角以及J3上方的位置，轻轻撬动核心板。待连接器松开脱离后，再取下核心板。
+
+image::{cpk_set_name}/docs/images/21_overview/{cpk_set_name}_unmount.jpg[width=800]
+
 下一篇：link:22_hardware.{manual_doc_ext}[22. {expboardname}硬件概述]
