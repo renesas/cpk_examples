@@ -9,8 +9,8 @@ extern "C" {
 
 uint32_t SD_Init(void);
 uint32_t SD_InitMedia(void);
-uint32_t SD_IsInsert(void);
 uint32_t SD_IsInsertRemoveExist(void);
+uint32_t SD_IsInsert(void);
 uint32_t SD_IsTransDone(void);
 uint32_t SD_Read(uint8_t *data, uint32_t block_addr, uint32_t size);
 uint32_t SD_WaitTrans(void);

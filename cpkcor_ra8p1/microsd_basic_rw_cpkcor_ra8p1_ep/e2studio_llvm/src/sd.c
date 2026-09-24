@@ -3,6 +3,11 @@
 #include "sd.h"
 #include "utils/util.h"
 
+#if BSP_CFG_RTOS == 2
+#include "FreeRTOS.h"
+#include "event_groups.h"
+#endif
+
 #define SD_INSTANCE		g_rm_block_media0
 #define SD_INSTANCE_CFG	UTIL_CONCAT(SD_INSTANCE, _cfg)
 #define SD_CALLBACK		RM_BLOCK_MEDIA_Callback
@@ -29,7 +34,10 @@
 #define SD_LOGE(msg, ...)
 #endif
 
+/* FSP 的回调函数可能同时给出卡插入和卡移除事件，使用这个标志记录这种情况
+ * 当发生这种情况时，SD_IsInsert() 会同时读取 CD 引脚的电平来共同判断是插入还是移除 */
 static bool s_insert_remove_exist;
+static bool s_use_cd_pin;
 static volatile bool s_inserted;
 static volatile uint8_t s_trans_done;
 
@@ -37,10 +45,20 @@ uint32_t SD_Init(void)
 {
 	uint32_t err;
 
+	const rm_block_media_sdmmc_extended_cfg_t *p_extend_cfg = (const rm_block_media_sdmmc_extended_cfg_t *)SD_INSTANCE_CFG.p_extend;
+	sdhi_instance_ctrl_t *p_ctrl = (sdhi_instance_ctrl_t *)p_extend_cfg->p_sdmmc->p_ctrl;
+	sdmmc_cfg_t *p_cfg = (sdmmc_cfg_t *)p_extend_cfg->p_sdmmc->p_cfg;
+
 	err = RM_BLOCK_MEDIA_SDMMC_Open(SD_INSTANCE.p_ctrl, SD_INSTANCE.p_cfg);
 	UNLIKE_RETURN(err, 0, "Open failed: %u", err);
+	SD_LOGD("SD_OPION: 0x%08" PRIX32, p_ctrl->p_reg->SD_OPTION);
 	s_insert_remove_exist = false;
-
+	if (p_cfg->card_detect == SDMMC_CARD_DETECT_CD) {
+		s_use_cd_pin = true;
+	}
+	else {
+		s_use_cd_pin = false;
+	}
 
 	return 0;
 }
@@ -61,6 +79,11 @@ uint32_t SD_InitMedia(void)
 	s_trans_done = 1;
 
 	return 0;
+}
+
+uint32_t SD_IsInsertRemoveExist(void)
+{
+	return s_insert_remove_exist ? 1 : 0;
 }
 
 uint32_t SD_IsInsert(void)
@@ -92,13 +115,10 @@ uint32_t SD_IsInsert(void)
 		}
 	}
 	else {
+		/* 在不使用 CD 功能时，RM_BLOCK_MEDIA_SDMMC_StatusGet() 会直接设置 media_inserted 为 true
+		 * 如果要实现自己的判断逻辑，在这里修改 */
 		return 1;
 	}
-}
-
-uint32_t SD_IsInsertRemoveExist(void)
-{
-	return s_insert_remove_exist ? 1 : 0;
 }
 
 uint32_t SD_IsTransDone(void)

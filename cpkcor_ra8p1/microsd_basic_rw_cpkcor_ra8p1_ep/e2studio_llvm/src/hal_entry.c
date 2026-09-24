@@ -135,3 +135,18 @@ void LOG_GetTime(uint32_t *s, uint32_t *ms)
 	*ms = (uint32_t)(t % 1000);
 }
 #endif
+
+void EXTERNAL_IRQ_Callback(external_irq_callback_args_t *p_args)
+{
+	bsp_io_level_t level;
+
+	if (p_args->channel == g_external_irq29_cfg.channel) {
+		R_IOPORT_PinRead(g_ioport.p_ctrl, BSP_IO_PORT_08_PIN_02, &level);
+		if (level == BSP_IO_LEVEL_HIGH) {
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, BSP_IO_PORT_08_PIN_02, BSP_IO_LEVEL_LOW);
+		}
+		else {
+			R_IOPORT_PinWrite(g_ioport.p_ctrl, BSP_IO_PORT_08_PIN_02, BSP_IO_LEVEL_HIGH);
+		}
+	}
+}

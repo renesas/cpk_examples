@@ -2,13 +2,13 @@
 
 == 运行
 
-在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 microsd_basic_rw_cpkcor_ra8t2_ep.hex。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，会等待 SD 插入，然后进行读写速度测试。SD 卡读写速度与 SD 卡本身关系较大，以下是两张不同的 SD 卡的速度测试结果。在测试完成后，程序不会再对 SD 卡进行读写操作，此时可以插拔 SD 卡来检查 RA8P1 的插拔检测功能是否正常
+在 e^2^ studio 中导入工程，生成并编译，或直接烧录本文件夹下的 microsd_basic_rw_cpkcor_ra8p1_ep.hex。打开一个串口调试工具，波特率 2000000，数据位 8bit，停止位 1bit，无奇偶校验。程序烧录后，会等待 SD 插入，然后进行读写速度测试。SD 卡读写速度与 SD 卡本身关系较大，以下是两张 SD 卡的速度测试结果
 
 SD Card 1
 
 [.text-center]
 --
-image::Snipaste_2026-07-29_18-13-45.png[role="thumb"]
+image::Snipaste_2026-07-21_10-10-52.png[role="thumb"]
 --
 
 SD Card 2
@@ -135,6 +135,8 @@ uint32_t SD_IsInsert(void)
 		}
 	}
 	else {
+        /* 在不使用 CD 功能时，RM_BLOCK_MEDIA_SDMMC_StatusGet() 会直接设置 media_inserted 为 true
+		 * 如果要实现自己的判断逻辑，在这里修改 */
 		return 1;
 	}
 }
