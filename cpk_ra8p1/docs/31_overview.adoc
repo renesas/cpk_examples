@@ -18,7 +18,7 @@
 //:cpk_set_name: cpkcor_ra8p1_ecsmcb
 //:cpk_set_name: cpkhmi_ra8p1_ecsmcb
 :cpk_set_name: cpk_ra8p1
-//:cpk_set_name: cpkhmi_ra8p1_ekra8x2
+//:cpk_set_name: cpkhmi_ra8p1_ek8x2
 //:cpk_set_name: cpkmini_ra8p1
 //:cpk_set_name: cpkcor_ra8p1_mini8x2
 
@@ -29,8 +29,8 @@
 :coreboardname: CPKCOR-RA8P1
 :core_bd_name: cpkcor_ra8p1
 :core_bd_version: v1.0
-:expboardname: CPKEXP-EKRA8X2
-:exp_bd_name: cpkexp_ekra8x2
+:expboardname: CPKEXP-EK8X2
+:exp_bd_name: cpkexp_ek8x2
 :exp_bd_version: v1.0
 
 // USB defination for manual
